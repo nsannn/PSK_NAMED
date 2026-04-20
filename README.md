@@ -30,3 +30,17 @@
    ```bash
    npm run dev
    ```
+
+### 3. Database Setup (PostgreSQL)
+
+*For first time setup:*
+
+1. **Install PostgreSQL**: Ensure the PostgreSQL **database server** is installed and running on your local machine.
+   *Note: You may also want to install a GUI client like **pgAdmin** or **DBeaver**
+2. **Configure Connection String**: Check `backend/Api/appsettings.Development.json` (or `appsettings.json`) and verify the connection string matches your local PostgreSQL credentials (username, password, port).
+3. **Apply Migrations**: Open a terminal in the backend `Api` directory and run the Entity Framework Core migrations to create the database schema:
+   ```bash
+   cd backend/Api
+   dotnet tool install --global dotnet-ef # if you don't have the EF Core tools installed
+   dotnet ef database update
+   ```
