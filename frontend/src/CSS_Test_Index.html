@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>CSS Testing</title>
+        <link rel="stylesheet" href="main.css">
+        <script src="CSS_Test_Scripts.js" defer></script>
+    </head>
+    <body>
+        <div id="transparent_panel" onclick="closeEverything()"></div>
+        <div id="mobile_sidebar">
+            <button id="close_button" onclick="closeMobileSidebar()">
+                <span>X</span>
+            </button>
+            <div id="nav_group">
+                <button>Events</button>
+                <button>Partners</button>
+                <button>Contacts</button>
+            </div>
+            <div id="account_group">
+                <button onclick="openSignInWindowSidebar()">Sign In</button>
+                <button onclick="openRegisterWindowSidebar()">Register</button>
+            </div>
+        </div>
+        <form id="register_window">
+            <span id="window_name">Create New Account</span>
+            <hr/>
+            <div id="register_full_name" class="align_row">
+                <input type="text" id="register_first_name" placeholder="First Name">
+                <input type="text" id="register_last_name" placeholder="Last Name">
+            </div>
+            <input type="text" id="register_email" placeholder="Email">
+            <input type="text" id="register_password" placeholder="Password">
+            <input type="text" id="register_confirm_password" placeholder="Confirm Password">
+            <div id="term_of_services_checkbox" class="align_row">
+                <input type="checkbox" id="term_of_services">
+                <label for="term_of_services">I agree to the Terms and Conditions</label>
+            </div>
+            <input type="submit" value="Register">
+            <hr/>
+            <span id="other_options_text">Or Use other Accounts</span>
+            <div id="other_options">
+                <button value="Google">Google</button>
+                <button value="Facebook">Facebook</button>
+            </div>
+        </form>
+        <div id="sign_in_window">
+            <span id="window_name">Sign In to Your Account</span>
+            <hr/>
+            <input type="text" id="sign_in_email" placeholder="Email">
+            <input type="text" id="sign_in_password" placeholder="Password">
+            <button id="forgot_password_button" class="text_button">Forgot Password?</button>
+            <input type="submit" value="Sign In">
+            <button id="sign_in_register_button" class="text_button">Don't have an account? Register</button>
+            <hr/>
+            <span id="other_options_text">Or Use other Accounts</span>
+            <div id="other_options">
+                <button value="Google">Google</button>
+                <button value="Facebook">Facebook</button>
+            </div>
+        </div>
+        <div id="top_bar">
+            <div id="site_logo">Logo</div>
+            <div id="nav_group">
+                <button>Events</button>
+                <button>Partners</button>
+                <button>Contacts</button>
+            </div>
+            <div id="account_group">
+                <button onclick="openSignInWindow()">Sign In</button>
+                <button onclick="openRegisterWindow()">Register</button>
+            </div>
+            <button id="menu_button" onclick="openMobileSidebar()">
+                <span>☰</span>
+            </button>
+        </div>
+        <div class="align_row">
+
+        </div>
+    </body>
+</html>
