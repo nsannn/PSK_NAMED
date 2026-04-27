@@ -110,12 +110,16 @@
                 </div>
                 <div id="event_list">
                     <div id="event_card">
-                        Poster
-                        Event Name
-                        Date
-                        Location
-                        Description
-                        Price
+                        <div id="event_card_poster">
+                            Poster
+                        </div>
+                        <div class="align_column">
+                            <span>Event Name</span>
+                            <span>Date</span>
+                            <span>Location</span>
+                            <span>Description</span>
+                            <span>Price</span>
+                        </div>
                     </div>
                     <div id="event_card">
                         Event Card 2
@@ -127,12 +131,20 @@
                         Event Card 4
                     </div>
                 </div>
-                <div id="pagination">
-                    Button Prev
-                    Prev Pages
-                    Current Page
-                    Next Pages
-                    Button Next
+                <div id="pagination" class="align_row">
+                    <button id="pagination_button">&lt</button>
+                    <div id="pagination_container_pages" class="align_row">
+                        <button id="page_button">1</button>
+                        <button id="page_button">...</button>
+                        <button id="page_button">7</button>
+                        <button id="page_button">8</button>
+                        <button id="page_button" class="current_page">9</button>
+                        <button id="page_button">10</button>
+                        <button id="page_button">11</button>
+                        <button id="page_button">...</button>
+                        <button id="page_button">30</button>
+                    </div>
+                    <button id="pagination_button">&gt</button>
                 </div>
             </div>
         </div>
