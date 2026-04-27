@@ -4,6 +4,8 @@ let mobileSidebar=document.getElementById('mobile_sidebar');
 let registerWindow=document.getElementById('register_window');
 let signInWindow=document.getElementById('sign_in_window');
 let transparentPanel=document.getElementById('transparent_panel');
+let sortContainer=document.getElementById('sort_container');
+let sortMenu=document.getElementById('sort_options_menu');
 
 function openMobileSidebar(){
     mobileSidebar.style.right='0';
@@ -113,3 +115,29 @@ function closeEverything(){
     if(signInWindow.style.display==='flex')
         closeSignInWindow();
 }
+
+function toggleSortMenu(){
+    if(sortMenu.style.display==='block'){
+        sortMenu.style.opacity='0';
+        sortMenu.style.margin='2rem auto auto auto';
+        setTimeout(()=>{
+            sortMenu.style.display='none';
+        },100);
+    } else {
+        sortMenu.style.display='block';
+        setTimeout(()=>{
+            sortMenu.style.opacity='1';
+            sortMenu.style.margin='0.5rem auto auto auto';
+        },100);
+    }
+}
+
+document.addEventListener('click',(e)=>{
+    if(!sortContainer.contains(e.target)){
+        sortMenu.style.opacity='0';
+        sortMenu.style.margin='2rem auto auto auto';
+        setTimeout(()=>{
+            sortMenu.style.display='none';
+        },100);
+    }
+});

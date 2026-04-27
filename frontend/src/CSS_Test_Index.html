@@ -76,7 +76,65 @@
             </button>
         </div>
         <div class="align_row">
-
+            <div id="filters_menu" class="align_column">
+                Filters
+                Event Type
+                Ticket Price
+                Date
+                Tags
+                City
+            </div>
+            <div id="event_list_main" class="align_column">
+                <div id="search_sort_menu" class="align_row">
+                    <button id="filter_button_mobile"></button>
+                    <form id="search_form">
+                        <div id="search_wrapper" class="align_row">
+                            <input type="text" id="search_input" placeholder="Search...">
+                            <input type="submit" id="search_button" value="🔍︎">
+                        </div>
+                    </form>
+                    <div id="sort_container">
+                        <button id="sort_button" class="align_row" onclick="toggleSortMenu()">
+                            <span id="sort_text">Sort</span>
+                            <div id="sort_separator"></div>
+                            <span id="sort_selected_text">New</span>
+                        </button>
+                        <button id="sort_button_mobile" class="align_row" onclick="toggleSortMenu()"></button>
+                        <div id="sort_options_menu" class="align_column">
+                            <button id="sort_option">New</button>
+                            <button id="sort_option">Popularity</button>
+                            <button id="sort_option">Price: Low to High</button>
+                            <button id="sort_option">Price: High to Low</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="event_list">
+                    <div id="event_card">
+                        Poster
+                        Event Name
+                        Date
+                        Location
+                        Description
+                        Price
+                    </div>
+                    <div id="event_card">
+                        Event Card 2
+                    </div>
+                    <div id="event_card">
+                        Event Card 3
+                    </div>
+                    <div id="event_card">
+                        Event Card 4
+                    </div>
+                </div>
+                <div id="pagination">
+                    Button Prev
+                    Prev Pages
+                    Current Page
+                    Next Pages
+                    Button Next
+                </div>
+            </div>
         </div>
     </body>
 </html>
