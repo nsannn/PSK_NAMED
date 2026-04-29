@@ -4,6 +4,7 @@ let mobileSidebar=document.getElementById('mobile_sidebar');
 let registerWindow=document.getElementById('register_window');
 let signInWindow=document.getElementById('sign_in_window');
 let transparentPanel=document.getElementById('transparent_panel');
+let filterMenu=document.getElementById('filters_menu');
 let sortContainer=document.getElementById('sort_container');
 let sortMenu=document.getElementById('sort_options_menu');
 
@@ -105,17 +106,6 @@ function closeSignInWindow(){
     },100);
 }
 
-function closeEverything(){
-    if(mobileSidebar.style.right==='0px')
-        closeMobileSidebar();
-
-    if(registerWindow.style.display==='flex')
-        closeRegisterWindow();
-
-    if(signInWindow.style.display==='flex')
-        closeSignInWindow();
-}
-
 function toggleSortMenu(){
     if(sortMenu.style.display==='block'){
         sortMenu.style.opacity='0';
@@ -141,3 +131,32 @@ document.addEventListener('click',(e)=>{
         },100);
     }
 });
+
+function openFilterMenu(){
+    filterMenu.style.left='0';
+    transparentPanel.style.display='block';
+    setTimeout(()=>{
+        transparentPanel.style.opacity='0.8';
+    },100);
+}
+
+function closeFilterMenu(){
+    filterMenu.style.left='-320px';
+    transparentPanel.style.opacity='0';
+    setTimeout(()=>{
+        transparentPanel.style.display='none';
+    },100);
+}
+
+function closeEverything(){
+    if(mobileSidebar.style.right==='0px')
+        closeMobileSidebar();
+
+    if(registerWindow.style.display==='flex')
+        closeRegisterWindow();
+
+    if(signInWindow.style.display==='flex')
+        closeSignInWindow();
+    if(filterMenu.style.left==='0px')
+        closeFilterMenu();
+}

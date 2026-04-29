@@ -77,16 +77,56 @@
         </div>
         <div class="align_row">
             <div id="filters_menu" class="align_column">
-                Filters
-                Event Type
-                Ticket Price
-                Date
-                Tags
-                City
+                <button id="close_button" onclick="closeFilterMenu()">
+                    <span>X</span>
+                </button>
+                <span id="filters_title">Filters</span>
+                <div id="filter_container" class="align_column">
+                    <span id="filter_name">Event Type</span>
+                    <hr/>
+                    <div id="filter_options_container" class="align_row">
+                        <button id="filter_option">Conterts</button>
+                        <button id="filter_option" class="option_selected">Festivals</button>
+                    </div>
+                </div>
+                <div id="filter_container" class="align_column">
+                    <span id="filter_name">Ticket Price</span>
+                    <hr/>
+                    <form class="align_row">
+                        <input type="number" id="filter_price_min_input" placeholder="Min">
+                        <span id="filter_separator">-</span>
+                        <input type="number" id="filter_price_max_input" placeholder="Max">
+                    </form>
+                </div>
+                <div id="filter_container" class="align_column">
+                    <span id="filter_name">Date</span>
+                    <hr/>
+                    <form class="align_row">
+                        <input type="date">
+                        <span id="filter_separator">-</span>
+                        <input type="date">
+                    </form>
+                </div>
+                <div id="filter_container" class="align_column">
+                    <span id="filter_name">Tags</span>
+                    <hr/>
+                    <div id="filter_options_container" class="align_row">
+                        <button id="filter_option">Online</button>
+                        <button id="filter_option" class="option_selected">Outdoors</button>
+                        <button id="filter_option">Indoors</button>
+                    </div>
+                </div>
+                <div id="filter_container" class="align_column">
+                    <span id="filter_name">City</span>
+                    <hr/>
+                    <form class="align_column">
+                        <input type="text" id="filter_city_input" value="Vilnius">
+                    </form>
+                </div>
             </div>
             <div id="event_list_main" class="align_column">
                 <div id="search_sort_menu" class="align_row">
-                    <button id="filter_button_mobile"></button>
+                    <button id="filter_button_mobile" onclick="openFilterMenu()"></button>
                     <form id="search_form">
                         <div id="search_wrapper" class="align_row">
                             <input type="text" id="search_input" placeholder="Search...">
