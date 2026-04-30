@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>CSS Testing</title>
+        <link rel="stylesheet" href="main.css">
+        <script src="CSS_Test_Scripts.js" defer></script>
+    </head>
+    <body>
+        <div id="transparent_panel" onclick="closeEverything()"></div>
+        <div id="mobile_sidebar">
+            <button id="close_button" onclick="closeMobileSidebar()">
+                <span>X</span>
+            </button>
+            <div id="nav_group">
+                <button>Events</button>
+                <button>Partners</button>
+                <button>Contacts</button>
+            </div>
+            <div id="account_group">
+                <button onclick="openSignInWindowSidebar()">Sign In</button>
+                <button onclick="openRegisterWindowSidebar()">Register</button>
+            </div>
+        </div>
+        <form id="register_window">
+            <span id="window_name">Create New Account</span>
+            <hr/>
+            <div id="register_full_name" class="align_row">
+                <input type="text" id="register_first_name" placeholder="First Name">
+                <input type="text" id="register_last_name" placeholder="Last Name">
+            </div>
+            <input type="text" id="register_email" placeholder="Email">
+            <input type="text" id="register_password" placeholder="Password">
+            <input type="text" id="register_confirm_password" placeholder="Confirm Password">
+            <div id="term_of_services_checkbox" class="align_row">
+                <input type="checkbox" id="term_of_services">
+                <label for="term_of_services">I agree to the Terms and Conditions</label>
+            </div>
+            <input type="submit" value="Register">
+            <hr/>
+            <span id="other_options_text">Or Use other Accounts</span>
+            <div id="other_options">
+                <button value="Google">Google</button>
+                <button value="Facebook">Facebook</button>
+            </div>
+        </form>
+        <div id="sign_in_window">
+            <span id="window_name">Sign In to Your Account</span>
+            <hr/>
+            <input type="text" id="sign_in_email" placeholder="Email">
+            <input type="text" id="sign_in_password" placeholder="Password">
+            <button id="forgot_password_button" class="text_button">Forgot Password?</button>
+            <input type="submit" value="Sign In">
+            <button id="sign_in_register_button" class="text_button">Don't have an account? Register</button>
+            <hr/>
+            <span id="other_options_text">Or Use other Accounts</span>
+            <div id="other_options">
+                <button value="Google">Google</button>
+                <button value="Facebook">Facebook</button>
+            </div>
+        </div>
+        <div id="top_bar">
+            <div id="site_logo">Logo</div>
+            <div id="nav_group">
+                <button>Events</button>
+                <button>Partners</button>
+                <button>Contacts</button>
+            </div>
+            <div id="account_group">
+                <button onclick="openSignInWindow()">Sign In</button>
+                <button onclick="openRegisterWindow()">Register</button>
+            </div>
+            <button id="menu_button" onclick="openMobileSidebar()">
+                <span>☰</span>
+            </button>
+        </div>
+        <div class="align_row">
+            <div id="filters_menu" class="align_column">
+                <button id="close_button" onclick="closeFilterMenu()">
+                    <span>X</span>
+                </button>
+                <span id="filters_title">Filters</span>
+                <div id="filter_container" class="align_column">
+                    <span id="filter_name">Event Type</span>
+                    <hr/>
+                    <div id="filter_options_container" class="align_row">
+                        <button id="filter_option">Conterts</button>
+                        <button id="filter_option" class="option_selected">Festivals</button>
+                    </div>
+                </div>
+                <div id="filter_container" class="align_column">
+                    <span id="filter_name">Ticket Price</span>
+                    <hr/>
+                    <form class="align_row">
+                        <input type="number" id="filter_price_min_input" placeholder="Min">
+                        <span id="filter_separator">-</span>
+                        <input type="number" id="filter_price_max_input" placeholder="Max">
+                    </form>
+                </div>
+                <div id="filter_container" class="align_column">
+                    <span id="filter_name">Date</span>
+                    <hr/>
+                    <form class="align_row">
+                        <input type="date">
+                        <span id="filter_separator">-</span>
+                        <input type="date">
+                    </form>
+                </div>
+                <div id="filter_container" class="align_column">
+                    <span id="filter_name">Tags</span>
+                    <hr/>
+                    <div id="filter_options_container" class="align_row">
+                        <button id="filter_option">Online</button>
+                        <button id="filter_option" class="option_selected">Outdoors</button>
+                        <button id="filter_option">Indoors</button>
+                    </div>
+                </div>
+                <div id="filter_container" class="align_column">
+                    <span id="filter_name">City</span>
+                    <hr/>
+                    <form class="align_column">
+                        <input type="text" id="filter_city_input" value="Vilnius">
+                    </form>
+                </div>
+            </div>
+            <div id="event_list_main" class="align_column">
+                <div id="search_sort_menu" class="align_row">
+                    <button id="filter_button_mobile" onclick="openFilterMenu()"></button>
+                    <form id="search_form">
+                        <div id="search_wrapper" class="align_row">
+                            <input type="text" id="search_input" placeholder="Search...">
+                            <input type="submit" id="search_button" value="🔍︎">
+                        </div>
+                    </form>
+                    <div id="sort_container">
+                        <button id="sort_button" class="align_row" onclick="toggleSortMenu()">
+                            <span id="sort_text">Sort</span>
+                            <div id="sort_separator"></div>
+                            <span id="sort_selected_text">New</span>
+                        </button>
+                        <button id="sort_button_mobile" class="align_row" onclick="toggleSortMenu()"></button>
+                        <div id="sort_options_menu" class="align_column">
+                            <button id="sort_option">New</button>
+                            <button id="sort_option">Popularity</button>
+                            <button id="sort_option">Price: Low to High</button>
+                            <button id="sort_option">Price: High to Low</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="event_list">
+                    <div id="event_card">
+                        <div id="event_card_poster">
+                            Poster
+                        </div>
+                        <div id="event_card_information" class="align_column">
+                            <span id="event_name">Event Name</span>
+                            <span id="event_date">📅: [Event Date]</span>
+                            <span id="event_location">📍: [Event Location]</span>
+                            <span id="event_description">[Event Description]</span>
+                            <span id="event_price">From [Price]€</span>
+                        </div>
+                    </div>
+                    <div id="event_card">
+                        <div id="event_card_poster">
+                            Poster
+                        </div>
+                        <div id="event_card_information" class="align_column">
+                            <span id="event_name">Event Name</span>
+                            <span id="event_date">📅: [Event Date]</span>
+                            <span id="event_location">📍: [Event Location]</span>
+                            <span id="event_description">[Event Description]</span>
+                            <span id="event_price">From [Price]€</span>
+                        </div>
+                    </div>
+                    <div id="event_card">
+                        <div id="event_card_poster">
+                            Poster
+                        </div>
+                        <div id="event_card_information" class="align_column">
+                            <span id="event_name">Event Name</span>
+                            <span id="event_date">📅: [Event Date]</span>
+                            <span id="event_location">📍: [Event Location]</span>
+                            <span id="event_description">[Event Description]</span>
+                            <span id="event_price">From [Price]€</span>
+                        </div>
+                    </div>
+                    <div id="event_card">
+                        <div id="event_card_poster">
+                            Poster
+                        </div>
+                        <div id="event_card_information" class="align_column">
+                            <span id="event_name">Event Name</span>
+                            <span id="event_date">📅: [Event Date]</span>
+                            <span id="event_location">📍: [Event Location]</span>
+                            <span id="event_description">[Event Description]</span>
+                            <span id="event_price">From [Price]€</span>
+                        </div>
+                    </div>
+                </div>
+                <div id="pagination" class="align_row">
+                    <button id="pagination_button">&lt</button>
+                    <div id="pagination_container_pages" class="align_row">
+                        <button id="page_button">1</button>
+                        <button id="page_button">...</button>
+                        <button id="page_button">7</button>
+                        <button id="page_button">8</button>
+                        <button id="page_button" class="current_page">9</button>
+                        <button id="page_button">10</button>
+                        <button id="page_button">11</button>
+                        <button id="page_button">...</button>
+                        <button id="page_button">30</button>
+                    </div>
+                    <button id="pagination_button">&gt</button>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
