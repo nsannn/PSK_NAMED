@@ -50,14 +50,23 @@ body {
 }
 
 #root {
+
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
+
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+
 }
 
-/* ============================
+/* 
    Shared button system
-   ============================ */
+    */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -119,9 +128,9 @@ body {
   margin-top: 0.5rem;
 }
 
-/* ============================
+/* 
    Scrollbar
-   ============================ */
+    */
 ::-webkit-scrollbar {
   width: 8px;
   height: 6px;
