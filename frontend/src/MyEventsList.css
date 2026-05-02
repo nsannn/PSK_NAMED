@@ -1,0 +1,147 @@
+.my-events-wrapper {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.my-events-main {
+    flex: 1;
+    width: auto;
+    min-width: 0;
+    padding-right: 1rem;
+    box-sizing: border-box;
+}
+
+.create-event-btn {
+    background-color: var(--tertiary-color);
+    border: 3px solid var(--tertiary-border-color);
+    color: var(--primary-text-color);
+    padding: 0.4rem 1rem;
+    border-radius: 1rem;
+    font-weight: bold;
+    margin-left: 1rem;
+    cursor: pointer;
+}
+
+.create-event-btn:hover {
+    background-color: var(--quaternary-hover-color);
+}
+
+.my-events-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.my-events-card {
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    margin: 0 !important;
+    box-sizing: border-box;
+    min-width: 0;
+}
+
+.my-events-card-body {
+    width: 100%;
+    flex: 1;
+    min-width: 0;
+}
+
+.my-events-card-poster {
+    flex-shrink: 0;
+    width: 180px !important;
+}
+
+.my-events-card-info {
+    justify-content: space-between;
+    flex: 1;
+    min-width: 0;
+    word-break: break-word;
+    overflow: hidden;
+}
+
+.my-events-details {
+    margin-top: 1rem;
+}
+
+.my-events-stat-row {
+    justify-content: space-between;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+}
+
+.my-events-stat-row:first-child {
+    margin-top: 0;
+}
+
+.my-events-progress-bg {
+    height: 8px;
+    background-color: var(--tertiary-border-color);
+    border-radius: 4px;
+    margin: 0.3rem 0;
+    overflow: hidden;
+}
+
+.my-events-progress-bar {
+    height: 100%;
+    background-color: var(--primary-text-color);
+}
+
+.my-events-stat-value {
+    font-weight: bold;
+}
+
+.my-events-edit-link {
+    text-decoration: underline;
+    font-size: 0.7rem;
+    cursor: pointer;
+    font-weight: normal;
+    margin-left: 0.2rem;
+}
+
+.my-events-actions {
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.my-events-btn {
+    flex: 1;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    background-color: var(--quaternary-color);
+    border: none;
+    color: var(--primary-text-color);
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.my-events-btn:hover {
+    background-color: var(--quaternary-hover-color);
+}
+
+.my-events-btn-outline {
+    flex: 1;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    background-color: transparent;
+    border: 2px solid var(--quaternary-color);
+    color: var(--primary-text-color);
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.my-events-btn-outline:hover {
+    background-color: var(--secondary-hover-color);
+}
+
+.my-events-card-footer {
+    text-align: center;
+    width: 100%;
+    font-size: 1.2rem;
+    padding: 0.5rem 0;
+    border-top: 2px solid var(--tertiary-border-color);
+    margin-top: 0.5rem;
+}
