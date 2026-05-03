@@ -68,6 +68,22 @@ hr{
     flex-direction:column;
 }
 
+#info_name{
+    margin-left:0.5rem;
+}
+
+#info_separator{
+    background-color:var(--primary-detail-border-color);
+    border-radius:5px;
+    width:5px;
+    height:1.5rem;
+    margin:auto 1rem auto 1rem;
+}
+
+#info_value{
+    margin:auto;
+}
+
 /* Transparent Panel with Low Opacity */
 #transparent_panel{
     display:none;
@@ -310,6 +326,29 @@ input[type="submit"]{
     #account_group button:first-child:hover{
         background-color:var(--primary-detail-hover-color);
         transform:scale(1.05);
+    }
+
+/* Account Window */
+#account_window{
+    display:none;
+    position:absolute;
+    background-color:var(--secondary-color);
+    border-radius:1rem;
+    border:3px solid var(--secondary-border-color);
+    color:var(--primary-text-color);
+    font-size:1.2rem;
+    font-weight:bold;
+    width:15rem;
+    margin:2rem auto auto auto;
+    right:1rem;
+    opacity:0;
+    transition:opacity 0.2s ease,margin 0.3s ease;
+    z-index:100;
+}
+
+    #account_window button{
+        width:90%;
+        margin:0.5rem auto 0.5rem auto;
     }
 
 /* Hamburger Menu Button for Mobile or Small Windows */
@@ -592,22 +631,6 @@ input[type="submit"]{
         transform:scale(1.05);
     }
 
-#sort_text{
-    margin-left:0.5rem;
-}
-
-#sort_separator{
-    background-color:var(--tertiary-border-color);
-    border-radius:5px;
-    width:5px;
-    height:1.5rem;
-    margin:auto 0 auto 1rem;
-}
-
-#sort_selected_text{
-    margin:auto;
-}
-
 #sort_options_menu{
     display:none;
     position:absolute;
@@ -702,7 +725,7 @@ input[type="submit"]{
     padding:0.2rem;
 }
 
-#event_card_information #event_description{
+#event_card_information #event_description,#event_description{
     background-color:var(--secondary-color);
     border-radius:0.5rem;
     width:95%;
@@ -786,6 +809,196 @@ input[type="submit"]{
 
     .current_page:hover{
         background-color:var(--primary-detail-hover-color) !important;
+    }
+
+/* Event Page Elements */
+#event_container{
+    display:flex;
+    flex-direction:row;
+}
+
+#event_poster{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background-color:var(--secondary-color);
+    border-radius:2rem;
+    width:372px;
+    height:526.2px;
+    margin:1rem 0.3rem auto auto;
+    font-size:1.5rem;
+}
+
+#event_main{
+    width:60%;
+    margin:1rem auto auto 0.3rem;
+}
+
+#event_information{
+    background-color:var(--tertiary-color);
+    border:3px solid var(--tertiary-border-color);
+    border-radius:1.5rem;
+    margin:0 0 0.5rem 0;
+    padding:0.5rem;
+}
+
+#event_name{
+    margin:0.5rem auto 0.5rem auto;
+    font-size:1.8rem;
+    font-weight:bold;
+}
+
+#event_main_info{
+    display:flex;
+    flex-direction:row;
+    margin:0.5rem auto;
+}
+
+#event_type,#event_date,#event_location{
+    background-color:var(--secondary-color);
+    border:2px solid var(--secondary-border-color);
+    border-radius:0.5rem;
+    font-size:1.1rem;
+    font-weight:bold;
+    padding:0.2rem 1rem 0.2rem 0.2rem;
+}
+
+    #event_type{
+        margin:auto 0.5rem auto auto;
+    }
+
+    #event_date{
+        margin:auto 0.5rem auto 0.5rem;
+    }
+
+    #event_location{
+        margin:auto auto auto 0.5rem;
+    }
+
+#event_tags_checkout{
+    display:flex;
+    flex-direction:row;
+    height:16rem;
+}
+
+#event_tags{
+    background-color:var(--tertiary-color);
+    border:3px solid var(--tertiary-border-color);
+    border-radius:0.5rem;
+    width:15rem;
+    padding:0.5rem;
+    margin:0 auto 0 0;
+    overflow-x:auto;
+}
+
+#event_tags_name{
+    margin:0.5rem auto 0 0.5rem;
+    font-size:1.4rem;
+    font-weight:bold;
+}
+
+#event_tag_list{
+    display:grid;
+    grid-template-columns:auto auto auto;
+    gap:0.2rem;
+    width:95%;
+    margin:0 auto 0.5rem auto;
+}
+
+#event_tag{
+    background-color:var(--quaternary-color);
+    border:none;
+    border-radius:1rem;
+    margin:auto 0.2rem;
+    padding:0.4rem;
+    color:var(--primary-text-color);
+    font-size:1rem;
+    font-weight:bold;
+    text-align:center;
+}
+
+#event_tickets{
+    background-color:var(--tertiary-color);
+    border:3px solid var(--tertiary-border-color);
+    border-radius:0.5rem;
+    width:20rem;
+    padding:0.5rem;
+    overflow-x:auto;
+}
+
+#event_ticket{
+    width:95%;
+    margin:0.2rem auto 0.2rem auto;
+}
+
+#event_ticket_info{
+    background-color:var(--secondary-color);
+    border-radius:1rem;
+    margin:auto auto auto 0;
+    padding:0.5rem;
+    font-size:1.1rem;
+}
+
+#event_ticket_count_controls{
+    background-color:var(--secondary-color);
+    border-radius:0.8rem;
+    width:5rem;
+}
+
+#event_ticket_count_control{
+    background:none;
+    border:none;
+    border-radius:1rem;
+    margin:0;
+    width:1.5rem;
+    color:var(--primary-text-color);
+    font-size:1.2rem;
+    font-weight:bold;
+    cursor:pointer;
+    transition:background-color 0.3s ease;
+}
+
+    #event_ticket_count_control:hover{
+        background-color:var(--secondary-hover-color);
+    }
+
+#event_ticket_count{
+    margin:auto;
+    font-size:1.2rem;
+    font-weight:bold;
+}
+
+#event_checkout{
+    background-color:var(--tertiary-color);
+    border:3px solid var(--tertiary-border-color);
+    border-radius:0.5rem;
+    width:15rem;
+    margin:0 0 0 auto;
+    padding:0.5rem;
+}
+
+#event_checkout span{
+    margin:1rem auto 0.5rem auto;
+    font-size:2rem;
+    font-weight:bold;
+}
+
+#checkout_button{
+    background-color:var(--primary-detail-color);
+    border:3px solid var(--primary-detail-border-color);
+    border-radius:2rem;
+    width:90%;
+    margin:auto auto 1rem auto;
+    color:var(--primary-text-color);
+    font-size:1.8rem;
+    font-weight:bold;
+    padding:0.3rem;
+    transition:background-color 0.3s ease,transform 0.3s ease;
+}
+
+    #checkout_button:hover{
+        background-color:var(--primary-detail-hover-color);
+        transform:scale(1.05);
     }
 
 /* Scrollbar Components */
@@ -979,5 +1192,68 @@ input[type="submit"]{
         margin-left:0.2rem;
         margin-right:0.2rem;
         overflow-x:scroll;
+    }
+
+    #event_container{
+        flex-direction:column;
+    }
+
+    #event_poster{
+        margin:0.2rem auto;
+        transform:scale(0.9);
+    }
+
+    #event_main{
+        width:90%;
+        margin:0rem auto auto auto;
+    }
+
+    #event_main_info{
+        display:flex;
+        flex-direction:column;
+        width:100%;
+    }
+
+    #event_type,#event_date,#event_location{
+        width:90%;
+        margin:0.2rem auto auto auto;
+    }
+
+    #info_name{
+        text-align:center;
+        width:15%;
+    }
+
+    #event_tags_checkout{
+        display:flex;
+        flex-direction:column;
+        height:auto;
+        width:100%;
+        margin:0.5rem auto auto auto;
+    }
+
+    #event_tags{
+        max-height:15rem;
+        width:90%;
+        margin:0 auto 0.5rem auto;
+    }
+
+    #event_tickets{
+        max-height:15rem;
+        width:90%;
+        margin:0 auto 0.5rem auto;
+    }
+
+    #event_checkout{
+        width:90%;
+        margin:0 auto 1rem auto;
+    }
+
+    #event_checkout span{
+        margin:0.2rem auto 0.5rem auto;
+    }
+
+    #checkout_button{
+        margin:0.5rem auto;
     }
 }

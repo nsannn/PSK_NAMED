@@ -3,6 +3,8 @@ let closeBtn=document.getElementById('close_button');
 let mobileSidebar=document.getElementById('mobile_sidebar');
 let registerWindow=document.getElementById('register_window');
 let signInWindow=document.getElementById('sign_in_window');
+let accountGroup=document.getElementById('account_group');
+let accountWindow=document.getElementById('account_window');
 let transparentPanel=document.getElementById('transparent_panel');
 let filterMenu=document.getElementById('filters_menu');
 let sortContainer=document.getElementById('sort_container');
@@ -106,6 +108,24 @@ function closeSignInWindow(){
     },100);
 }
 
+function openAccountWindow(event){
+    event.stopPropagation();
+
+    if(accountWindow.style.display==='block'){
+        accountWindow.style.opacity='0';
+        accountWindow.style.margin='2rem auto auto auto';
+        setTimeout(()=>{
+            accountWindow.style.display='none';
+        },100);
+    } else {
+        accountWindow.style.display='block';
+        setTimeout(()=>{
+            accountWindow.style.opacity='1';
+            accountWindow.style.margin='0.5rem auto auto auto';
+        },100);
+    }
+}
+
 function toggleSortMenu(){
     if(sortMenu.style.display==='block'){
         sortMenu.style.opacity='0';
@@ -121,16 +141,6 @@ function toggleSortMenu(){
         },100);
     }
 }
-
-document.addEventListener('click',(e)=>{
-    if(!sortContainer.contains(e.target)){
-        sortMenu.style.opacity='0';
-        sortMenu.style.margin='2rem auto auto auto';
-        setTimeout(()=>{
-            sortMenu.style.display='none';
-        },100);
-    }
-});
 
 function openFilterMenu(){
     filterMenu.style.left='0';
@@ -160,3 +170,20 @@ function closeEverything(){
     if(filterMenu.style.left==='0px')
         closeFilterMenu();
 }
+
+document.addEventListener('click',(e)=>{
+    if(sortContainer && !sortContainer.contains(e.target)){
+        sortMenu.style.opacity='0';
+        sortMenu.style.margin='2rem auto auto auto';
+        setTimeout(()=>{
+            sortMenu.style.display='none';
+        },100);
+    }
+    if(accountGroup && !accountGroup.contains(e.target)){
+        accountWindow.style.opacity='0';
+        accountWindow.style.margin='2rem auto auto auto';
+        setTimeout(()=>{
+            accountWindow.style.display='none';
+        },100);
+    }
+});
