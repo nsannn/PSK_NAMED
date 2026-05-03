@@ -301,7 +301,7 @@ input[type="submit"]{
 
 /* Group of Account Buttons*/
 #account_group{
-    margin:auto 5rem;
+    margin:auto 5rem auto 1rem;
 }
 
     #account_group button{
@@ -328,7 +328,74 @@ input[type="submit"]{
         transform:scale(1.05);
     }
 
-/* Account Window */
+/* Notification Button and Window */
+#notification_container{
+    margin:auto 0.5rem auto auto;
+}
+
+#notification_button{
+    background-color:var(--primary-color);
+    border:3px solid var(--primary-border-color);
+    border-radius:2rem;
+    width:2.7rem !important;
+    height:2.7rem;
+    font-size:1rem !important;
+    cursor:pointer;
+    transition:background-color 0.3s ease,transform 0.3s ease;
+}
+
+    #notification_button:hover{
+        background-color:var(--primary-hover-color);
+        transform:scale(1.05);
+    }
+
+#notification_window{
+    display:none;
+    position:absolute;
+    background-color:var(--secondary-color);
+    border-radius:1rem;
+    border:3px solid var(--secondary-border-color);
+    color:var(--primary-text-color);
+    font-size:1.2rem;
+    font-weight:bold;
+    width:40rem;
+    max-height:30rem;
+    margin:1.5rem auto auto auto !important;
+    right:1rem;
+    opacity:0;
+    overflow-y:auto;
+    transition:opacity 0.2s ease,margin 0.3s ease;
+    z-index:100;
+}
+
+#user_notification{
+    background-color:var(--quaternary-color);
+    border-radius:1rem;
+    width:90%;
+    margin:0.2rem auto;
+    padding:0.5rem;
+}
+
+    #user_notification span:first-child{
+        font-size:1.4rem;
+        font-weight:bold;
+    }
+
+    #user_notification span{
+        font-size:1.2rem;
+        font-weight:100;
+    }
+
+/* Account Button and Window */
+#user_account_button{
+    background-color:var(--primary-detail-color) !important;
+    border-color:var(--primary-detail-border-color) !important;
+}
+
+    #user_account_button:hover{
+        background-color:var(--primary-detail-hover-color) !important;
+    }
+
 #account_window{
     display:none;
     position:absolute;
@@ -339,7 +406,7 @@ input[type="submit"]{
     font-size:1.2rem;
     font-weight:bold;
     width:15rem;
-    margin:2rem auto auto auto;
+    margin:1.5rem auto auto auto !important;
     right:1rem;
     opacity:0;
     transition:opacity 0.2s ease,margin 0.3s ease;
@@ -1059,6 +1126,7 @@ input[type="submit"]{
     
     #site_logo{
         margin-left:2rem !important;
+        margin-right:auto !important;
     }
 
     #nav_group,#account_group{
@@ -1084,6 +1152,10 @@ input[type="submit"]{
                 transform:scale(1.05);
             }
 
+    #notification_window{
+        width:90%;
+    }
+
     #account_group{
         flex-direction:column;
         margin:1rem auto auto auto;
@@ -1095,7 +1167,7 @@ input[type="submit"]{
 
     #menu_button{
         display:block;
-        margin-left:auto;
+        margin-left:1rem;
         margin-right:2rem;
         width:3rem !important;
         height:3rem;

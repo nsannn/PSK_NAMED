@@ -31,8 +31,17 @@
                 <button>Partners</button>
                 <button>Contacts</button>
             </div>
+            <div id="notification_container">
+                <button id="notification_button" onclick="openNotificationWindow(event)">🔔</button>
+                <div id="notification_window" class="align_column">
+                    <div id="user_notification" class="align_column">
+                        <span>Just a reminder that [Event Name] is on [Date]</span>
+                        <span>We're looking forward to seeing you - have your QR code ready</span>
+                    </div>
+                </div>
+            </div>
             <div id="account_group">
-                <button onclick="openAccountWindow(event)">[Username]</button>
+                <button id="user_account_button" onclick="openAccountWindow(event)">[Username]</button>
                 <div id="account_window" class="align_column">
                     <button>Bought Tickets</button>
                     <button>Settings</button>

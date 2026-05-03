@@ -3,6 +3,8 @@ let closeBtn=document.getElementById('close_button');
 let mobileSidebar=document.getElementById('mobile_sidebar');
 let registerWindow=document.getElementById('register_window');
 let signInWindow=document.getElementById('sign_in_window');
+let notificationContainer=document.getElementById('notification_container');
+let notificationWindow=document.getElementById('notification_window');
 let accountGroup=document.getElementById('account_group');
 let accountWindow=document.getElementById('account_window');
 let transparentPanel=document.getElementById('transparent_panel');
@@ -108,7 +110,43 @@ function closeSignInWindow(){
     },100);
 }
 
+function openNotificationWindow(event){
+    if(sortMenu)
+        closeSortMenu();
+    if(accountWindow)
+        closeAccountWindow();
+
+    event.stopPropagation();
+
+    if(notificationWindow.style.display==='block'){
+        notificationWindow.style.opacity='0';
+        notificationWindow.style.margin='2rem auto auto auto';
+        setTimeout(()=>{
+            notificationWindow.style.display='none';
+        },100);
+    } else {
+        notificationWindow.style.display='block';
+        setTimeout(()=>{
+            notificationWindow.style.opacity='1';
+            notificationWindow.style.margin='0.5rem auto auto auto';
+        },100);
+    }
+}
+
+function closeNotificationWindow(){
+    notificationWindow.style.opacity='0';
+    notificationWindow.style.margin='1.5rem auto auto auto';
+    setTimeout(()=>{
+        notificationWindow.style.display='none';
+    },100);
+}
+
 function openAccountWindow(event){
+    if(sortMenu)
+        closeSortMenu();
+    if(notificationWindow)
+        closeNotificationWindow();
+
     event.stopPropagation();
 
     if(accountWindow.style.display==='block'){
@@ -126,7 +164,20 @@ function openAccountWindow(event){
     }
 }
 
+function closeAccountWindow(){
+    accountWindow.style.opacity='0';
+    accountWindow.style.margin='1.5rem auto auto auto';
+    setTimeout(()=>{
+        accountWindow.style.display='none';
+    },100);
+}
+
 function toggleSortMenu(){
+    if(notificationWindow)
+        closeNotificationWindow();
+    if(accountWindow)
+        closeAccountWindow();
+
     if(sortMenu.style.display==='block'){
         sortMenu.style.opacity='0';
         sortMenu.style.margin='2rem auto auto auto';
@@ -140,6 +191,14 @@ function toggleSortMenu(){
             sortMenu.style.margin='0.5rem auto auto auto';
         },100);
     }
+}
+
+function closeSortMenu(){
+    sortMenu.style.opacity='0';
+    sortMenu.style.margin='2rem auto auto auto';
+    setTimeout(()=>{
+        sortMenu.style.display='none';
+    },100);
 }
 
 function openFilterMenu(){
@@ -173,17 +232,12 @@ function closeEverything(){
 
 document.addEventListener('click',(e)=>{
     if(sortContainer && !sortContainer.contains(e.target)){
-        sortMenu.style.opacity='0';
-        sortMenu.style.margin='2rem auto auto auto';
-        setTimeout(()=>{
-            sortMenu.style.display='none';
-        },100);
+        closeSortMenu();
+    }
+    if(notificationContainer && !notificationContainer.contains(e.target)){
+        closeNotificationWindow();
     }
     if(accountGroup && !accountGroup.contains(e.target)){
-        accountWindow.style.opacity='0';
-        accountWindow.style.margin='2rem auto auto auto';
-        setTimeout(()=>{
-            accountWindow.style.display='none';
-        },100);
+        closeAccountWindow();
     }
 });
