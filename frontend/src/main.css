@@ -21,12 +21,19 @@
     /* Shades of Detail Hover Color */
     --primary-detail-hover-color:#dd7a1d;
 
+    /* Attention Color */
+    --primary-attention-color:#ba0303;
+    
+    /* Attention Hover Color */
+    --primary-attention-hover-color:#f01919;
+
     /* Border Color */
     --primary-border-color:#232222;
     --secondary-border-color:#201e1e;
     --tertiary-border-color:#2b2929;
     --quaternary-border-color:#444040;
     --primary-detail-border-color:#aa5404;
+    --primary-attention-border-color:#cd0c0c;
 
     /* Text Color*/
     --primary-text-color:#e0dcdc;
@@ -418,6 +425,65 @@ input[type="submit"]{
         margin:0.5rem auto 0.5rem auto;
     }
 
+/* Confirmation Window of Delete Action */
+#delete_confirmation_window{
+    display:none;
+    position:fixed;
+    top:15rem;
+    left:50%;
+    background-color:var(--tertiary-color);
+    border:3px solid var(--tertiary-border-color);
+    border-radius:0.8rem;
+    width:20rem;
+    padding:1.5rem;
+    color:var(--primary-text-color);
+    font-size:1.2rem;
+    font-weight:bold;
+    transform:translate(-50%,0%);
+    opacity:0;
+    z-index:1010;
+    transition:opacity 0.3s ease,top 0.4s ease;
+}
+
+#delete_confirmation_window #window_info{
+    margin:0 auto 0.2rem auto;
+    font-size:1.1rem;
+}
+
+#delete_confirmation_window #window_small_info{
+    margin:0.2rem auto 0.5rem 0;
+    font-size:1rem;
+    font-weight:100;
+}
+
+#delete_confirmation_window #delete_controls{
+    margin:0.5rem 0.5rem auto auto;
+}
+
+#delete_confirmation_window #delete_controls button{
+    background-color:var(--quaternary-color);
+    border:2px solid var(--quaternary-border-color);
+    border-radius:1rem;
+    margin:auto 0.5rem auto 0.5rem;
+    color:var(--primary-text-color);
+    font-size:1.1rem;
+    transition:background-color 0.3s ease,transform 0.3s ease;
+}
+
+    #delete_confirmation_window #delete_controls button:last-child{
+        background-color:var(--primary-attention-color);
+        border-color:var(--primary-attention-border-color);
+    }
+
+    #delete_confirmation_window #delete_controls button:hover{
+        background-color:var(--quaternary-hover-color);
+        transform:scale(1.05);
+    }
+
+    #delete_confirmation_window #delete_controls button:last-child:hover{
+        background-color:var(--primary-attention-hover-color);
+    }
+
 /* Hamburger Menu Button for Mobile or Small Windows */
 #menu_button{
     display:none;
@@ -606,6 +672,32 @@ input[type="submit"]{
     #filter_button_mobile:hover{
         background-color:var(--secondary-hover-color);
         transform:scale(1.05);
+    }
+
+#create_new_event_button{
+    background-color:var(--secondary-color);
+    border-radius:2rem;
+    border:3px solid var(--secondary-border-color);
+    cursor:pointer;
+    color:var(--primary-text-color);
+    font-size:1.2rem;
+    font-weight:bold;
+    padding:0.4rem;
+    margin:auto 0.5rem auto 0.5rem;
+    transition:background-color 0.3s ease,transform 0.3s ease;
+}
+
+    #create_new_event_button:hover{
+        background-color:var(--secondary-hover-color);
+        transform:scale(1.05);
+    }
+
+    #search_sort_menu > #create_new_event_button{
+        display:flex;
+    }
+
+    #event_list_main > #create_new_event_button{
+        display:none;
     }
 
 #search_form{
@@ -804,6 +896,77 @@ input[type="submit"]{
     overflow-x:hidden;
     overflow-y:auto;
 }
+
+#event_card_information #event_selling_info_container{
+    background-color:var(--secondary-color);
+    border-radius:0.5rem;
+    width:95%;
+    margin:0.5rem auto;
+    font-size:1rem;
+    padding:0.5rem;
+    overflow-wrap:break-word;
+    overflow-x:hidden;
+    overflow-y:auto;
+}
+
+#event_selling_info_container #event_selling_info{
+    width:90%;
+    margin:0.2rem auto 0.2rem auto;
+}
+
+    #event_selling_info_container #event_selling_info span:first-child{
+        margin:0 auto 0 0;
+    }
+
+    #event_selling_info_container #event_selling_info span:last-child{
+        font-weight:bold;
+    }
+
+#event_sold_tickets_container{
+    background-color:var(--quaternary-color);
+    border:none;
+    border-radius:5px;
+    width:90%;
+    height:10px;
+    margin:0.2rem auto 0.2rem auto;
+}
+
+#event_sold_tickets_container #event_sold_tickets{
+    background-color:var(--primary-detail-color);
+    border-radius:5px;
+    margin:0 auto 0 0;
+    height:100%;
+}
+
+#event_card_information #event_controls{
+    margin:0.5rem 0;
+}
+
+#event_card_information #event_controls button{
+    background-color:var(--quaternary-color);
+    border-radius:1rem;
+    border:2px solid var(--quaternary-border-color);
+    margin:auto;
+    color:var(--primary-text-color);
+    font-size:1.2rem;
+    font-weight:bold;
+    padding:0.5rem;
+    transition:background-color 0.3s ease,transform 0.3s ease;
+}
+
+    #event_card_information #event_controls button:hover{
+        background-color:var(--quaternary-hover-color);
+        transform:scale(1.05);
+    }
+
+    #event_card_information #event_controls button:first-child{
+        background-color:var(--primary-detail-color);
+        border:2px solid var(--primary-detail-border-color);
+    }
+
+        #event_card_information #event_controls button:first-child:hover{
+            background-color:var(--primary-detail-hover-color);
+        }
 
 #event_card_information #event_price{
     margin:auto 0.5rem 0.5rem auto;
@@ -1165,6 +1328,18 @@ input[type="submit"]{
             margin:0.5rem auto;
         }
 
+    #delete_confirmation_window #window_info{
+        font-size:1.3rem;
+    }
+
+    #delete_confirmation_window #window_small_info{
+        font-size:1.2rem;
+    }
+
+    #delete_confirmation_window #delete_controls button{
+        font-size:1.5rem;
+    }
+
     #menu_button{
         display:block;
         margin-left:1rem;
@@ -1209,6 +1384,15 @@ input[type="submit"]{
     #filter_button_mobile{
         display:flex;
     }
+
+    #search_sort_menu > #create_new_event_button{
+        display:none;
+    }
+
+    #event_list_main > #create_new_event_button{
+        display:flex;
+    }
+
 
     #search_form{
         width:70%;
