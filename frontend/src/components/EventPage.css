@@ -1,0 +1,84 @@
+.event-page {
+  min-height: 100vh;
+  background: var(--background);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.event-card {
+  width: 100%;
+  max-width: 40rem;
+  background: var(--surface-2);
+  border: 2px solid var(--border-2);
+  border-radius: 1rem;
+  padding: 2rem;
+  animation: fadeIn 0.3s ease;
+}
+
+.event-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text-0);
+}
+
+.event-divider {
+  height: 3px;
+  background: var(--accent);
+  margin: 1rem 0;
+  border-radius: 3px;
+}
+
+.event-description {
+  color: var(--text-1);
+  margin-bottom: 1.5rem;
+}
+
+.event-meta p {
+  color: var(--text-2);
+  margin: 0.25rem 0;
+}
+
+.event-tickets {
+  margin: 1.5rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.event-ticket {
+  display: flex;
+  justify-content: space-between;
+  background: var(--surface-1);
+  border: 2px solid var(--border-1);
+  border-radius: 0.75rem;
+  padding: 0.6rem 0.8rem;
+  font-weight: 600;
+  color: var(--text-0);
+}
+
+.event-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 1.5rem;
+}
+
+.event-tag {
+  background: var(--surface-1);
+  border: 1px solid var(--border-1);
+  border-radius: 999px;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-1);
+}
+
+.event-ticket:hover {
+  border-color: var(--accent);
+}
+
+.event-tag:hover {
+  color: var(--accent);
+}
