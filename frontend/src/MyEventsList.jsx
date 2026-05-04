@@ -1,56 +1,25 @@
-﻿import React, { useState } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './main.css';
 import './MyEventsList.css';
 
 function MyEventsList() {
     const navigate = useNavigate();
-    const events = [
-        {
-            id: 1,
-            name: "[Event Name]",
-            date: "[Event Date]",
-            location: "[Event Location]",
-            description: "[Event Description]",
-            ticketsSold: 120,
-            ticketsTotal: 300,
-            revenue: "2,400",
-            price: 20
-        },
-        {
-            id: 2,
-            name: "[Event Name]",
-            date: "[Event Date]",
-            location: "[Event Location]",
-            description: "[Event Description]",
-            ticketsSold: 280,
-            ticketsTotal: 300,
-            revenue: "16,800",
-            price: 60
-        },
-        {
-            id: 3,
-            name: "[Event Name]",
-            date: "[Event Date]",
-            location: "[Event Location]",
-            description: "[Event Description]",
-            ticketsSold: 85,
-            ticketsTotal: 150,
-            revenue: "1,275",
-            price: 15
-        },
-        {
-            id: 4,
-            name: "[Event Name]",
-            date: "[Event Date]",
-            location: "[Event Location]",
-            description: "[Event Description]",
-            ticketsSold: 200,
-            ticketsTotal: 250,
-            revenue: "6,000",
-            price: 30
-        }
-    ];
+    const [events, setEvents] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        fetch('/api/events/myevents')
+            .then(res => res.json())
+            .then(data => {
+                setEvents(data);
+                setLoading(false);
+            })
+            .catch(err => {
+                console.error("Failed to fetch events", err);
+                setLoading(false);
+            });
+    }, []);
 
     return (
         <>
@@ -157,8 +126,8 @@ function MyEventsList() {
                     </div>
 
                     <div id='event_list' style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem', width: '100%', boxSizing: 'border-box' }}>
-                        {events.map(ev => {
-                            const percentSold = (ev.ticketsSold / ev.ticketsTotal) * 100;
+                        {loading ? <p style={{gridColumn: '1 / -1', textAlign: 'center'}}>Loading events...</p> : events.length === 0 ? <p style={{gridColumn: '1 / -1', textAlign: 'center'}}>No events found.</p> : events.map(ev => {
+                            const percentSold = ev.ticketsTotal > 0 ? (ev.ticketsSold / ev.ticketsTotal) * 100 : 0;
                             return (
                                 <div id="event_card" key={ev.id} style={{flexDirection: 'column', height: '100%', width: '100%', margin: 0, boxSizing: 'border-box', minWidth: 0}}>
                                     <div className="align_row" style={{width: '100%', flex: 1, minWidth: 0}}>
