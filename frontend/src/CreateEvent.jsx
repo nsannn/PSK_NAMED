@@ -6,6 +6,84 @@ import './CreateEvent.css';
 function CreateEvent() {
     const navigate = useNavigate();
 
+    const [title, setTitle] = useState('');
+    const [date, setDate] = useState('');
+    const [time, setTime] = useState('');
+    const [location, setLocation] = useState('');
+    const [description, setDescription] = useState('');
+    
+    const [ticketTiers, setTicketTiers] = useState([
+        { name: '', quantity: 0, price: 0 }
+    ]);
+    
+    const [eventType, setEventType] = useState('Festival');
+    const [tags, setTags] = useState(['Outdoor']);
+
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const handleAddTier = () => {
+        setTicketTiers([...ticketTiers, { name: '', quantity: 0, price: 0 }]);
+    };
+
+    const handleTierChange = (index, field, value) => {
+        const newTiers = [...ticketTiers];
+        newTiers[index][field] = value;
+        setTicketTiers(newTiers);
+    };
+
+    const toggleTag = (tag) => {
+        if (tags.includes(tag)) {
+            setTags(tags.filter(t => t !== tag));
+        } else {
+            setTags([...tags, tag]);
+        }
+    };
+
+    const handleSubmit = async () => {
+        setIsSubmitting(true);
+        
+        let combinedDate = new Date();
+        if (date && time) {
+            combinedDate = new Date(`${date}T${time}:00`);
+        }
+
+        const eventData = {
+            title,
+            description,
+            location,
+            date: combinedDate.toISOString(),
+            eventType,
+            tags,
+            ticketTiers: ticketTiers.map(t => ({
+                name: t.name,
+                quantity: Number(t.quantity),
+                price: Number(t.price)
+            }))
+        };
+
+        try {
+            const response = await fetch('/api/events', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(eventData)
+            });
+
+            if (response.ok) {
+                navigate('/');
+            } else {
+                console.error("Failed to create event:", await response.text());
+                alert("Failed to create event");
+            }
+        } catch (error) {
+            console.error("Error submitting form:", error);
+            alert("Error creating event");
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
     return (
         <>
             <div id='top_bar'>
@@ -33,7 +111,9 @@ function CreateEvent() {
                     <h1>Create New Event</h1>
                     <div className='create-event-header-actions'>
                         <button className='btn-cancel' onClick={() => navigate('/')}>Cancel</button>
-                        <button className='btn-submit'>Create Event</button>
+                        <button className='btn-submit' onClick={handleSubmit} disabled={isSubmitting}>
+                            {isSubmitting ? 'Creating...' : 'Create Event'}
+                        </button>
                     </div>
                 </div>
 
@@ -48,28 +128,28 @@ function CreateEvent() {
                             
                             <div className='form-group'>
                                 <label>Event Name</label>
-                                <input type="text" placeholder="Enter event name" />
+                                <input type="text" placeholder="Enter event name" value={title} onChange={(e) => setTitle(e.target.value)} />
                             </div>
 
                             <div className='form-group-row align_row'>
                                 <div className='form-group' style={{ flex: 1 }}>
                                     <label>Date</label>
-                                    <input type="text" />
+                                    <input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
                                 </div>
                                 <div className='form-group' style={{ flex: 1 }}>
                                     <label>Time</label>
-                                    <input type="text" />
+                                    <input type="time" value={time} onChange={(e) => setTime(e.target.value)} />
                                 </div>
                             </div>
 
                             <div className='form-group'>
                                 <label>Location</label>
-                                <input type="text" placeholder="Enter location" />
+                                <input type="text" placeholder="Enter location" value={location} onChange={(e) => setLocation(e.target.value)} />
                             </div>
 
                             <div className='form-group'>
                                 <label>Description</label>
-                                <textarea placeholder="Enter event description"></textarea>
+                                <textarea placeholder="Enter event description" value={description} onChange={(e) => setDescription(e.target.value)}></textarea>
                             </div>
                         </div>
 
@@ -77,31 +157,33 @@ function CreateEvent() {
                         <div className='create-event-section align_column'>
                             <div className='section-header align_row'>
                                 <h2>Ticket Tiers</h2>
-                                <button className='btn-add-tier'>+ Add Tier</button>
+                                <button className='btn-add-tier' onClick={handleAddTier}>+ Add Tier</button>
                             </div>
 
-                            <div className='ticket-tier-box align_column'>
-                                <h3>Tier 1</h3>
-                                
-                                <div className='form-group'>
-                                    <label>Tier Name</label>
-                                    <input type="text" placeholder="e.g., VIP Sector, Standing, Close Seats" />
-                                </div>
-
-                                <div className='form-group-row align_row'>
-                                    <div className='form-group' style={{ flex: 1 }}>
-                                        <label>Quantity</label>
-                                        <input type="number" defaultValue={0} />
+                            {ticketTiers.map((tier, index) => (
+                                <div className='ticket-tier-box align_column' key={index}>
+                                    <h3>Tier {index + 1}</h3>
+                                    
+                                    <div className='form-group'>
+                                        <label>Tier Name</label>
+                                        <input type="text" placeholder="e.g., VIP Sector, Standing, Close Seats" value={tier.name} onChange={(e) => handleTierChange(index, 'name', e.target.value)} />
                                     </div>
-                                    <div className='form-group' style={{ flex: 1, position: 'relative' }}>
-                                        <label>Price</label>
-                                        <div className='input-with-symbol'>
-                                            <input type="number" defaultValue={0} />
-                                            <span className='input-symbol'>€</span>
+
+                                    <div className='form-group-row align_row'>
+                                        <div className='form-group' style={{ flex: 1 }}>
+                                            <label>Quantity</label>
+                                            <input type="number" min="0" value={tier.quantity} onChange={(e) => handleTierChange(index, 'quantity', e.target.value)} />
+                                        </div>
+                                        <div className='form-group' style={{ flex: 1, position: 'relative' }}>
+                                            <label>Price</label>
+                                            <div className='input-with-symbol'>
+                                                <input type="number" min="0" step="0.01" value={tier.price} onChange={(e) => handleTierChange(index, 'price', e.target.value)} />
+                                                <span className='input-symbol'>€</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            ))}
                         </div>
 
                     </div>
@@ -122,11 +204,15 @@ function CreateEvent() {
                         <div className='create-event-section align_column'>
                             <h2>Event Type</h2>
                             <div className='pill-container align_row'>
-                                <button className='pill'>Concert</button>
-                                <button className='pill pill-selected'>Festival</button>
-                                <button className='pill'>Conference</button>
-                                <button className='pill'>Exhibition</button>
-                                <button className='pill'>Sports</button>
+                                {['Concert', 'Festival', 'Conference', 'Exhibition', 'Sports'].map(type => (
+                                    <button 
+                                        key={type}
+                                        className={`pill ${eventType === type ? 'pill-selected' : ''}`}
+                                        onClick={() => setEventType(type)}
+                                    >
+                                        {type}
+                                    </button>
+                                ))}
                             </div>
                         </div>
 
@@ -134,10 +220,15 @@ function CreateEvent() {
                         <div className='create-event-section align_column'>
                             <h2>Tags</h2>
                             <div className='pill-container align_row'>
-                                <button className='pill'>Online</button>
-                                <button className='pill pill-selected'>Outdoor</button>
-                                <button className='pill'>Indoor</button>
-                                <button className='pill'>Family</button>
+                                {['Online', 'Outdoor', 'Indoor', 'Family'].map(tag => (
+                                    <button 
+                                        key={tag}
+                                        className={`pill ${tags.includes(tag) ? 'pill-selected' : ''}`}
+                                        onClick={() => toggleTag(tag)}
+                                    >
+                                        {tag}
+                                    </button>
+                                ))}
                             </div>
                         </div>
 
