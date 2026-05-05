@@ -150,14 +150,14 @@ function openAccountWindow(event){
 
     event.stopPropagation();
 
-    if(accountWindow.style.display==='block'){
+    if(accountWindow.style.display==='flex'){
         accountWindow.style.opacity='0';
         accountWindow.style.margin='2rem auto auto auto';
         setTimeout(()=>{
             accountWindow.style.display='none';
         },100);
     } else {
-        accountWindow.style.display='block';
+        accountWindow.style.display='flex';
         setTimeout(()=>{
             accountWindow.style.opacity='1';
             accountWindow.style.margin='0.5rem auto auto auto';
