@@ -914,16 +914,16 @@ input[type="submit"]{
     overflow-y:auto;
 }
 
-#event_selling_info_container #event_selling_info{
+#event_selling_info{
     width:90%;
     margin:0.2rem auto 0.2rem auto;
 }
 
-    #event_selling_info_container #event_selling_info span:first-child{
+    #event_selling_info span:first-child{
         margin:0 auto 0 0;
     }
 
-    #event_selling_info_container #event_selling_info span:last-child{
+    #event_selling_info span:last-child{
         font-weight:bold;
     }
 
@@ -1267,6 +1267,11 @@ input[type="submit"]{
         margin-right:0;
     }
 
+#staff_main_column_part.staff_event_statistics{
+    margin-top:0;
+    margin-bottom:0;
+}
+
 #staff_info_card{
     background-color:var(--tertiary-color);
     border:2px solid var(--tertiary-border-color);
@@ -1279,6 +1284,16 @@ input[type="submit"]{
         margin-top:0;
     }
 
+#staff_main_column_part.staff_event_statistics #staff_info_card{
+     margin-top:0;
+     margin-bottom:0;
+     height:100%;
+}
+
+#staff_info_card #event_selling_info{
+    font-size:1.2rem;
+}
+    
 #staff_info_card_name{
     display:flex;
     flex-direction:row;
@@ -1319,12 +1334,30 @@ input[type="submit"]{
     font-weight:bold;
 }
 
-#staff_event_card_input input{
+#staff_event_card_input input,#staff_event_card_input span{
     background-color:var(--secondary-color);
     border:2px solid var(--secondary-border-color);
     border-radius:0.5rem;
     margin:0.2rem auto;
     width:100%;
+    color:var(--primary-text-color);
+    font-size:1rem;
+    padding:0.5rem;
+    box-sizing:border-box;
+}
+
+#staff_event_card_input span{
+    overflow-wrap:break-word;
+}
+
+#staff_event_card_input #staff_event_description{
+    background-color:var(--secondary-color);
+    border:2px solid var(--secondary-border-color);
+    border-radius:0.5rem;
+    margin:0.2rem auto;
+    width:100%;
+    height:10rem;
+    resize:none;
     color:var(--primary-text-color);
     font-size:1rem;
     padding:0.5rem;
@@ -1368,6 +1401,49 @@ input[type="submit"]{
         background-color:var(--primary-attention-hover-color);
         transform:scale(1.05);
     }
+
+#staff_event_detail_controls{
+    display:flex;
+    flex-direction:row;
+    width:100%;
+    margin:0.5rem auto;
+}
+
+#staff_event_detail_controls button{
+    background-color:var(--quaternary-color);
+    border:2px solid var(--quaternary-border-color);
+    border-radius:1rem;
+    width:24%;
+    margin:0 auto;
+    color:var(--primary-text-color);
+    font-size:1.3rem;
+    font-weight:bold;
+    padding:0.4rem;
+    transition:background-color 0.3s ease,transform 0.3s ease;
+}
+
+    #staff_event_detail_controls button:hover{
+        background-color:var(--quaternary-hover-color);
+        transform:scale(1.05);
+    }
+
+    #staff_event_detail_controls button:first-child{
+        background-color:var(--primary-detail-color);
+        border-color:var(--primary-detail-border-color);
+    }
+
+        #staff_event_detail_controls button:first-child:hover{
+            background-color:var(--primary-detail-hover-color);
+        }
+
+    #staff_event_detail_controls button:last-child{
+        background-color:var(--primary-attention-color);
+        border-color:var(--primary-attention-border-color);
+    }
+
+        #staff_event_detail_controls button:last-child:hover{
+            background-color:var(--primary-attention-hover-color);
+        }
 
 #staff_choosen_event_poster{
     display:flex;
@@ -1456,6 +1532,15 @@ input[type="submit"]{
         #staff_event_controls:last-child:hover{
             background-color:var(--primary-detail-hover-color);
         }
+
+#staff_event_controls.staff_event_delete{
+    background-color:var(--primary-attention-color);
+    border-color:var(--primary-attention-border-color);
+}
+
+    #staff_event_controls.staff_event_delete:hover{
+        background-color:var(--primary-attention-hover-color);
+    }
 
 /* Scrollbar Components */
 ::-webkit-scrollbar{
@@ -1748,5 +1833,30 @@ input[type="submit"]{
         margin-left:auto !important;
         margin-right:auto !important;
         margin-bottom:0.5rem;
+    }
+
+    #staff_main_column_part.staff_event_statistics{
+        width:100% !important;
+        margin-top:0.5rem;
+        margin-bottom:0.5rem;
+    }
+
+    #staff_event_detail_controls{
+        flex-direction:column;
+    }
+
+    #staff_event_detail_controls button{
+        width:100%;
+        margin:0.5rem auto;
+    }
+
+    #staff_info_card_input_group.change_align{
+        flex-direction:column;
+        width:95%;
+        margin:0 auto;
+    }
+
+    #staff_info_card_input_group.change_align #staff_event_card_input{
+        width:100%;
     }
 }
