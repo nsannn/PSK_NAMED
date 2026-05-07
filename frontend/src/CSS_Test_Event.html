@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>CSS Testing</title>
+        <link rel="stylesheet" href="main.css">
+        <script src="CSS_Test_Scripts.js" defer></script>
+    </head>
+    <body>
+        <div id="transparent_panel" onclick="closeEverything()"></div>
+        <div id="mobile_sidebar">
+            <button id="close_button" onclick="closeMobileSidebar()">
+                <span>X</span>
+            </button>
+            <div id="nav_group">
+                <button>Events</button>
+                <button>Partners</button>
+                <button>Contacts</button>
+            </div>
+            <div id="account_group">
+                <button>Bought Tickets</button>
+                <button>Settings</button>
+                <button>Log Out</button>
+            </div>
+        </div>
+        <div id="top_bar">
+            <div id="site_logo">Logo</div>
+            <div id="nav_group">
+                <button>Events</button>
+                <button>Partners</button>
+                <button>Contacts</button>
+            </div>
+            <div id="notification_container">
+                <button id="notification_button" onclick="openNotificationWindow(event)">🔔</button>
+                <div id="notification_window" class="align_column">
+                    <div id="user_notification" class="align_column">
+                        <span>Just a reminder that [Event Name] is on [Date]</span>
+                        <span>We're looking forward to seeing you - have your QR code ready</span>
+                    </div>
+                </div>
+            </div>
+            <div id="account_group">
+                <button id="user_account_button" onclick="openAccountWindow(event)">[Username]</button>
+                <div id="account_window" class="align_column">
+                    <button>Bought Tickets</button>
+                    <button>Settings</button>
+                    <button>Log Out</button>
+                </div>
+            </div>
+            <button id="menu_button" onclick="openMobileSidebar()">
+                <span>☰</span>
+            </button>
+        </div>
+        <div id="event_container" class="align_row">
+            <div id="event_poster">
+                Poster
+            </div>
+            <div id="event_main" class="align_column">
+                <div id="event_information" class="align_column">
+                    <span id="event_name">Event Name</span>
+                    <div id="event_main_info">
+                        <div id="event_type" class="align_row">
+                            <span id="info_name">Type</span>
+                            <div id="info_separator"></div>
+                            <span id="info_value">[Event Type]</span>
+                        </div>
+                        <div id="event_date" class="align_row">
+                            <span id="info_name">📅</span>
+                            <div id="info_separator"></div>
+                            <span id="info_value">[Event Date]</span>
+                        </div>
+                        <div id="event_location" class="align_row">
+                            <span id="info_name">📍</span>
+                            <div id="info_separator"></div>
+                            <span id="info_value">[Event Location]</span>
+                        </div>
+                    </div>
+                    <span id="event_description">[Event Description]</span>
+                </div>
+                <div id="event_tags_checkout">
+                    <div id="event_tags">
+                        <span id="event_tags_name">Tags</span>
+                        <hr>
+                        <div id="event_tag_list" class="align_row">
+                            <span id="event_tag">[Type]</span>
+                        </div>
+                    </div>
+                    <div id="event_tickets" class="align_column">
+                        <div id="event_ticket" class="align_row">
+                            <span id="event_ticket_info">[Ticket Type] [Price]€</span>
+                            <div id="event_ticket_count_controls" class="align_row">
+                                <button id="event_ticket_count_control">-</button>
+                                <span id="event_ticket_count">1</span>
+                                <button id="event_ticket_count_control">+</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="event_checkout" class="align_column">
+                        <span>Total</span>
+                        <span>[Price]€</span>
+                        <button id="checkout_button">Checkout</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

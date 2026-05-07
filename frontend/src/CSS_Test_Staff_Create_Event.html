@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>CSS Testing</title>
+        <link rel="stylesheet" href="main.css">
+        <script src="CSS_Test_Scripts.js" defer></script>
+    </head>
+    <body>
+        <div id="transparent_panel" onclick="closeEverything()"></div>
+        <div id="mobile_sidebar">
+            <button id="close_button" onclick="closeMobileSidebar()">
+                <span>X</span>
+            </button>
+            <div id="nav_group">
+                <button>My Events</button>
+                <button>Partners</button>
+                <button>Contacts</button>
+            </div>
+            <div id="account_group">
+                <button>Settings</button>
+                <button>Log Out</button>
+            </div>
+        </div>
+        <div id="top_bar">
+            <div id="site_logo">Logo</div>
+            <div id="nav_group">
+                <button>My Events</button>
+                <button>Partners</button>
+                <button>Contacts</button>
+            </div>
+            <div id="notification_container">
+                <button id="notification_button" onclick="openNotificationWindow(event)">🔔</button>
+                <div id="notification_window" class="align_column">
+                    <div id="user_notification" class="align_column">
+                        <span>Just a reminder that [Event Name] is on [Date]</span>
+                        <span>We're looking forward to seeing you - have your QR code ready</span>
+                    </div>
+                </div>
+            </div>
+            <div id="account_group">
+                <button id="user_account_button" onclick="openAccountWindow(event)">[Username]</button>
+                <div id="account_window" class="align_column">
+                    <button>Bought Tickets</button>
+                    <button>Settings</button>
+                    <button>Log Out</button>
+                </div>
+            </div>
+            <button id="menu_button" onclick="openMobileSidebar()">
+                <span>☰</span>
+            </button>
+        </div>
+        <div class="align_column">
+            <div id="staff_main_row_part">
+                <span id="staff_page_name">Create New Event</span>
+            </div>
+            <div id="staff_main_row_part">
+                <div id="staff_main_column_part" class="align_column" style="width:70%;">
+                    <div id="staff_info_card" class="align_column">
+                        <div id="staff_info_card_name">
+                            <span>Event Details</span>
+                        </div>
+                        <hr/>
+                        <div id="staff_event_card_input" class="align_column">
+                            <label for="staff_event_name">Event Name</label>
+                            <input id="staff_event_name" type="text" placeholder="Event Name">
+                        </div>
+                        <div id="staff_info_card_input_group">
+                            <div id="staff_event_card_input" class="align_column">
+                                <label for="staff_event_date">Date</label>
+                                <input id="staff_event_date" type="date">
+                            </div>
+                            <div id="staff_event_card_input" class="align_column">
+                                <label for="staff_event_time">Time</label>
+                                <input id="staff_event_time" type="time">
+                            </div>
+                        </div>
+                        <div id="staff_event_card_input" class="align_column">
+                            <label for="staff_event_location">Location</label>
+                            <input id="staff_event_location" type="text" placeholder="Event Location">
+                        </div>
+                        <div id="staff_event_card_input" class="align_column">
+                            <label for="staff_event_description">Description</label>
+                            <textarea id="staff_event_description" placeholder="Event Description"></textarea>
+                        </div>
+                    </div>
+                    <div id="staff_info_card" class="align_column" style="max-height:30rem;">
+                        <div id="staff_info_card_name">
+                            <span>Ticket Tiers</span>
+                            <button>+ Add Tier</button>
+                        </div>
+                        <div id="staff_event_ticket_tier_list" class="align_column">
+                            <div id="staff_event_ticket_tier" class="align_column">
+                                <div id="staff_event_card_input" class="align_column">
+                                    <label for="staff_ticket_tier_name">Tier Name</label>
+                                    <input id="staff_ticket_tier_name" type="text" placeholder="Tier Name">
+                                </div>
+                                <div id="staff_info_card_input_group">
+                                    <div id="staff_event_card_input" class="align_column">
+                                        <label for="staff_ticket_tier_quantity">Quantity</label>
+                                        <input id="staff_ticket_tier_quantity" type="number" value="0">
+                                    </div>
+                                    <div id="staff_event_card_input" class="align_column">
+                                        <label for="staff_ticket_tier_price">Price</label>
+                                        <input id="staff_ticket_tier_price" type="number" value="0">
+                                    </div>
+                                </div>
+                                <button id="staff_event_ticket_tier_delete_button">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="staff_main_column_part" class="align_column" style="width:28%;">
+                    <div id="staff_info_card" class="align_column">
+                        <div id="staff_info_card_name">
+                            <span>Event Poster</span>
+                        </div>
+                        <div id="staff_choosen_event_poster">
+                            Upload Event Poster
+                        </div>
+                        <label id="staff_event_poster_button" for="staff_event_poster_file">Choose File</label>
+                        <input type="file" id="staff_event_poster_file">
+                    </div>
+                    <div id="staff_info_card" class="align_column">
+                        <div id="staff_info_card_name">
+                            <span>Event Type</span>
+                        </div>
+                        <hr/>
+                        <div id="staff_event_info_list" class="align_row">
+                            <button id="staff_event_info_button">[Type]</button>
+                        </div>
+                    </div>
+                    <div id="staff_info_card" class="align_column">
+                        <div id="staff_info_card_name">
+                            <span>Tags</span>
+                        </div>
+                        <hr>
+                        <div id="staff_event_info_list" class="align_row">
+                            <button id="staff_event_info_button">[Tag]</button>
+                        </div>
+                    </div>
+                    <button id="staff_event_controls">Cancel</button>
+                    <button id="staff_event_controls">Create Event</button>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

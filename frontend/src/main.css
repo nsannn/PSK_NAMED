@@ -10,6 +10,7 @@
     /* Shades of Main Hover Color */
     --primary-hover-color:#2a2828;
     --secondary-hover-color:#2d2c2c;
+    --tertiary-hover-color:#2b2929;
     --quaternary-hover-color:#444141;
 
     /* Shades of Main Selected Color */
@@ -21,12 +22,19 @@
     /* Shades of Detail Hover Color */
     --primary-detail-hover-color:#dd7a1d;
 
+    /* Attention Color */
+    --primary-attention-color:#ba0303;
+    
+    /* Attention Hover Color */
+    --primary-attention-hover-color:#f01919;
+
     /* Border Color */
     --primary-border-color:#232222;
     --secondary-border-color:#201e1e;
     --tertiary-border-color:#2b2929;
     --quaternary-border-color:#444040;
     --primary-detail-border-color:#aa5404;
+    --primary-attention-border-color:#cd0c0c;
 
     /* Text Color*/
     --primary-text-color:#e0dcdc;
@@ -66,6 +74,22 @@ hr{
 .align_column{
     display:flex;
     flex-direction:column;
+}
+
+#info_name{
+    margin-left:0.5rem;
+}
+
+#info_separator{
+    background-color:var(--primary-detail-border-color);
+    border-radius:5px;
+    width:5px;
+    height:1.5rem;
+    margin:auto 1rem auto 1rem;
+}
+
+#info_value{
+    margin:auto;
 }
 
 /* Transparent Panel with Low Opacity */
@@ -131,6 +155,10 @@ hr{
         background-color:var(--primary-hover-color);
         transform:scale(1.05);
     }
+
+input{
+    color-scheme:dark;
+}
 
 input[type="text"]{
     background-color:var(--secondary-color);
@@ -285,7 +313,7 @@ input[type="submit"]{
 
 /* Group of Account Buttons*/
 #account_group{
-    margin:auto 5rem;
+    margin:auto 5rem auto 1rem;
 }
 
     #account_group button{
@@ -310,6 +338,155 @@ input[type="submit"]{
     #account_group button:first-child:hover{
         background-color:var(--primary-detail-hover-color);
         transform:scale(1.05);
+    }
+
+/* Notification Button and Window */
+#notification_container{
+    margin:auto 0.5rem auto auto;
+}
+
+#notification_button{
+    background-color:var(--primary-color);
+    border:3px solid var(--primary-border-color);
+    border-radius:2rem;
+    width:2.7rem !important;
+    height:2.7rem;
+    font-size:1rem !important;
+    cursor:pointer;
+    transition:background-color 0.3s ease,transform 0.3s ease;
+}
+
+    #notification_button:hover{
+        background-color:var(--primary-hover-color);
+        transform:scale(1.05);
+    }
+
+#notification_window{
+    display:none;
+    position:absolute;
+    background-color:var(--secondary-color);
+    border-radius:1rem;
+    border:3px solid var(--secondary-border-color);
+    color:var(--primary-text-color);
+    font-size:1.2rem;
+    font-weight:bold;
+    width:40rem;
+    max-height:30rem;
+    margin:1.5rem auto auto auto !important;
+    right:1rem;
+    opacity:0;
+    overflow-y:auto;
+    transition:opacity 0.2s ease,margin 0.3s ease;
+    z-index:100;
+}
+
+#user_notification{
+    background-color:var(--quaternary-color);
+    border-radius:1rem;
+    width:90%;
+    margin:0.2rem auto;
+    padding:0.5rem;
+}
+
+    #user_notification span:first-child{
+        font-size:1.4rem;
+        font-weight:bold;
+    }
+
+    #user_notification span{
+        font-size:1.2rem;
+        font-weight:100;
+    }
+
+/* Account Button and Window */
+#user_account_button{
+    background-color:var(--primary-detail-color) !important;
+    border-color:var(--primary-detail-border-color) !important;
+}
+
+    #user_account_button:hover{
+        background-color:var(--primary-detail-hover-color) !important;
+    }
+
+#account_window{
+    display:none;
+    position:absolute;
+    background-color:var(--secondary-color);
+    border-radius:1rem;
+    border:3px solid var(--secondary-border-color);
+    color:var(--primary-text-color);
+    font-size:1.2rem;
+    font-weight:bold;
+    width:15rem;
+    margin:1.5rem auto auto auto !important;
+    right:1rem;
+    opacity:0;
+    transition:opacity 0.2s ease,margin 0.3s ease;
+    z-index:100;
+}
+
+    #account_window button{
+        width:90%;
+        margin:0.5rem auto 0.5rem auto;
+    }
+
+/* Confirmation Window of Delete Action */
+#delete_confirmation_window{
+    display:none;
+    position:fixed;
+    top:15rem;
+    left:50%;
+    background-color:var(--tertiary-color);
+    border:3px solid var(--tertiary-border-color);
+    border-radius:0.8rem;
+    width:20rem;
+    padding:1.5rem;
+    color:var(--primary-text-color);
+    font-size:1.2rem;
+    font-weight:bold;
+    transform:translate(-50%,0%);
+    opacity:0;
+    z-index:1010;
+    transition:opacity 0.3s ease,top 0.4s ease;
+}
+
+#delete_confirmation_window #window_info{
+    margin:0 auto 0.2rem auto;
+    font-size:1.1rem;
+}
+
+#delete_confirmation_window #window_small_info{
+    margin:0.2rem auto 0.5rem 0;
+    font-size:1rem;
+    font-weight:100;
+}
+
+#delete_confirmation_window #delete_controls{
+    margin:0.5rem 0.5rem auto auto;
+}
+
+#delete_confirmation_window #delete_controls button{
+    background-color:var(--quaternary-color);
+    border:2px solid var(--quaternary-border-color);
+    border-radius:1rem;
+    margin:auto 0.5rem auto 0.5rem;
+    color:var(--primary-text-color);
+    font-size:1.1rem;
+    transition:background-color 0.3s ease,transform 0.3s ease;
+}
+
+    #delete_confirmation_window #delete_controls button:last-child{
+        background-color:var(--primary-attention-color);
+        border-color:var(--primary-attention-border-color);
+    }
+
+    #delete_confirmation_window #delete_controls button:hover{
+        background-color:var(--quaternary-hover-color);
+        transform:scale(1.05);
+    }
+
+    #delete_confirmation_window #delete_controls button:last-child:hover{
+        background-color:var(--primary-attention-hover-color);
     }
 
 /* Hamburger Menu Button for Mobile or Small Windows */
@@ -502,6 +679,32 @@ input[type="submit"]{
         transform:scale(1.05);
     }
 
+#create_new_event_button{
+    background-color:var(--secondary-color);
+    border-radius:2rem;
+    border:3px solid var(--secondary-border-color);
+    cursor:pointer;
+    color:var(--primary-text-color);
+    font-size:1.2rem;
+    font-weight:bold;
+    padding:0.4rem;
+    margin:auto 0.5rem auto 0.5rem;
+    transition:background-color 0.3s ease,transform 0.3s ease;
+}
+
+    #create_new_event_button:hover{
+        background-color:var(--secondary-hover-color);
+        transform:scale(1.05);
+    }
+
+    #search_sort_menu > #create_new_event_button{
+        display:flex;
+    }
+
+    #event_list_main > #create_new_event_button{
+        display:none;
+    }
+
 #search_form{
     width:30rem;
     margin:0.2rem auto 0.2rem 0.5rem;
@@ -591,22 +794,6 @@ input[type="submit"]{
         background-color:var(--secondary-hover-color);
         transform:scale(1.05);
     }
-
-#sort_text{
-    margin-left:0.5rem;
-}
-
-#sort_separator{
-    background-color:var(--tertiary-border-color);
-    border-radius:5px;
-    width:5px;
-    height:1.5rem;
-    margin:auto 0 auto 1rem;
-}
-
-#sort_selected_text{
-    margin:auto;
-}
 
 #sort_options_menu{
     display:none;
@@ -702,7 +889,7 @@ input[type="submit"]{
     padding:0.2rem;
 }
 
-#event_card_information #event_description{
+#event_card_information #event_description,#event_description{
     background-color:var(--secondary-color);
     border-radius:0.5rem;
     width:95%;
@@ -714,6 +901,77 @@ input[type="submit"]{
     overflow-x:hidden;
     overflow-y:auto;
 }
+
+#event_card_information #event_selling_info_container{
+    background-color:var(--secondary-color);
+    border-radius:0.5rem;
+    width:95%;
+    margin:0.5rem auto;
+    font-size:1rem;
+    padding:0.5rem;
+    overflow-wrap:break-word;
+    overflow-x:hidden;
+    overflow-y:auto;
+}
+
+#event_selling_info{
+    width:90%;
+    margin:0.2rem auto 0.2rem auto;
+}
+
+    #event_selling_info span:first-child{
+        margin:0 auto 0 0;
+    }
+
+    #event_selling_info span:last-child{
+        font-weight:bold;
+    }
+
+#event_sold_tickets_container{
+    background-color:var(--quaternary-color);
+    border:none;
+    border-radius:5px;
+    width:90%;
+    height:10px;
+    margin:0.2rem auto 0.2rem auto;
+}
+
+#event_sold_tickets_container #event_sold_tickets{
+    background-color:var(--primary-detail-color);
+    border-radius:5px;
+    margin:0 auto 0 0;
+    height:100%;
+}
+
+#event_card_information #event_controls{
+    margin:0.5rem 0;
+}
+
+#event_card_information #event_controls button{
+    background-color:var(--quaternary-color);
+    border-radius:1rem;
+    border:2px solid var(--quaternary-border-color);
+    margin:auto;
+    color:var(--primary-text-color);
+    font-size:1.2rem;
+    font-weight:bold;
+    padding:0.5rem;
+    transition:background-color 0.3s ease,transform 0.3s ease;
+}
+
+    #event_card_information #event_controls button:hover{
+        background-color:var(--quaternary-hover-color);
+        transform:scale(1.05);
+    }
+
+    #event_card_information #event_controls button:first-child{
+        background-color:var(--primary-detail-color);
+        border:2px solid var(--primary-detail-border-color);
+    }
+
+        #event_card_information #event_controls button:first-child:hover{
+            background-color:var(--primary-detail-hover-color);
+        }
 
 #event_card_information #event_price{
     margin:auto 0.5rem 0.5rem auto;
@@ -788,6 +1046,502 @@ input[type="submit"]{
         background-color:var(--primary-detail-hover-color) !important;
     }
 
+/* Event Page Elements */
+#event_container{
+    display:flex;
+    flex-direction:row;
+}
+
+#event_poster{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background-color:var(--secondary-color);
+    border-radius:2rem;
+    width:372px;
+    height:526.2px;
+    margin:1rem 0.3rem auto auto;
+    font-size:1.5rem;
+}
+
+#event_main{
+    width:60%;
+    margin:1rem auto auto 0.3rem;
+}
+
+#event_information{
+    background-color:var(--tertiary-color);
+    border:3px solid var(--tertiary-border-color);
+    border-radius:1.5rem;
+    margin:0 0 0.5rem 0;
+    padding:0.5rem;
+}
+
+#event_name{
+    margin:0.5rem auto 0.5rem auto;
+    font-size:1.8rem;
+    font-weight:bold;
+}
+
+#event_main_info{
+    display:flex;
+    flex-direction:row;
+    margin:0.5rem auto;
+}
+
+#event_type,#event_date,#event_location{
+    background-color:var(--secondary-color);
+    border:2px solid var(--secondary-border-color);
+    border-radius:0.5rem;
+    font-size:1.1rem;
+    font-weight:bold;
+    padding:0.2rem 1rem 0.2rem 0.2rem;
+}
+
+    #event_type{
+        margin:auto 0.5rem auto auto;
+    }
+
+    #event_date{
+        margin:auto 0.5rem auto 0.5rem;
+    }
+
+    #event_location{
+        margin:auto auto auto 0.5rem;
+    }
+
+#event_tags_checkout{
+    display:flex;
+    flex-direction:row;
+    height:16rem;
+}
+
+#event_tags{
+    background-color:var(--tertiary-color);
+    border:3px solid var(--tertiary-border-color);
+    border-radius:0.5rem;
+    width:15rem;
+    padding:0.5rem;
+    margin:0 auto 0 0;
+    overflow-x:auto;
+}
+
+#event_tags_name{
+    margin:0.5rem auto 0 0.5rem;
+    font-size:1.4rem;
+    font-weight:bold;
+}
+
+#event_tag_list{
+    display:grid;
+    grid-template-columns:auto auto auto;
+    gap:0.2rem;
+    width:95%;
+    margin:0 auto 0.5rem auto;
+}
+
+#event_tag{
+    background-color:var(--quaternary-color);
+    border:none;
+    border-radius:1rem;
+    margin:auto 0.2rem;
+    padding:0.4rem;
+    color:var(--primary-text-color);
+    font-size:1rem;
+    font-weight:bold;
+    text-align:center;
+}
+
+#event_tickets{
+    background-color:var(--tertiary-color);
+    border:3px solid var(--tertiary-border-color);
+    border-radius:0.5rem;
+    width:20rem;
+    padding:0.5rem;
+    overflow-x:auto;
+}
+
+#event_ticket{
+    width:95%;
+    margin:0.2rem auto 0.2rem auto;
+}
+
+#event_ticket_info{
+    background-color:var(--secondary-color);
+    border-radius:1rem;
+    margin:auto auto auto 0;
+    padding:0.5rem;
+    font-size:1.1rem;
+}
+
+#event_ticket_count_controls{
+    background-color:var(--secondary-color);
+    border-radius:0.8rem;
+    width:5rem;
+}
+
+#event_ticket_count_control{
+    background:none;
+    border:none;
+    border-radius:1rem;
+    margin:0;
+    width:1.5rem;
+    color:var(--primary-text-color);
+    font-size:1.2rem;
+    font-weight:bold;
+    cursor:pointer;
+    transition:background-color 0.3s ease;
+}
+
+    #event_ticket_count_control:hover{
+        background-color:var(--secondary-hover-color);
+    }
+
+#event_ticket_count{
+    margin:auto;
+    font-size:1.2rem;
+    font-weight:bold;
+}
+
+#event_checkout{
+    background-color:var(--tertiary-color);
+    border:3px solid var(--tertiary-border-color);
+    border-radius:0.5rem;
+    width:15rem;
+    margin:0 0 0 auto;
+    padding:0.5rem;
+}
+
+#event_checkout span{
+    margin:1rem auto 0.5rem auto;
+    font-size:2rem;
+    font-weight:bold;
+}
+
+#checkout_button{
+    background-color:var(--primary-detail-color);
+    border:3px solid var(--primary-detail-border-color);
+    border-radius:2rem;
+    width:90%;
+    margin:auto auto 1rem auto;
+    color:var(--primary-text-color);
+    font-size:1.8rem;
+    font-weight:bold;
+    padding:0.3rem;
+    transition:background-color 0.3s ease,transform 0.3s ease;
+}
+
+    #checkout_button:hover{
+        background-color:var(--primary-detail-hover-color);
+        transform:scale(1.05);
+    }
+ 
+/* Staff Pages Components */
+#staff_main_row_part{
+    display:flex;
+    flex-direction:row;
+    width:95%;
+    margin:0.5rem auto;
+}
+
+    #staff_main_row_part:first-child{
+        margin-top:1rem;
+    }
+
+#staff_main_row_part #staff_page_name{
+    margin:auto auto auto 0.5rem;
+    font-size:1.5rem;
+    font-weight:bold;
+}
+
+#staff_main_column_part{
+    width:49%;
+    margin:0 auto auto auto;
+}
+
+    #staff_main_column_part:first-child{
+        margin-left:0;
+    }
+
+    #staff_main_column_part:last-child{
+        margin-right:0;
+    }
+
+#staff_main_column_part.staff_event_statistics{
+    margin-top:0;
+    margin-bottom:0;
+}
+
+#staff_info_card{
+    background-color:var(--tertiary-color);
+    border:2px solid var(--tertiary-border-color);
+    border-radius:1rem;
+    margin:0.5rem 0;
+    padding:0.5rem;
+}
+
+    #staff_info_card:first-child{
+        margin-top:0;
+    }
+
+#staff_main_column_part.staff_event_statistics #staff_info_card{
+     margin-top:0;
+     margin-bottom:0;
+     height:100%;
+}
+
+#staff_info_card #event_selling_info{
+    font-size:1.2rem;
+}
+    
+#staff_info_card_name{
+    display:flex;
+    flex-direction:row;
+    width:95%;
+    margin:0 auto;
+}
+
+#staff_info_card_name span{
+    margin:0 auto 0 0;
+    font-size:1.3rem;
+    font-weight:bold;
+}
+
+#staff_info_card_name button{
+    background-color:var(--secondary-color);
+    border:2px solid var(--secondary-border-color);
+    border-radius:1rem;
+    margin:0 0.5rem;
+    color:var(--primary-text-color);
+    font-size:1rem;
+    padding:0.2rem 0.5rem;
+    transition:background-color 0.3s ease,transform 0.3s ease;
+}
+
+    #staff_info_card_name button:hover{
+        background-color:var(--secondary-hover-color);
+        transform:scale(1.05);
+    }
+
+#staff_event_card_input{
+    width:95%;
+    margin:0.2rem auto;
+}
+
+#staff_event_card_input label{
+    margin:0 auto 0.2rem 0;
+    font-size:1.1rem;
+    font-weight:bold;
+}
+
+#staff_event_card_input input,#staff_event_card_input span{
+    background-color:var(--secondary-color);
+    border:2px solid var(--secondary-border-color);
+    border-radius:0.5rem;
+    margin:0.2rem auto;
+    width:100%;
+    color:var(--primary-text-color);
+    font-size:1rem;
+    padding:0.5rem;
+    box-sizing:border-box;
+}
+
+#staff_event_card_input span{
+    overflow-wrap:break-word;
+}
+
+#staff_event_card_input #staff_event_description{
+    background-color:var(--secondary-color);
+    border:2px solid var(--secondary-border-color);
+    border-radius:0.5rem;
+    margin:0.2rem auto;
+    width:100%;
+    height:10rem;
+    resize:none;
+    color:var(--primary-text-color);
+    font-size:1rem;
+    padding:0.5rem;
+    box-sizing:border-box;
+}
+
+#staff_info_card_input_group{
+    display:flex;
+    flex-direction:row;
+}
+
+#staff_info_card_input_group #staff_event_card_input{
+    width:45%;
+}
+
+#staff_event_ticket_tier_list{
+    max-height:30rem;
+    overflow-x:auto;
+}
+
+#staff_event_ticket_tier{
+    background-color:var(--quaternary-color);
+    border:2px solid var(--quaternary-border-color);
+    border-radius:1rem;
+    width:95%;
+    margin:0.4rem auto;
+}
+
+#staff_event_ticket_tier_delete_button{
+    background-color:var(--primary-attention-color);
+    border:2px solid var(--primary-attention-border-color);
+    border-radius:0.5rem;
+    margin:0.5rem 1rem 0.5rem auto;
+    color:var(--primary-text-color);
+    font-size:1.2rem;
+    padding:0.2rem 0.4rem;
+    transition:background-color 0.3s ease,transform 0.3s ease;
+}
+
+    #staff_event_ticket_tier_delete_button:hover{
+        background-color:var(--primary-attention-hover-color);
+        transform:scale(1.05);
+    }
+
+#staff_event_detail_controls{
+    display:flex;
+    flex-direction:row;
+    width:100%;
+    margin:0.5rem auto;
+}
+
+#staff_event_detail_controls button{
+    background-color:var(--quaternary-color);
+    border:2px solid var(--quaternary-border-color);
+    border-radius:1rem;
+    width:24%;
+    margin:0 auto;
+    color:var(--primary-text-color);
+    font-size:1.3rem;
+    font-weight:bold;
+    padding:0.4rem;
+    transition:background-color 0.3s ease,transform 0.3s ease;
+}
+
+    #staff_event_detail_controls button:hover{
+        background-color:var(--quaternary-hover-color);
+        transform:scale(1.05);
+    }
+
+    #staff_event_detail_controls button:first-child{
+        background-color:var(--primary-detail-color);
+        border-color:var(--primary-detail-border-color);
+    }
+
+        #staff_event_detail_controls button:first-child:hover{
+            background-color:var(--primary-detail-hover-color);
+        }
+
+    #staff_event_detail_controls button:last-child{
+        background-color:var(--primary-attention-color);
+        border-color:var(--primary-attention-border-color);
+    }
+
+        #staff_event_detail_controls button:last-child:hover{
+            background-color:var(--primary-attention-hover-color);
+        }
+
+#staff_choosen_event_poster{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background-color:var(--primary-color);
+    border-radius:1rem;
+    width:248px;
+    height:350.8px;
+    margin:0.5rem auto;
+    font-size:1.2rem;
+    font-weight:bold;
+}
+
+#staff_event_poster_button{
+    background-color:var(--secondary-color);
+    border:2px solid var(--secondary-border-color);
+    border-radius:1rem;
+    width:90%;
+    margin:0.5rem auto;
+    font-size:1.4rem;
+    font-weight:bold;
+    text-align:center;
+    padding:0.5rem;
+    transition:background-color 0.3s ease,transform 0.3s ease;
+}
+
+    #staff_event_poster_button:hover{
+        background-color:var(--secondary-hover-color);
+        transform:scale(1.03);
+    }
+
+#staff_event_poster_file{
+    display:none;
+}
+
+#staff_event_info_list{
+    display:grid;
+    grid-template-columns:auto auto auto;
+    gap:0.3rem;
+    width:95%;
+    margin:0 auto 0.5rem auto;
+}
+
+#staff_event_info_button{
+    background-color:var(--quaternary-color);
+    border:none;
+    border-radius:1rem;
+    margin:auto 0.2rem;
+    padding:0.4rem;
+    color:var(--primary-text-color);
+    font-size:1rem;
+    font-weight:bold;
+    text-align:center;
+    transition:background-color 0.3s ease,transform 0.3s ease;
+}
+
+    #staff_event_info_button:hover{
+        background-color:var(--quaternary-hover-color);
+        transform:scale(1.02);
+    }
+
+#staff_event_controls{
+    background-color:var(--tertiary-color);
+    border:2px solid var(--tertiary-border-color);
+    border-radius:1rem;
+    margin:0.5rem 0;
+    font-size:1.5rem;
+    font-weight:bold;
+    color:var(--primary-text-color);
+    padding:0.4rem;
+    transition:background-color 0.3s ease,transform 0.3s ease;
+}
+
+    #staff_event_controls:hover{
+        background-color:var(--tertiary-hover-color);
+        transform:scale(1.05);
+    }
+
+    #staff_event_controls:last-child{
+        background-color:var(--primary-detail-color);
+        border-color:var(--primary-detail-border-color);
+        margin-bottom:2rem;
+    }
+
+        #staff_event_controls:last-child:hover{
+            background-color:var(--primary-detail-hover-color);
+        }
+
+#staff_event_controls.staff_event_delete{
+    background-color:var(--primary-attention-color);
+    border-color:var(--primary-attention-border-color);
+}
+
+    #staff_event_controls.staff_event_delete:hover{
+        background-color:var(--primary-attention-hover-color);
+    }
+
 /* Scrollbar Components */
 ::-webkit-scrollbar{
     width:8px;
@@ -846,6 +1600,7 @@ input[type="submit"]{
     
     #site_logo{
         margin-left:2rem !important;
+        margin-right:auto !important;
     }
 
     #nav_group,#account_group{
@@ -871,6 +1626,10 @@ input[type="submit"]{
                 transform:scale(1.05);
             }
 
+    #notification_window{
+        width:90%;
+    }
+
     #account_group{
         flex-direction:column;
         margin:1rem auto auto auto;
@@ -880,9 +1639,21 @@ input[type="submit"]{
             margin:0.5rem auto;
         }
 
+    #delete_confirmation_window #window_info{
+        font-size:1.3rem;
+    }
+
+    #delete_confirmation_window #window_small_info{
+        font-size:1.2rem;
+    }
+
+    #delete_confirmation_window #delete_controls button{
+        font-size:1.5rem;
+    }
+
     #menu_button{
         display:block;
-        margin-left:auto;
+        margin-left:1rem;
         margin-right:2rem;
         width:3rem !important;
         height:3rem;
@@ -924,6 +1695,15 @@ input[type="submit"]{
     #filter_button_mobile{
         display:flex;
     }
+
+    #search_sort_menu > #create_new_event_button{
+        display:none;
+    }
+
+    #event_list_main > #create_new_event_button{
+        display:flex;
+    }
+
 
     #search_form{
         width:70%;
@@ -979,5 +1759,104 @@ input[type="submit"]{
         margin-left:0.2rem;
         margin-right:0.2rem;
         overflow-x:scroll;
+    }
+
+    #event_container{
+        flex-direction:column;
+    }
+
+    #event_poster{
+        margin:0.2rem auto;
+        transform:scale(0.9);
+    }
+
+    #event_main{
+        width:90%;
+        margin:0rem auto auto auto;
+    }
+
+    #event_main_info{
+        display:flex;
+        flex-direction:column;
+        width:100%;
+    }
+
+    #event_type,#event_date,#event_location{
+        width:90%;
+        margin:0.2rem auto auto auto;
+    }
+
+    #info_name{
+        text-align:center;
+        width:15%;
+    }
+
+    #event_tags_checkout{
+        display:flex;
+        flex-direction:column;
+        height:auto;
+        width:100%;
+        margin:0.5rem auto auto auto;
+    }
+
+    #event_tags{
+        max-height:15rem;
+        width:90%;
+        margin:0 auto 0.5rem auto;
+    }
+
+    #event_tickets{
+        max-height:15rem;
+        width:90%;
+        margin:0 auto 0.5rem auto;
+    }
+
+    #event_checkout{
+        width:90%;
+        margin:0 auto 1rem auto;
+    }
+
+    #event_checkout span{
+        margin:0.2rem auto 0.5rem auto;
+    }
+
+    #checkout_button{
+        margin:0.5rem auto;
+    }
+
+    #staff_main_row_part{
+        flex-direction:column;
+    }
+
+    #staff_main_column_part{
+        width:90% !important;
+        margin-left:auto !important;
+        margin-right:auto !important;
+        margin-bottom:0.5rem;
+    }
+
+    #staff_main_column_part.staff_event_statistics{
+        width:100% !important;
+        margin-top:0.5rem;
+        margin-bottom:0.5rem;
+    }
+
+    #staff_event_detail_controls{
+        flex-direction:column;
+    }
+
+    #staff_event_detail_controls button{
+        width:100%;
+        margin:0.5rem auto;
+    }
+
+    #staff_info_card_input_group.change_align{
+        flex-direction:column;
+        width:95%;
+        margin:0 auto;
+    }
+
+    #staff_info_card_input_group.change_align #staff_event_card_input{
+        width:100%;
     }
 }
