@@ -1099,7 +1099,7 @@ input[type="submit"]{
 }
 
     #event_type{
-        margin:auto 0.5rem auto auto;
+        margin:auto 0.5rem auto 0.5rem;
     }
 
     #event_date{
@@ -1107,7 +1107,7 @@ input[type="submit"]{
     }
 
     #event_location{
-        margin:auto auto auto 0.5rem;
+        margin:auto 0.5rem auto 0.5rem;
     }
 
 #event_tags_checkout{
@@ -1235,7 +1235,126 @@ input[type="submit"]{
         background-color:var(--primary-detail-hover-color);
         transform:scale(1.05);
     }
- 
+
+/* Checkout Page Components */
+#checkout_main_column_part{
+    width:60%;
+    margin:0.5rem auto auto 0;
+}
+
+#checkout_order_summary{
+    background-color:var(--quaternary-color);
+    border:2px solid var(--quaternary-border-color);
+    border-radius:1rem;
+    width:35%;
+    margin:0.5rem 0 0.5rem auto;
+    padding:0.5rem;
+}
+
+#checkout_payment_options{
+    display:flex;
+    flex-direction:row;
+    max-width:90%;
+    margin:0.5rem auto;
+    overflow-x:auto;
+    overflow-y:hidden;
+}
+
+#checkout_payment_options button{
+    background-color:var(--secondary-color);
+    border:2px solid var(--secondary-border-color);
+    border-radius:0.5rem;
+    width:7rem;
+    margin:0 0.4rem;
+    color:var(--primary-text-color);
+    font-size:1.5rem;
+    padding:0.5rem;
+    cursor:pointer;
+    transition:background-color 0.3s ease,transform 0.3s ease;
+}
+
+    #checkout_payment_options button:hover{
+        background-color:var(--secondary-hover-color);
+        transform:scale(1.03);
+    }
+
+#checkout_tickets_list{
+    max-height:15rem;
+    overflow-y:auto;
+}
+
+#checkout_ticket{
+    display:flex;
+    flex-direction:row;
+    background-color:var(--secondary-color);
+    border:2px solid var(--secondary-border-color);
+    border-radius:1rem;
+    width:90%;
+    margin:0.5rem auto;
+    font-size:1.2rem;
+    padding:0.5rem;
+}
+
+    #checkout_ticket span:first-child{
+        margin:auto auto auto 0.5rem;
+    }
+
+    #checkout_ticket span:last-child{
+        margin:auto 0.5rem auto auto;
+        font-weight:bold;
+    }
+
+#checkout_completion_window{
+    background-color:var(--tertiary-color);
+    border:2px solid var(--tertiary-border-color);
+    border-radius:2rem;
+    margin:2rem auto;
+    width:50%;
+    padding:1rem;
+}
+
+#checkout_completion_image{
+    width:90%;
+    margin:0.5rem auto;
+    font-size:9rem !important;
+    text-align:center;
+}
+
+#checkout_completion_window span{
+    margin:0.5rem auto;
+    font-size:1.8rem;
+    font-weight:bold;
+}
+
+    #checkout_completion_window span:last-child{
+        font-size:1.3rem;
+    }
+
+#checkout_completion_controls{
+    display:flex;
+    flex-direction:row;
+    margin:0.5rem auto;
+}
+
+#checkout_completion_controls button{
+    background-color:var(--tertiary-color);
+    border:2px solid var(--tertiary-border-color);
+    border-radius:1rem;
+    width:18rem;
+    margin:0 2rem;
+    color:var(--primary-text-color);
+    font-size:1.5rem;
+    font-weight:bold;
+    padding:0.5rem;
+    cursor:pointer;
+    transition:background-color 0.3s ease,transform 0.3s ease;
+}
+
+    #checkout_completion_controls button:hover{
+        background-color:var(--tertiary-hover-color);
+        transform:scale(1.05);
+    }
+
 /* Staff Pages Components */
 #staff_main_row_part{
     display:flex;
@@ -1821,6 +1940,30 @@ input[type="submit"]{
     }
 
     #checkout_button{
+        margin:0.5rem auto;
+    }
+
+    #checkout_main_column_part{
+        width:90%;
+        margin:0.5rem auto;
+    }
+
+    #checkout_order_summary{
+        width:90%;
+        margin:0.5rem auto;
+    }
+
+    #checkout_completion_window{
+        width:80%;
+    }
+
+    #checkout_completion_controls{
+        flex-direction:column;
+        width:90%;
+    }
+
+    #checkout_completion_controls button{
+        width:100%;
         margin:0.5rem auto;
     }
 

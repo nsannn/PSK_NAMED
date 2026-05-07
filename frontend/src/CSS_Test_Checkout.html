@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>CSS Testing</title>
+        <link rel="stylesheet" href="main.css">
+        <script src="CSS_Test_Scripts.js" defer></script>
+    </head>
+    <body>
+        <div id="transparent_panel" onclick="closeEverything()"></div>
+        <div id="mobile_sidebar">
+            <button id="close_button" onclick="closeMobileSidebar()">
+                <span>X</span>
+            </button>
+            <div id="nav_group">
+                <button>Events</button>
+                <button>Partners</button>
+                <button>Contacts</button>
+            </div>
+            <div id="account_group">
+                <button>Bought Tickets</button>
+                <button>Settings</button>
+                <button>Log Out</button>
+            </div>
+        </div>
+        <div id="top_bar">
+            <div id="site_logo">Logo</div>
+            <div id="nav_group">
+                <button>Events</button>
+                <button>Partners</button>
+                <button>Contacts</button>
+            </div>
+            <div id="notification_container">
+                <button id="notification_button" onclick="openNotificationWindow(event)">🔔</button>
+                <div id="notification_window" class="align_column">
+                    <div id="user_notification" class="align_column">
+                        <span>Just a reminder that [Event Name] is on [Date]</span>
+                        <span>We're looking forward to seeing you - have your QR code ready</span>
+                    </div>
+                </div>
+            </div>
+            <div id="account_group">
+                <button id="user_account_button" onclick="openAccountWindow(event)">[Username]</button>
+                <div id="account_window" class="align_column">
+                    <button>Bought Tickets</button>
+                    <button>Settings</button>
+                    <button>Log Out</button>
+                </div>
+            </div>
+            <button id="menu_button" onclick="openMobileSidebar()">
+                <span>☰</span>
+            </button>
+        </div>
+        <div id="staff_main_row_part">
+            <div id="checkout_main_column_part" class="align_column">
+                <div id="staff_info_card" class="align_column">
+                    <div id="staff_info_card_name">
+                        <span>Buyer Information</span>
+                    </div>
+                    <hr/>
+                    <div id="staff_info_card_input_group">
+                        <div id="staff_event_card_input" class="align_column">
+                            <label for="checkout_first_name">First Name</label>
+                            <input id="checkout_first_name" type="text">
+                        </div>
+                        <div id="staff_event_card_input" class="align_column">
+                            <label for="checkout_last_name">Last Name</label>
+                            <input id="checkout_last_name" type="text">
+                        </div>
+                    </div>
+                    <div id="staff_event_card_input" class="align_column">
+                        <label for="checkout_email">Email</label>
+                        <input id="checkout_email" type="text" placeholder="Email">
+                    </div>
+                    <div id="staff_event_card_input" class="align_column">
+                        <label for="checkout_phone">Phone</label>
+                        <input id="checkout_phone" type="text" placeholder="Phone">
+                    </div>
+                </div>
+                <div id="staff_info_card" class="align_column">
+                    <div id="staff_info_card_name">
+                        <span>Payment Method</span>
+                    </div>
+                    <hr/>
+                    <div id="checkout_payment_options">
+                        <button style="width:7rem !important;">Card</button>
+                        <button>Google Pay</button>
+                        <button>Apple Pay</button>
+                    </div>
+                    <hr/>
+                    <div id="staff_event_card_input" class="align_column">
+                        <label for="checkout_card_number">Card Number</label>
+                        <input id="checkout_card_number" type="text">
+                    </div>
+                    <div id="staff_info_card_input_group">
+                        <div id="staff_event_card_input" class="align_column">
+                            <label for="checkout_card_expiration">Expiration</label>
+                            <input id="checkout_card_expiration" type="text">
+                        </div>
+                        <div id="staff_event_card_input" class="align_column">
+                            <label for="checkout_card_cvv">CVV</label>
+                            <input id="checkout_card_cvv" type="text">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="checkout_order_summary" class="align_column">
+                <div id="staff_info_card_name">
+                    <span>Order Summary</span>
+                </div>
+                <hr/>
+                <div id="staff_info_card" class="align_column">
+                    <span id="event_name" style="font-size:1.4rem;">[Event Name]</span>
+                    <div id="event_date" class="align_row" style="margin-bottom:0.5rem;">
+                        <span id="info_name">📅</span>
+                        <div id="info_separator"></div>
+                        <span id="info_value">[Event Date]</span>
+                    </div>
+                    <div id="event_location" class="align_row">
+                        <span id="info_name">📍</span>
+                        <div id="info_separator"></div>
+                        <span id="info_value">[Event Location]</span>
+                    </div>
+                </div>
+                <div id="staff_info_card" class="align_column">
+                    <div id="staff_info_card_name">
+                        <span>Tickets</span>
+                    </div>
+                    <hr/>
+                    <div id="checkout_tickets_list">
+                        <div id="checkout_ticket">
+                            <span>[Ticket Type] x[Count]</span>
+                            <span>[Price]€</span>
+                        </div>
+                    </div>
+                </div>
+                <div id="staff_info_card" class="align_column">
+                    <div id="event_selling_info" class="align_row">
+                        <span>Subtotal</span>
+                        <span>[Subtotal Price]€</span>
+                    </div>
+                    <hr/>
+                    <div id="event_selling_info" class="align_row">
+                        <span>Service Fee</span>
+                        <span>[Service Fee]€</span>
+                    </div>
+                    <hr/>
+                    <div id="event_selling_info" class="align_row">
+                        <span>Total</span>
+                        <span>[Total Price]€</span>
+                    </div>
+                </div>
+                <div id="term_of_services_checkbox" class="align_row">
+                    <input type="checkbox" id="term_of_services">
+                    <label for="term_of_services">I agree to the Terms and Conditions</label>
+                </div>
+                <button id="checkout_button">Pay [Price]€</button>
+            </div>
+        </div>
+    </body>
+</html>
