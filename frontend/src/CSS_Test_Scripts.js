@@ -3,6 +3,7 @@ let closeBtn=document.getElementById('close_button');
 let mobileSidebar=document.getElementById('mobile_sidebar');
 let registerWindow=document.getElementById('register_window');
 let signInWindow=document.getElementById('sign_in_window');
+let qrCodeWindow=document.getElementById('qr_code_window');
 let deleteWindow=document.getElementById('delete_confirmation_window');
 let notificationContainer=document.getElementById('notification_container');
 let notificationWindow=document.getElementById('notification_window');
@@ -12,6 +13,8 @@ let transparentPanel=document.getElementById('transparent_panel');
 let filterMenu=document.getElementById('filters_menu');
 let sortContainer=document.getElementById('sort_container');
 let sortMenu=document.getElementById('sort_options_menu');
+
+let ticketGroupList=document.getElementById('my_tickets_ticket_list');
 
 function openMobileSidebar(){
     mobileSidebar.style.right='0';
@@ -104,6 +107,30 @@ function closeSignInWindow(){
     signInWindow.style.top='15rem';
     setTimeout(()=>{
         signInWindow.style.display='none';
+    },100);
+    transparentPanel.style.opacity='0';
+    setTimeout(()=>{
+        transparentPanel.style.display='none';
+    },100);
+}
+
+function openQRCodeWindow(){
+    qrCodeWindow.style.display='flex';
+    setTimeout(()=>{
+        qrCodeWindow.style.opacity='1';
+        qrCodeWindow.style.top='6rem';
+    },100);
+    transparentPanel.style.display='block';
+    setTimeout(()=>{
+        transparentPanel.style.opacity='0.8';
+    },100);
+}
+
+function closeQRCodeWindow(){
+    qrCodeWindow.style.opacity='0';
+    qrCodeWindow.style.top='15rem';
+    setTimeout(()=>{
+        qrCodeWindow.style.display='none';
     },100);
     transparentPanel.style.opacity='0';
     setTimeout(()=>{
@@ -252,8 +279,10 @@ function closeEverything(){
     if(signInWindow && signInWindow.style.display==='flex')
         closeSignInWindow();
 
+    if(qrCodeWindow && qrCodeWindow.style.display==='flex')
+        closeQRCodeWindow();
+
     if(deleteWindow && deleteWindow.style.display==='flex'){
-        console.log("Test")
         closeDeleteWindow();
     }
 
@@ -272,3 +301,17 @@ document.addEventListener('click',(e)=>{
         closeAccountWindow();
     }
 });
+
+function openTicketGroup(){
+    if(ticketGroupList){
+        ticketGroupList.classList.toggle('open_group_tickets');
+
+        if(ticketGroupList.classList.contains('open_group_tickets')){
+            setTimeout(()=>{
+                ticketGroupList.style.overflow='auto';
+            },300);
+        }else{
+            ticketGroupList.style.overflow='hidden';
+        }
+    }
+}
