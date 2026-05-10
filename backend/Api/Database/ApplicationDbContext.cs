@@ -1,4 +1,4 @@
-using Api.Models;
+﻿using Api.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Api.Database
@@ -11,6 +11,9 @@ namespace Api.Database
         }
 
         public DbSet<User> Users { get; set; } = null!;
+        public DbSet<Event> Events { get; set; }
+        public DbSet<Ticket> Tickets { get; set; }
+        public DbSet<Tag> Tags { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -21,6 +24,10 @@ namespace Api.Database
                 entity.HasIndex(u => u.Email).IsUnique();
                 entity.Property(u => u.Role).HasConversion<string>();
             });
+            
+            modelBuilder.Entity<Event>()
+                .HasMany(e => e.Tags)
+                .WithMany(t => t.Events);
         }
     }
 }
