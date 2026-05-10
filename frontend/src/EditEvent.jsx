@@ -1,0 +1,330 @@
+﻿import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import './EditEvent.css';
+import './main.css';
+
+function EditEvent() {
+    const navigate = useNavigate();
+    const { id } = useParams();
+
+    const [title, setTitle] = useState('');
+    const [date, setDate] = useState('');
+    const [time, setTime] = useState('');
+    const [location, setLocation] = useState('');
+    const [description, setDescription] = useState('');
+    
+    const [ticketTiers, setTicketTiers] = useState([]);
+    
+    const [eventType, setEventType] = useState('');
+    const [tags, setTags] = useState([]);
+
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
+
+    const [hasPoster,     setHasPoster]     = useState(false);
+    const [posterFile,    setPosterFile]    = useState(null);
+    const [posterPreview, setPosterPreview] = useState(null);
+
+    useEffect(() => {
+        setIsLoading(true);
+        fetch('/api/events/' + id)
+            .then(res => res.json())
+            .then(data => {
+                setTitle(data.title || data.name || '');
+                if (data.date) {
+                    const d = new Date(data.date);
+                    setDate(d.toISOString().substring(0, 10));
+                    setTime(d.toISOString().substring(11, 16));
+                }
+                setLocation(data.location || '');
+                setDescription(data.description || '');
+                setEventType(data.eventType || 'Festival');
+                setTags(data.tags ? data.tags.map(t => t.name) : []);
+                setHasPoster(data.hasPoster ?? false);
+                setTicketTiers(data.tickets && data.tickets.length > 0 ? data.tickets.map(t => ({
+                    name: t.name,
+                    quantity: t.quantity || 0,
+                    price: t.price || 0,
+                    id: t.id
+                })) : [{ name: '', quantity: 0, price: 0 }]);
+            })
+            .catch(err => {
+                console.error("Failed to fetch event", err);
+                alert("Failed to load event data.");
+            })
+            .finally(() => setIsLoading(false));
+    }, [id]);
+
+    const handleAddTier = () => {
+        setTicketTiers([...ticketTiers, { name: '', quantity: 0, price: 0 }]);
+    };
+
+    const handleTierChange = (index, field, value) => {
+        const newTiers = [...ticketTiers];
+        newTiers[index][field] = value;
+        setTicketTiers(newTiers);
+    };
+
+    const toggleTag = (tag) => {
+        if (tags.includes(tag)) {
+            setTags(tags.filter(t => t !== tag));
+        } else {
+            setTags([...tags, tag]);
+        }
+    };
+
+    const handlePosterChange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        setPosterFile(file);
+        setPosterPreview(URL.createObjectURL(file));
+    };
+
+    const handleSubmit = async () => {
+        setIsSubmitting(true);
+        
+        let combinedDate = new Date();
+        if (date && time) {
+            combinedDate = new Date(date + 'T' + time + ':00');
+        }
+
+        const eventData = {
+            id,
+            title,
+            description,
+            location,
+            date: combinedDate.toISOString(),
+            eventType,
+            tags,
+            ticketTiers: ticketTiers.map(t => ({
+                id: t.id,
+                name: t.name,
+                quantity: Number(t.quantity),
+                price: Number(t.price)
+            }))
+        };
+
+        try {
+            const response = await fetch('/api/events/' + id, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(eventData)
+            });
+
+            if (response.ok) {
+                if (posterFile) {
+                    const form = new FormData();
+                    form.append('file', posterFile);
+                    await fetch(`/api/events/${id}/poster`, { method: 'POST', body: form });
+                }
+                navigate('/');
+            } else {
+                console.error("Failed to update event:", await response.text());
+                alert("Failed to update event");
+            }
+        } catch (error) {
+            console.error("Error submitting form:", error);
+            alert("Error updating event");
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const handleDelete = async () => {
+        setIsDeleting(true);
+        try {
+            const response = await fetch('/api/events/' + id, {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                navigate('/');
+            } else {
+                console.error("Failed to delete event:", await response.text());
+                alert("Failed to delete event");
+            }
+        } catch (error) {
+            console.error("Error deleting event:", error);
+            alert("Error deleting event");
+        } finally {
+            setIsDeleting(false);
+            setShowDeleteModal(false);
+        }
+    };
+
+    if (isLoading) {
+        return <div className="page-loading">Loading event details...</div>;
+    }
+
+    return (
+        <>
+            {showDeleteModal && (
+                <>
+                    <div id="transparent_panel" onClick={() => setShowDeleteModal(false)}></div>
+                    <div id="delete_confirmation_window" className="align_column">
+                        <span id="window_name">Delete Event?</span>
+                        <hr />
+                        <span id="window_info">Are you sure you want to delete {title}?</span>
+                        <span id="window_small_info">This action cannot be undone. All event data will be lost.</span>
+                        <div id="delete_controls" className="align_row">
+                            <button onClick={() => setShowDeleteModal(false)}>Cancel</button>
+                            <button onClick={handleDelete} disabled={isDeleting}>{isDeleting ? 'Deleting...' : 'Delete'}</button>
+                        </div>
+                    </div>
+                </>
+            )}
+
+            <div className="align_column">
+                <div id="staff_main_row_part">
+                    <span id="staff_page_name">Edit Event</span>
+                </div>
+                <div id="staff_main_row_part">
+                    <div id="staff_main_column_part" className="align_column edit-event-main-column-left">
+                        <div id="staff_info_card" className="align_column">
+                            <div id="staff_info_card_name">
+                                <span>Event Details</span>
+                            </div>
+                            <hr/>
+                            <div id="staff_event_card_input" className="align_column">
+                                <label htmlFor="staff_event_name">Event Name</label>
+                                <input id="staff_event_name" type="text" placeholder="Event Name" value={title} onChange={(e) => setTitle(e.target.value)} />
+                            </div>
+                            <div id="staff_info_card_input_group">
+                                <div id="staff_event_card_input" className="align_column">
+                                    <label htmlFor="staff_event_date">Date</label>
+                                    <input id="staff_event_date" type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+                                </div>
+                                <div id="staff_event_card_input" className="align_column">
+                                    <label htmlFor="staff_event_time">Time</label>
+                                    <input id="staff_event_time" type="time" value={time} onChange={(e) => setTime(e.target.value)} />
+                                </div>
+                            </div>
+                            <div id="staff_event_card_input" className="align_column">
+                                <label htmlFor="staff_event_location">Location</label>
+                                <input id="staff_event_location" type="text" placeholder="Event Location" value={location} onChange={(e) => setLocation(e.target.value)} />
+                            </div>
+                            <div id="staff_event_card_input" className="align_column">
+                                <label htmlFor="staff_event_description">Description</label>
+                                <textarea id="staff_event_description" placeholder="Event Description" value={description} onChange={(e) => setDescription(e.target.value)}></textarea>
+                            </div>
+                        </div>
+
+                        <div id="staff_info_card" className="align_column edit-event-info-card-scrollable">
+                            <div id="staff_info_card_name">
+                                <span>Ticket Tiers</span>
+                                <button onClick={handleAddTier}>+ Add Tier</button>
+                            </div>
+                            <div id="staff_event_ticket_tier_list" className="align_column edit-event-tier-list">
+                                {ticketTiers.map((tier, index) => (
+                                    <div id="staff_event_ticket_tier" className="align_column" key={index}>
+                                        <div id="staff_event_card_input" className="align_column">
+                                            <label htmlFor={'staff_ticket_tier_name_' + index}>Tier Name</label>
+                                            <input id={'staff_ticket_tier_name_' + index} type="text" placeholder="Tier Name" value={tier.name} onChange={(e) => handleTierChange(index, 'name', e.target.value)} />
+                                        </div>
+                                        <div id="staff_info_card_input_group">
+                                            <div id="staff_event_card_input" className="align_column">
+                                                <label htmlFor={'staff_ticket_tier_quantity_' + index}>Quantity</label>
+                                                <input id={'staff_ticket_tier_quantity_' + index} type="number" value={tier.quantity} onChange={(e) => handleTierChange(index, 'quantity', e.target.value)} />
+                                            </div>
+                                            <div id="staff_event_card_input" className="align_column">
+                                                <label htmlFor={'staff_ticket_tier_price_' + index}>Price</label>
+                                                <input id={'staff_ticket_tier_price_' + index} type="number" value={tier.price} onChange={(e) => handleTierChange(index, 'price', e.target.value)} />
+                                            </div>
+                                        </div>
+                                        <button id="staff_event_ticket_tier_delete_button" onClick={() => {
+                                            const newTiers = [...ticketTiers];
+                                            newTiers.splice(index, 1);
+                                            setTicketTiers(newTiers);
+                                        }}>Delete</button>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="staff_main_column_part" className="align_column edit-event-main-column-right">
+                        <div id="staff_info_card" className="align_column">
+                            <div id="staff_info_card_name">
+                                <span>Event Poster</span>
+                            </div>
+                            <div id="staff_choosen_event_poster">
+                                {posterPreview ? (
+                                    <img
+                                        src={posterPreview}
+                                        alt="Poster preview"
+                                        className="edit-event-poster-img"
+                                    />
+                                ) : hasPoster ? (
+                                    <img
+                                        src={`/api/events/${id}/poster`}
+                                        alt="Event poster"
+                                        className="edit-event-poster-img"
+                                        onError={() => setHasPoster(false)}
+                                    />
+                                ) : (
+                                    'Upload Event Poster'
+                                )}
+                            </div>
+                            <label id="staff_event_poster_button" htmlFor="staff_event_poster_file">
+                                {hasPoster || posterFile ? 'Change Poster' : 'Choose File'}
+                            </label>
+                            <input
+                                type="file"
+                                id="staff_event_poster_file"
+                                accept="image/jpeg,image/png,image/webp"
+                                className="edit-event-poster-file-input"
+                                onChange={handlePosterChange}
+                            />
+                        </div>
+                        <div id="staff_info_card" className="align_column">
+                            <div id="staff_info_card_name">
+                                <span>Event Type</span>
+                            </div>
+                            <hr/>
+                            <div id="staff_event_info_list" className="align_row edit-event-type-tags-container">
+                                {['Concert', 'Festival', 'Conference', 'Exhibition', 'Sports'].map(type => (
+                                    <button 
+                                        key={type}
+                                        id="staff_event_info_button"
+                                        className={eventType === type ? 'option_selected' : ''}
+                                        onClick={() => setEventType(type)}
+                                    >
+                                        {type}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                        <div id="staff_info_card" className="align_column">
+                            <div id="staff_info_card_name">
+                                <span>Tags</span>
+                            </div>
+                            <hr/>
+                            <div id="staff_event_info_list" className="align_row edit-event-type-tags-container">
+                                {['Online', 'Outdoor', 'Indoor', 'Family'].map(tag => (
+                                    <button 
+                                        key={tag}
+                                        id="staff_event_info_button"
+                                        className={tags.includes(tag) ? 'option_selected' : ''}
+                                        onClick={() => toggleTag(tag)}
+                                    >
+                                        {tag}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                        <button id="staff_event_controls" className="staff_event_delete edit-event-delete-button" onClick={() => setShowDeleteModal(true)}>Delete</button>
+                        <button id="staff_event_controls" onClick={() => navigate('/')}>Cancel</button>
+                        <button id="staff_event_controls" onClick={handleSubmit} disabled={isSubmitting}>{isSubmitting ? 'Saving...' : 'Save Changes'}</button>
+                    </div>
+                </div>
+            </div>
+        </>
+    );
+}
+
+export default EditEvent;

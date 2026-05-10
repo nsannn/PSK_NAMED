@@ -12,5 +12,6 @@ namespace Api.Dtos.Event
         public DateTime Date { get; set; }
         public List<TicketDto> Tickets { get; set; } = new();
         public List<TagDto> Tags { get; set; } = new();
+        public bool HasPoster { get; set; }
     }
 }

@@ -10,6 +10,8 @@ namespace Api.Dtos.Event
         public int TicketsSold { get; set; }
         public int TicketsTotal { get; set; }
         public string Revenue { get; set; } = string.Empty;
+        public decimal RevenueAmount { get; set; }
         public decimal Price { get; set; }
+        public bool HasPoster { get; set; }
     }
 }
