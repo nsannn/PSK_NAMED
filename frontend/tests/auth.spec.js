@@ -13,7 +13,7 @@ for (const role of rolesToTest) {
     const lastName = 'User';
 
     // 1. Open webpage
-    await page.goto('http://localhost:3002/');
+    await page.goto('http://localhost:3000/');
 
     // 2. Click register
     await page.click('button:has-text("Register")');
