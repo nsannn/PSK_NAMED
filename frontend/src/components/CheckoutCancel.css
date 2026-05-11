@@ -1,0 +1,43 @@
+/* Cancel-specific overrides (shares .checkout-result & .result-card from CheckoutSuccess.css) */
+
+.cancel-card__icon-wrap {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 1.25rem;
+}
+
+.cancel-card__icon {
+  width: 64px;
+  height: 64px;
+}
+
+.cancel-card__circle {
+  stroke: var(--text-2);
+  stroke-width: 2;
+  stroke-dasharray: 157;
+  stroke-dashoffset: 157;
+  animation: checkCircle 0.6s 0.15s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+}
+
+.cancel-card__x1,
+.cancel-card__x2 {
+  stroke: var(--text-2);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-dasharray: 26;
+  stroke-dashoffset: 26;
+}
+
+.cancel-card__x1 {
+  animation: checkPath 0.3s 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+}
+
+.cancel-card__x2 {
+  animation: checkPath 0.3s 0.75s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+}
+
+.cancel-card__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
