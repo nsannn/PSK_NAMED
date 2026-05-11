@@ -10,6 +10,7 @@ import EventDashboard from './EventDashboard';
 import CheckoutPage from './components/CheckoutPage';
 import CheckoutSuccess from './components/CheckoutSuccess';
 import CheckoutCancel from './components/CheckoutCancel';
+import EventPage from './components/EventPage';
 import './App.css';
 
 function App() {

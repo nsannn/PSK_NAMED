@@ -31,7 +31,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 );
 
 // JWT Authentication
-var jwtSecret = builder.Configuration["JWT_SECRET"] ?? "ThisIsAFallbackDevSecretKey";
+var jwtSecret = builder.Configuration["JWT_SECRET"] ?? "ThisIsAFallbackDevSecretKeyThatIsLongEnough!!";
 var key = Encoding.UTF8.GetBytes(jwtSecret);
 
 builder.Services.AddAuthentication(options =>
