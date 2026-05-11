@@ -44,3 +44,30 @@
    dotnet tool install --global dotnet-ef # if you don't have the EF Core tools installed
    dotnet ef database update
    ```
+
+
+# .env files:
+
+## frontend:
+
+VITE_STRIPE_PUBLISHABLE_KEY=
+
+## backend:
+
+DB_HOST=localhost  
+DB_PORT=5432  
+DB_NAME=Named  
+DB_USER=postgres  
+DB_PASSWORD=postgres  
+JWT_SECRET=  
+
+SMTP_HOST=  
+SMTP_PORT=  
+SMTP_USER=  
+SMTP_PASS=  
+
+STRIPE_WEBHOOK_SECRET=  
+STRIPE_SECRET_KEY=  
+
+> To get STRIPE_WEBHOOK_SECRET (add secret once and then dotnet run will start this automatically via StripeListenService)
+> stripe listen --forward-to http://localhost:5134/api/checkout/webhook

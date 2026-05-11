@@ -209,6 +209,9 @@ function EventDetails() {
 
                         {/* Action buttons */}
                         <div id="staff_event_detail_controls">
+                            <button onClick={() => navigate(`/event/${event.id}`)} style={{ backgroundColor: '#2ba84a', color: '#fff' }}>
+                                View as Customer (Test)
+                            </button>
                             <button onClick={() => navigate('/edit-event/' + event.id)}>Edit</button>
                             <button onClick={() => navigate('/event-statistics/' + event.id)}>Report</button>
                             <button>Export Attendees</button>

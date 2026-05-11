@@ -4,9 +4,14 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using DotNetEnv;
+using Stripe;
+using Api.Services;
 
 // Load .env file before building the app
 Env.Load();
+
+// Configure Stripe SDK with secret key from .env
+StripeConfiguration.ApiKey = Environment.GetEnvironmentVariable("STRIPE_SECRET_KEY");
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -58,6 +63,13 @@ builder.Services.AddAuthentication(options =>
 
 // Add services to the container.
 builder.Services.AddControllers();
+builder.Services.AddScoped<IEmailService, EmailService>();
+
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddHostedService<StripeListenService>();
+}
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -67,7 +79,8 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend",
         p => p.WithOrigins("http://localhost:3000", "https://localhost:3000", "http://localhost:5173")
             .AllowAnyHeader()
-            .AllowAnyMethod());
+            .AllowAnyMethod()
+            .AllowCredentials());
 });
 
 var app = builder.Build();
