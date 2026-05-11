@@ -1,29 +1,44 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './CheckoutPage.css';
 
-
-// TEMP hardcoded event ID
-const TEMP_EVENT_ID = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890';
-
-// TEMP: Static display data — later, fetch from /api/events/:id
-const TEMP_EVENT = {
-  name: 'Named Summer Festival 2026',
-  description:
-    'The biggest summer event in the Baltics — live music, food trucks, art installations and more. Join us for an unforgettable weekend!',
-  date: 'July 15, 2026 · 6:00 PM',
-  location: 'Vingis Park, Vilnius, Lithuania',
-  price: 25.0,
-  currency: '€',
-};
-
 export default function CheckoutPage() {
   const { user } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const totalPrice = (TEMP_EVENT.price * quantity).toFixed(2);
+  // Use event passed from navigation state
+  const passedEvent = location.state?.event;
+  
+  // If no event is passed, redirect back to home soon
+  useEffect(() => {
+    if (!passedEvent) {
+      navigate('/');
+    }
+  }, [passedEvent, navigate]);
+
+  if (!passedEvent) {
+    return null; // Will redirect via useEffect
+  }
+
+  const targetEvent = {
+    id: passedEvent.id,
+    name: passedEvent.title,
+    description: passedEvent.description,
+    date: new Date(passedEvent.date).toLocaleString('en-GB', {
+      day: '2-digit', month: 'short', year: 'numeric',
+      hour: '2-digit', minute: '2-digit'
+    }),
+    location: passedEvent.location,
+    price: passedEvent.tickets?.length > 0 ? passedEvent.tickets[0].price : 0,
+    currency: '€',
+  };
+
+  const totalPrice = (targetEvent.price * quantity).toFixed(2);
 
   async function handleCheckout() {
     setError('');
@@ -35,7 +50,7 @@ export default function CheckoutPage() {
         headers: { 'Content-Type': 'application/json' },
         credentials: 'same-origin',
         body: JSON.stringify({
-          eventId: TEMP_EVENT_ID,
+          eventId: targetEvent.id,
           quantity,
         }),
       });
@@ -80,20 +95,20 @@ export default function CheckoutPage() {
     <main className="checkout-page">
       <div className="checkout-card">
         {/* Event header */}
-        <h1 className="checkout-card__title">{TEMP_EVENT.name}</h1>
+        <h1 className="checkout-card__title">{targetEvent.name}</h1>
 
         <div className="checkout-card__meta">
           <span className="checkout-card__meta-item">
             <span className="checkout-card__meta-icon">📅</span>
-            {TEMP_EVENT.date}
+            {targetEvent.date}
           </span>
           <span className="checkout-card__meta-item">
             <span className="checkout-card__meta-icon">📍</span>
-            {TEMP_EVENT.location}
+            {targetEvent.location}
           </span>
         </div>
 
-        <p className="checkout-card__desc">{TEMP_EVENT.description}</p>
+        <p className="checkout-card__desc">{targetEvent.description}</p>
 
         <div className="checkout-card__divider" />
 
@@ -128,7 +143,7 @@ export default function CheckoutPage() {
         <div className="checkout-card__row">
           <span className="checkout-card__label">Price per ticket</span>
           <span className="checkout-card__value">
-            {TEMP_EVENT.currency}{TEMP_EVENT.price.toFixed(2)}
+            {targetEvent.currency}{targetEvent.price.toFixed(2)}
           </span>
         </div>
 
@@ -137,7 +152,7 @@ export default function CheckoutPage() {
             Total
           </span>
           <span className="checkout-card__value checkout-card__value--total">
-            {TEMP_EVENT.currency}{totalPrice}
+            {targetEvent.currency}{totalPrice}
           </span>
         </div>
 
@@ -152,7 +167,7 @@ export default function CheckoutPage() {
           {loading ? (
             <span className="checkout-card__spinner" />
           ) : (
-            <>Proceed to Checkout — {TEMP_EVENT.currency}{totalPrice}</>
+            <>Proceed to Checkout — {targetEvent.currency}{totalPrice}</>
           )}
         </button>
 

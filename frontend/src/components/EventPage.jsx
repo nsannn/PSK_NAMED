@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import './EventPage.css';
 
 export default function EventPage() {
     const { id } = useParams();
+    const navigate = useNavigate();
 
     const [event, setEvent] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -212,7 +213,10 @@ export default function EventPage() {
                     </div>
 
                     {/* BUTTON */}
-                    <button className="checkout-button">
+                    <button 
+                        className="checkout-button"
+                        onClick={() => navigate('/checkout', { state: { event } })}
+                    >
                         Proceed To Checkout
                     </button>
 

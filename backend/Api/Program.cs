@@ -64,6 +64,12 @@ builder.Services.AddAuthentication(options =>
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddScoped<IEmailService, EmailService>();
+
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddHostedService<StripeListenService>();
+}
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

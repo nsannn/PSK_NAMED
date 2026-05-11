@@ -171,12 +171,23 @@ namespace Api.Controllers
 
                         if (session.Metadata.TryGetValue("eventId", out var eid) && Guid.TryParse(eid, out var eventId))
                         {
-                            var ev = await _db.Events.FindAsync(eventId);
+                            var ev = await _db.Events
+                                .Include(e => e.Tickets)
+                                .FirstOrDefaultAsync(e => e.Id == eventId);
+
                             if (ev != null)
                             {
                                 eventName = ev.Title;
                                 eventDate = ev.Date.ToString("MMMM d, yyyy");
                                 eventLocation = ev.Location;
+
+                                // Deduct ticket quantity
+                                var availableTicketTier = ev.Tickets.FirstOrDefault(t => t.Quantity - t.Sold >= quantity);
+                                if (availableTicketTier != null)
+                                {
+                                    availableTicketTier.Sold += quantity;
+                                    await _db.SaveChangesAsync();
+                                }
                             }
                         }
 

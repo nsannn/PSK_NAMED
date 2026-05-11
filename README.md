@@ -69,5 +69,5 @@ SMTP_PASS=
 STRIPE_WEBHOOK_SECRET=  
 STRIPE_SECRET_KEY=  
 
-> To get STRIPE_WEBHOOK_SECRET :
+> To get STRIPE_WEBHOOK_SECRET (add secret once and then dotnet run will start this automatically via StripeListenService)
 > stripe listen --forward-to http://localhost:5134/api/checkout/webhook
