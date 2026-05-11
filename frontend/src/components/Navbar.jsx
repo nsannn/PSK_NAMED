@@ -1,108 +1,68 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useNavigate, useLocation } from 'react-router-dom';
 import AuthModal from './AuthModal';
-import UserMenu from './UserMenu';
-import './Navbar.css';
+import '../main.css';
 
 export default function Navbar() {
-  const { user } = useAuth();
-  const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const [modalMode, setModalMode] = useState(null); // 'login' | 'register' | null
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   function openLogin() {
     setModalMode('login');
-    setMobileOpen(false);
   }
 
   function openRegister() {
     setModalMode('register');
-    setMobileOpen(false);
   }
 
   return (
     <>
-      <nav className="navbar" id="navbar">
-        <div
-          className="navbar__logo"
-          id="site-logo"
-          onClick={() => navigate('/')}
-          style={{ cursor: 'pointer' }}
-        >
-          Named
+      <div id="transparent_panel" style={{ display: modalMode ? 'block' : 'none', opacity: modalMode ? 0.5 : 0 }} onClick={() => setModalMode(null)}></div>
+      <div id="top_bar">
+        <div id="site_logo">Named</div>
+
+        <div id="nav_group">
+          <button
+              className={location.pathname === '/' ? 'option_selected' : ''}
+              onClick={() => navigate('/')}
+          >
+              My Events
+          </button>
+          <button
+              className={location.pathname === '/dashboard' ? 'option_selected' : ''}
+              onClick={() => navigate('/dashboard')}
+          >
+              Dashboard
+          </button>
+          <button>Partners</button>
+          <button>Contacts</button>
         </div>
 
-        <div className="navbar__links" id="nav-links">
-          <button className="navbar__link">Events</button>
-          <button className="navbar__link">Partners</button>
-          <button className="navbar__link">Contacts</button>
+        <div id="notification_container">
+            <button id="notification_button">🔔</button>
         </div>
 
-        <div className="navbar__actions" id="nav-actions">
+        <div id="account_group">
           {user ? (
             <>
-              {/* TEMP: Remove this button when event-page checkout navigation is ready */}
-              <button
-                className="btn btn--outline navbar__tickets-btn"
-                id="btn-buy-tickets"
-                onClick={() => navigate('/checkout')}
-              >
-                Buy Tickets
-              </button>
-              <UserMenu />
+              <button id="user_account_button" onClick={() => navigate('/checkout')}>Buy Tickets</button>
+              <button id="user_account_button" onClick={logout}>[{user.firstName || 'Username'}]</button>
             </>
           ) : (
             <>
-              <button className="btn btn--accent" id="btn-signin" onClick={openLogin}>
-                Sign In
-              </button>
-              <button className="btn btn--outline" id="btn-register" onClick={openRegister}>
-                Register
-              </button>
+                <button id="user_account_button" onClick={openLogin}>Sign In</button>
+                <button id="user_account_button" onClick={openRegister}>Register</button>
             </>
           )}
         </div>
 
-        <button
-          className="navbar__hamburger"
-          id="btn-hamburger"
-          onClick={() => setMobileOpen(!mobileOpen)}
-          aria-label="Toggle menu"
-        >
-          <span>{mobileOpen ? '✕' : '☰'}</span>
+        <button id="menu_button">
+          <span>☰</span>
         </button>
-      </nav>
-
-      {/* Mobile sidebar */}
-      <div className={`mobile-overlay ${mobileOpen ? 'mobile-overlay--visible' : ''}`}
-        onClick={() => setMobileOpen(false)} />
-      <aside className={`mobile-sidebar ${mobileOpen ? 'mobile-sidebar--open' : ''}`} id="mobile-sidebar">
-        <div className="mobile-sidebar__links">
-          <button className="mobile-sidebar__link">Events</button>
-          <button className="mobile-sidebar__link">Partners</button>
-          <button className="mobile-sidebar__link">Contacts</button>
-        </div>
-        <div className="mobile-sidebar__actions">
-          {user ? (
-            <>
-              {/* TEMP: Remove this button when event-page checkout navigation is ready */}
-              <button
-                className="btn btn--outline btn--full"
-                onClick={() => { navigate('/checkout'); setMobileOpen(false); }}
-              >
-                Buy Tickets
-              </button>
-              <UserMenu />
-            </>
-          ) : (
-            <>
-              <button className="btn btn--accent btn--full" onClick={openLogin}>Sign In</button>
-              <button className="btn btn--outline btn--full" onClick={openRegister}>Register</button>
-            </>
-          )}
-        </div>
-      </aside>
+      </div>
 
       {/* Auth modal */}
       {modalMode && (
@@ -115,4 +75,3 @@ export default function Navbar() {
     </>
   );
 }
-

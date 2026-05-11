@@ -41,13 +41,23 @@ namespace Api.Controllers
             if (req.Quantity < 1 || req.Quantity > 10)
                 return BadRequest(new { message = "Quantity must be between 1 and 10." });
 
-            // TEMP: queries the fictional Event table 
-            var ev = await _db.Events.FirstOrDefaultAsync(e => e.Id == req.EventId);
+            var ev = await _db.Events
+                .Include(e => e.Tickets)
+                .FirstOrDefaultAsync(e => e.Id == req.EventId);
             if (ev == null)
                 return NotFound(new { message = "Event not found." });
 
-            if (ev.AvailableTickets < req.Quantity)
+            var availableTickets = ev.Tickets.Sum(t => t.Quantity - t.Sold);
+            if (availableTickets < req.Quantity)
                 return BadRequest(new { message = "Not enough tickets available." });
+
+            var price = ev.Tickets
+                .OrderBy(t => t.Price)
+                .Select(t => t.Price)
+                .FirstOrDefault();
+
+            if (price <= 0)
+                return BadRequest(new { message = "Event has no purchasable tickets." });
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var userEmail = User.FindFirstValue(ClaimTypes.Email);
@@ -65,11 +75,11 @@ namespace Api.Controllers
                         {
                             PriceData = new SessionLineItemPriceDataOptions
                             {
-                                Currency = ev.Currency,
-                                UnitAmount = ev.PriceInCents,
+                                Currency = "eur",
+                                UnitAmount = (long)Math.Round(price * 100m, MidpointRounding.AwayFromZero),
                                 ProductData = new SessionLineItemPriceDataProductDataOptions
                                 {
-                                    Name = ev.Name,
+                                    Name = ev.Title,
                                     Description = $"{ev.Location} — {ev.Date:MMMM d, yyyy}",
                                 },
                             },
@@ -114,9 +124,8 @@ namespace Api.Controllers
                 var eventName = "Unknown Event";
                 if (session.Metadata.TryGetValue("eventId", out var eid) && Guid.TryParse(eid, out var eventId))
                 {
-                    // TEMP: queries fictional Event table
                     var ev = await _db.Events.FindAsync(eventId);
-                    if (ev != null) eventName = ev.Name;
+                    if (ev != null) eventName = ev.Title;
                 }
 
                 return Ok(new
@@ -165,7 +174,7 @@ namespace Api.Controllers
                             var ev = await _db.Events.FindAsync(eventId);
                             if (ev != null)
                             {
-                                eventName = ev.Name;
+                                eventName = ev.Title;
                                 eventDate = ev.Date.ToString("MMMM d, yyyy");
                                 eventLocation = ev.Location;
                             }

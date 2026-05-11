@@ -1,0 +1,43 @@
+/* EditEvent Page Styles */
+
+.page-loading {
+    color: white;
+    padding: 2rem;
+}
+
+
+.edit-event-main-column-left {
+    width: 70%;
+}
+
+.edit-event-main-column-right {
+    width: 28%;
+}
+
+.edit-event-info-card-scrollable {
+    max-height: 30rem;
+}
+
+.edit-event-tier-list {
+    overflow-y: auto;
+}
+
+.edit-event-type-tags-container {
+    flex-wrap: wrap;
+}
+
+.edit-event-poster-file-input {
+    display: none;
+}
+
+.edit-event-poster-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 1rem;
+}
+
+.edit-event-delete-button {
+    background-color: #d32f2f;
+    color: white;
+}
