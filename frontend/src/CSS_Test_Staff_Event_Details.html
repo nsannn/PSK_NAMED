@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>CSS Testing</title>
+        <link rel="stylesheet" href="main.css">
+        <script src="CSS_Test_Scripts.js" defer></script>
+    </head>
+    <body>
+        <div id="transparent_panel" onclick="closeEverything()"></div>
+        <div id="mobile_sidebar">
+            <button id="close_button" onclick="closeMobileSidebar()">
+                <span>X</span>
+            </button>
+            <div id="nav_group">
+                <button>My Events</button>
+                <button>Partners</button>
+                <button>Contacts</button>
+            </div>
+            <div id="account_group">
+                <button>Settings</button>
+                <button>Log Out</button>
+            </div>
+        </div>
+        <div id="delete_confirmation_window" class="align_column">
+            <span id="window_name">Cancel Event?</span>
+            <hr>
+            <span id="window_info">Are you sure you want to cancel [Event Name]?</span>
+            <span id="window_small_info">This action cannot be undone.</span>
+            <div id="delete_controls" class="align_row">
+                <button onclick="closeDeleteWindow()">Cancel</button>
+                <button>Confirm</button>
+            </div>
+        </div>
+        <div id="top_bar">
+            <div id="site_logo">Logo</div>
+            <div id="nav_group">
+                <button>My Events</button>
+                <button>Partners</button>
+                <button>Contacts</button>
+            </div>
+            <div id="notification_container">
+                <button id="notification_button" onclick="openNotificationWindow(event)">🔔</button>
+                <div id="notification_window" class="align_column">
+                    <div id="user_notification" class="align_column">
+                        <span>Just a reminder that [Event Name] is on [Date]</span>
+                        <span>We're looking forward to seeing you - have your QR code ready</span>
+                    </div>
+                </div>
+            </div>
+            <div id="account_group">
+                <button id="user_account_button" onclick="openAccountWindow(event)">[Username]</button>
+                <div id="account_window" class="align_column">
+                    <button>Bought Tickets</button>
+                    <button>Settings</button>
+                    <button>Log Out</button>
+                </div>
+            </div>
+            <button id="menu_button" onclick="openMobileSidebar()">
+                <span>☰</span>
+            </button>
+        </div>
+        <div class="align_column">
+            <div id="staff_main_row_part">
+                <span id="staff_page_name">Event Details</span>
+            </div>
+            <div id="staff_main_row_part">
+                <div id="staff_main_column_part" class="align_column" style="width:70%;">
+                    <div id="staff_info_card" class="align_column">
+                        <div id="staff_info_card_name">
+                            <span>[Event Name]</span>
+                        </div>
+                        <hr/>
+                        <div id="staff_info_card_input_group" class="change_align">
+                            <div id="staff_event_card_input" class="align_column">
+                                <label>Date</label>
+                                <span id="staff_event_date">[Event Date]</span>
+                            </div>
+                            <div id="staff_event_card_input" class="align_column">
+                                <label>Location</label>
+                                <span id="staff_event_time">[Event Location]</span>
+                            </div>
+                        </div>
+                        <div id="staff_event_card_input" class="align_column">
+                            <label for="staff_event_description">Description</label>
+                            <textarea id="staff_event_description" placeholder="Event Description" style="cursor:default;" readonly>[Event Description]</textarea>
+                        </div>
+                    </div>
+                    <div id="staff_main_row_part" style="width:100%;">
+                        <div id="staff_main_column_part" class="staff_event_statistics align_column">
+                            <div id="staff_info_card" class="align_column">
+                                <div id="staff_info_card_name">
+                                    <span>Ticket Sales</span>
+                                </div>
+                                <hr/>
+                                <div id="event_selling_info" class="align_row">
+                                    <span>Tickets Sold</span>
+                                    <span>120</span>
+                                </div>
+                                <div id="event_selling_info" class="align_row">
+                                    <span>Total Capacity</span>
+                                    <span>300</span>
+                                </div>
+                                <div id="event_sold_tickets_container">
+                                    <div id="event_sold_tickets" style="width:50%;"></div>
+                                </div>
+                                <div id="event_selling_info" class="align_row">
+                                    <span>Progress</span>
+                                    <span>40.0%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="staff_main_column_part" class="staff_event_statistics align_column">
+                            <div id="staff_info_card" class="align_column">
+                                <div id="staff_info_card_name">
+                                    <span>Revenue</span>
+                                </div>
+                                <hr/>
+                                <div id="event_selling_info" class="align_row">
+                                    <span>Ticket Price</span>
+                                    <span>€20</span>
+                                </div>
+                                <div id="event_selling_info" class="align_row">
+                                    <span>Average per Ticket</span>
+                                    <span>€20</span>
+                                </div>
+                                <div id="event_selling_info" class="align_row">
+                                    <span>Total Revenue</span>
+                                    <span>€2,400</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="staff_info_card" class="align_column" style="max-height:30rem;">
+                        <div id="staff_info_card_name">
+                            <span>Ticket Tiers</span>
+                        </div>
+                        <div id="staff_event_ticket_tier_list" class="align_column">
+                            <div id="staff_event_ticket_tier" class="align_column">
+                                <div id="staff_event_card_input" class="align_column">
+                                    <label>Tier Name</label>
+                                    <span id="staff_ticket_tier_name">[Tier Name]</span>
+                                </div>
+                                <div id="staff_info_card_input_group">
+                                    <div id="staff_event_card_input" class="align_column">
+                                        <label>Quantity</label>
+                                        <span id="staff_ticket_tier_quantity">[Quantity]</span>
+                                    </div>
+                                    <div id="staff_event_card_input" class="align_column">
+                                        <label>Price</label>
+                                        <span id="staff_ticket_tier_price">[Price]</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="staff_event_detail_controls">
+                        <button>Edit</button>
+                        <button>Report</button>
+                        <button>Export Attendees</button>
+                        <button onclick="openDeleteWindow()">Cancel</button>
+                    </div>
+                </div>
+                <div id="staff_main_column_part" class="align_column" style="width:28%;">
+                    <div id="staff_info_card" class="align_column">
+                        <div id="staff_info_card_name">
+                            <span>Event Poster</span>
+                        </div>
+                        <div id="staff_choosen_event_poster">
+                            [Event Poster]
+                        </div>
+                    </div>
+                    <div id="staff_info_card" class="align_column">
+                        <div id="staff_info_card_name">
+                            <span>Event Type</span>
+                        </div>
+                        <hr/>
+                        <div id="staff_event_info_list" class="align_row">
+                            <span id="staff_event_info_button">[Type]</span>
+                        </div>
+                    </div>
+                    <div id="staff_info_card" class="align_column">
+                        <div id="staff_info_card_name">
+                            <span>Tags</span>
+                        </div>
+                        <hr>
+                        <div id="staff_event_info_list" class="align_row">
+                            <span id="staff_event_info_button">[Tag]</span>
+                        </div>
+                    </div>
+                    <div id="staff_info_card" class="align_column">
+                        <div id="staff_info_card_name">
+                            <span>Statistics</span>
+                        </div>
+                        <hr>
+                        <div id="event_selling_info" class="align_row">
+                            <span>Available Tickets</span>
+                            <span>180</span>
+                        </div>
+                        <div id="event_selling_info" class="align_row">
+                            <span>Potential Revenue</span>
+                            <span>€6,000</span>
+                        </div>
+                        <div id="event_selling_info" class="align_row">
+                            <span>Revenue Left</span>
+                            <span>€3,600</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

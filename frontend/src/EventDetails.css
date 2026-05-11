@@ -1,0 +1,43 @@
+.page-loading {
+    color: white;
+    padding: 2rem;
+}
+
+.details-col-left {
+    width: 70%;
+}
+
+.details-col-right {
+    width: 28%;
+}
+
+.details-full-row {
+    width: 100% !important;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.details-ticket-tiers-card {
+    max-height: 30rem;
+}
+
+.details-textarea-readonly {
+    cursor: default;
+}
+
+.details-no-items {
+    margin: 0.5rem auto;
+    opacity: 0.6;
+}
+
+.poster-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 1rem;
+}
+
+.tag-empty {
+    margin: 0.3rem auto 0.5rem;
+    opacity: 0.6;
+}

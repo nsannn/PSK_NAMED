@@ -1,15 +1,32 @@
-import { useState, useEffect } from 'react'
+﻿import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import Navbar from './components/Navbar';
+import MyEventsList from './MyEventsList';
+import CreateEvent from './CreateEvent';
+import EditEvent from './EditEvent';
+import EventDetails from './EventDetails';
+import EventStatistics from './EventStatistics';
+import EventDashboard from './EventDashboard';
 import EventPage from './components/EventPage';
+import './App.css';
 
 function App() {
-  // const eventId = "00000000-0000-0000-0000-000000000000";
-  const eventId = "98886874-f180-4948-af89-ea624fd5515f";
-
   return (
-    <div>
-      <EventPage eventId={eventId} />
-    </div>
+    <AuthProvider>
+      <Router>
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<MyEventsList />} />
+          <Route path="/create-event" element={<CreateEvent />} />
+          <Route path="/edit-event/:id" element={<EditEvent />} />
+          <Route path="/event-details/:id" element={<EventDetails />} />
+          <Route path="/event/:id" element={<EventPage />} />
+          <Route path="/event-statistics/:id" element={<EventStatistics />} />
+          <Route path="/dashboard" element={<EventDashboard />} />
+        </Routes>
+      </Router>
+    </AuthProvider>
   );
 }
 
-export default App
+export default App;

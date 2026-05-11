@@ -3,6 +3,11 @@ let closeBtn=document.getElementById('close_button');
 let mobileSidebar=document.getElementById('mobile_sidebar');
 let registerWindow=document.getElementById('register_window');
 let signInWindow=document.getElementById('sign_in_window');
+let deleteWindow=document.getElementById('delete_confirmation_window');
+let notificationContainer=document.getElementById('notification_container');
+let notificationWindow=document.getElementById('notification_window');
+let accountGroup=document.getElementById('account_group');
+let accountWindow=document.getElementById('account_window');
 let transparentPanel=document.getElementById('transparent_panel');
 let filterMenu=document.getElementById('filters_menu');
 let sortContainer=document.getElementById('sort_container');
@@ -106,7 +111,98 @@ function closeSignInWindow(){
     },100);
 }
 
+function openNotificationWindow(event){
+    if(sortMenu)
+        closeSortMenu();
+    if(accountWindow)
+        closeAccountWindow();
+
+    event.stopPropagation();
+
+    if(notificationWindow.style.display==='block'){
+        notificationWindow.style.opacity='0';
+        notificationWindow.style.margin='2rem auto auto auto';
+        setTimeout(()=>{
+            notificationWindow.style.display='none';
+        },100);
+    } else {
+        notificationWindow.style.display='block';
+        setTimeout(()=>{
+            notificationWindow.style.opacity='1';
+            notificationWindow.style.margin='0.5rem auto auto auto';
+        },100);
+    }
+}
+
+function closeNotificationWindow(){
+    notificationWindow.style.opacity='0';
+    notificationWindow.style.margin='1.5rem auto auto auto';
+    setTimeout(()=>{
+        notificationWindow.style.display='none';
+    },100);
+}
+
+function openAccountWindow(event){
+    if(sortMenu)
+        closeSortMenu();
+    if(notificationWindow)
+        closeNotificationWindow();
+
+    event.stopPropagation();
+
+    if(accountWindow.style.display==='flex'){
+        accountWindow.style.opacity='0';
+        accountWindow.style.margin='2rem auto auto auto';
+        setTimeout(()=>{
+            accountWindow.style.display='none';
+        },100);
+    } else {
+        accountWindow.style.display='flex';
+        setTimeout(()=>{
+            accountWindow.style.opacity='1';
+            accountWindow.style.margin='0.5rem auto auto auto';
+        },100);
+    }
+}
+
+function closeAccountWindow(){
+    accountWindow.style.opacity='0';
+    accountWindow.style.margin='1.5rem auto auto auto';
+    setTimeout(()=>{
+        accountWindow.style.display='none';
+    },100);
+}
+
+function openDeleteWindow(){
+    deleteWindow.style.display='flex';
+    setTimeout(()=>{
+        deleteWindow.style.opacity='1';
+        deleteWindow.style.top='6rem';
+    },100);
+    transparentPanel.style.display='block';
+    setTimeout(()=>{
+        transparentPanel.style.opacity='0.8';
+    },100);
+}
+
+function closeDeleteWindow(){
+    deleteWindow.style.opacity='0';
+    deleteWindow.style.top='15rem';
+    setTimeout(()=>{
+        deleteWindow.style.display='none';
+    },100);
+    transparentPanel.style.opacity='0';
+    setTimeout(()=>{
+        transparentPanel.style.display='none';
+    },100);
+}
+
 function toggleSortMenu(){
+    if(notificationWindow)
+        closeNotificationWindow();
+    if(accountWindow)
+        closeAccountWindow();
+
     if(sortMenu.style.display==='block'){
         sortMenu.style.opacity='0';
         sortMenu.style.margin='2rem auto auto auto';
@@ -122,15 +218,13 @@ function toggleSortMenu(){
     }
 }
 
-document.addEventListener('click',(e)=>{
-    if(!sortContainer.contains(e.target)){
-        sortMenu.style.opacity='0';
-        sortMenu.style.margin='2rem auto auto auto';
-        setTimeout(()=>{
-            sortMenu.style.display='none';
-        },100);
-    }
-});
+function closeSortMenu(){
+    sortMenu.style.opacity='0';
+    sortMenu.style.margin='2rem auto auto auto';
+    setTimeout(()=>{
+        sortMenu.style.display='none';
+    },100);
+}
 
 function openFilterMenu(){
     filterMenu.style.left='0';
@@ -149,14 +243,32 @@ function closeFilterMenu(){
 }
 
 function closeEverything(){
-    if(mobileSidebar.style.right==='0px')
+    if(mobileSidebar && mobileSidebar.style.right==='0px')
         closeMobileSidebar();
 
-    if(registerWindow.style.display==='flex')
+    if(registerWindow && registerWindow.style.display==='flex')
         closeRegisterWindow();
 
-    if(signInWindow.style.display==='flex')
+    if(signInWindow && signInWindow.style.display==='flex')
         closeSignInWindow();
-    if(filterMenu.style.left==='0px')
+
+    if(deleteWindow && deleteWindow.style.display==='flex'){
+        console.log("Test")
+        closeDeleteWindow();
+    }
+
+    if(filterMenu && filterMenu.style.left==='0px')
         closeFilterMenu();
 }
+
+document.addEventListener('click',(e)=>{
+    if(sortContainer && !sortContainer.contains(e.target)){
+        closeSortMenu();
+    }
+    if(notificationContainer && !notificationContainer.contains(e.target)){
+        closeNotificationWindow();
+    }
+    if(accountGroup && !accountGroup.contains(e.target)){
+        closeAccountWindow();
+    }
+});

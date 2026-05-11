@@ -4,7 +4,6 @@ namespace Api.Models
     {
         public Guid Id { get; set; }
         public string Name { get; set; } = string.Empty;
-
-        public List<Event> Events { get; set; } = new();
+        public ICollection<Event> Events { get; set; } = new List<Event>();
     }
 }

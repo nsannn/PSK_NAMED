@@ -14,62 +14,48 @@
                 <span>X</span>
             </button>
             <div id="nav_group">
-                <button>Events</button>
+                <button>My Events</button>
                 <button>Partners</button>
                 <button>Contacts</button>
             </div>
             <div id="account_group">
-                <button onclick="openSignInWindowSidebar()">Sign In</button>
-                <button onclick="openRegisterWindowSidebar()">Register</button>
+                <button>Settings</button>
+                <button>Log Out</button>
             </div>
         </div>
-        <form id="register_window">
-            <span id="window_name">Create New Account</span>
-            <hr/>
-            <div id="register_full_name" class="align_row">
-                <input type="text" id="register_first_name" placeholder="First Name">
-                <input type="text" id="register_last_name" placeholder="Last Name">
-            </div>
-            <input type="text" id="register_email" placeholder="Email">
-            <input type="text" id="register_password" placeholder="Password">
-            <input type="text" id="register_confirm_password" placeholder="Confirm Password">
-            <div id="term_of_services_checkbox" class="align_row">
-                <input type="checkbox" id="term_of_services">
-                <label for="term_of_services">I agree to the Terms and Conditions</label>
-            </div>
-            <input type="submit" value="Register">
-            <hr/>
-            <span id="other_options_text">Or Use other Accounts</span>
-            <div id="other_options">
-                <button value="Google">Google</button>
-                <button value="Facebook">Facebook</button>
-            </div>
-        </form>
-        <div id="sign_in_window">
-            <span id="window_name">Sign In to Your Account</span>
-            <hr/>
-            <input type="text" id="sign_in_email" placeholder="Email">
-            <input type="text" id="sign_in_password" placeholder="Password">
-            <button id="forgot_password_button" class="text_button">Forgot Password?</button>
-            <input type="submit" value="Sign In">
-            <button id="sign_in_register_button" class="text_button">Don't have an account? Register</button>
-            <hr/>
-            <span id="other_options_text">Or Use other Accounts</span>
-            <div id="other_options">
-                <button value="Google">Google</button>
-                <button value="Facebook">Facebook</button>
+        <div id="delete_confirmation_window" class="align_column">
+            <span id="window_name">Cancel Event?</span>
+            <hr>
+            <span id="window_info">Are you sure you want to cancel [Event Name]?</span>
+            <span id="window_small_info">This action cannot be undone.</span>
+            <div id="delete_controls" class="align_row">
+                <button onclick="closeDeleteWindow()">Cancel</button>
+                <button>Confirm</button>
             </div>
         </div>
         <div id="top_bar">
             <div id="site_logo">Logo</div>
             <div id="nav_group">
-                <button>Events</button>
+                <button>My Events</button>
                 <button>Partners</button>
                 <button>Contacts</button>
             </div>
+            <div id="notification_container">
+                <button id="notification_button" onclick="openNotificationWindow(event)">🔔</button>
+                <div id="notification_window" class="align_column">
+                    <div id="user_notification" class="align_column">
+                        <span>Just a reminder that [Event Name] is on [Date]</span>
+                        <span>We're looking forward to seeing you - have your QR code ready</span>
+                    </div>
+                </div>
+            </div>
             <div id="account_group">
-                <button onclick="openSignInWindow()">Sign In</button>
-                <button onclick="openRegisterWindow()">Register</button>
+                <button id="user_account_button" onclick="openAccountWindow(event)">[Username]</button>
+                <div id="account_window" class="align_column">
+                    <button>Bought Tickets</button>
+                    <button>Settings</button>
+                    <button>Log Out</button>
+                </div>
             </div>
             <button id="menu_button" onclick="openMobileSidebar()">
                 <span>☰</span>
@@ -127,6 +113,7 @@
             <div id="event_list_main" class="align_column">
                 <div id="search_sort_menu" class="align_row">
                     <button id="filter_button_mobile" onclick="openFilterMenu()"></button>
+                    <button id="create_new_event_button">+ Create Event</button>
                     <form id="search_form">
                         <div id="search_wrapper" class="align_row">
                             <input type="text" id="search_input" placeholder="Search...">
@@ -148,6 +135,7 @@
                         </div>
                     </div>
                 </div>
+                <button id="create_new_event_button">+ Create Event</button>
                 <div id="event_list">
                     <div id="event_card">
                         <div id="event_card_poster">
@@ -158,6 +146,28 @@
                             <span id="event_date">📅: [Event Date]</span>
                             <span id="event_location">📍: [Event Location]</span>
                             <span id="event_description">[Event Description]</span>
+                            <div id="event_selling_info_container" class="align_column">
+                                <div id="event_selling_info" class="align_row">
+                                    <span>Tickets Sold</span>
+                                    <span>100/200</span>
+                                </div>
+                                <div id="event_sold_tickets_container">
+                                    <div id="event_sold_tickets" style="width:50%;"></div>
+                                </div>
+                                <div id="event_selling_info" class="align_row">
+                                    <span>Revenue</span>
+                                    <span>€1,000</span>
+                                </div>
+                                <div id="event_selling_info" class="align_row">
+                                    <span>Price</span>
+                                    <span>€20</span>
+                                </div>
+                            </div>
+                            <div id="event_controls" class="align_row">
+                                <button>Edit</button>
+                                <button>Details</button>
+                                <button onclick="openDeleteWindow()">Cancel</button>
+                            </div>
                             <span id="event_price">From [Price]€</span>
                         </div>
                     </div>
@@ -170,6 +180,28 @@
                             <span id="event_date">📅: [Event Date]</span>
                             <span id="event_location">📍: [Event Location]</span>
                             <span id="event_description">[Event Description]</span>
+                            <div id="event_selling_info_container" class="align_column">
+                                <div id="event_selling_info" class="align_row">
+                                    <span>Tickets Sold</span>
+                                    <span>100/200</span>
+                                </div>
+                                <div id="event_sold_tickets_container">
+                                    <div id="event_sold_tickets" style="width:50%;"></div>
+                                </div>
+                                <div id="event_selling_info" class="align_row">
+                                    <span>Revenue</span>
+                                    <span>€1,000</span>
+                                </div>
+                                <div id="event_selling_info" class="align_row">
+                                    <span>Price</span>
+                                    <span>€20</span>
+                                </div>
+                            </div>
+                            <div id="event_controls" class="align_row">
+                                <button>Edit</button>
+                                <button>Details</button>
+                                <button onclick="openDeleteWindow()">Cancel</button>
+                            </div>
                             <span id="event_price">From [Price]€</span>
                         </div>
                     </div>
@@ -182,6 +214,28 @@
                             <span id="event_date">📅: [Event Date]</span>
                             <span id="event_location">📍: [Event Location]</span>
                             <span id="event_description">[Event Description]</span>
+                            <div id="event_selling_info_container" class="align_column">
+                                <div id="event_selling_info" class="align_row">
+                                    <span>Tickets Sold</span>
+                                    <span>100/200</span>
+                                </div>
+                                <div id="event_sold_tickets_container">
+                                    <div id="event_sold_tickets" style="width:50%;"></div>
+                                </div>
+                                <div id="event_selling_info" class="align_row">
+                                    <span>Revenue</span>
+                                    <span>€1,000</span>
+                                </div>
+                                <div id="event_selling_info" class="align_row">
+                                    <span>Price</span>
+                                    <span>€20</span>
+                                </div>
+                            </div>
+                            <div id="event_controls" class="align_row">
+                                <button>Edit</button>
+                                <button>Details</button>
+                                <button onclick="openDeleteWindow()">Cancel</button>
+                            </div>
                             <span id="event_price">From [Price]€</span>
                         </div>
                     </div>
@@ -194,6 +248,28 @@
                             <span id="event_date">📅: [Event Date]</span>
                             <span id="event_location">📍: [Event Location]</span>
                             <span id="event_description">[Event Description]</span>
+                            <div id="event_selling_info_container" class="align_column">
+                                <div id="event_selling_info" class="align_row">
+                                    <span>Tickets Sold</span>
+                                    <span>100/200</span>
+                                </div>
+                                <div id="event_sold_tickets_container">
+                                    <div id="event_sold_tickets" style="width:50%;"></div>
+                                </div>
+                                <div id="event_selling_info" class="align_row">
+                                    <span>Revenue</span>
+                                    <span>€1,000</span>
+                                </div>
+                                <div id="event_selling_info" class="align_row">
+                                    <span>Price</span>
+                                    <span>€20</span>
+                                </div>
+                            </div>
+                            <div id="event_controls" class="align_row">
+                                <button>Edit</button>
+                                <button>Details</button>
+                                <button onclick="openDeleteWindow()">Cancel</button>
+                            </div>
                             <span id="event_price">From [Price]€</span>
                         </div>
                     </div>

@@ -1,0 +1,188 @@
+.page-loading {
+    color: white;
+    padding: 2rem;
+}
+
+.es-page {
+    gap: 0.75rem;
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+}
+
+.es-header {
+    width: 95%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+
+.es-event-title {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.es-page-label {
+    opacity: 0.5;
+    font-size: 1rem;
+}
+
+.es-row {
+    display: flex;
+    flex-direction: row;
+    gap: 0.75rem;
+    width: 95%;
+    margin: 0 auto;
+}
+
+.es-section {
+    width: 95%;
+    margin: 0 auto;
+}
+
+.es-info-card {
+    background-color: var(--tertiary-color);
+    border: 2px solid var(--tertiary-border-color);
+    border-radius: 1rem;
+    padding: 0.75rem 1rem;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.es-info-card-title {
+    font-size: 1.3rem;
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+}
+
+.es-card-hr {
+    margin: 0 0 0.5rem;
+}
+
+.es-kpi {
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+.es-flex-1 { flex: 1; }
+.es-flex-2 { flex: 2; }
+
+.es-progress {
+    margin: 0.4rem 0 0.2rem;
+}
+
+.es-empty {
+    margin: 0.5rem auto;
+    opacity: 0.6;
+}
+
+.es-tier-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin-top: 0.25rem;
+}
+
+.es-tier-item {
+    background: var(--secondary-color);
+    border: 1px solid var(--tertiary-border-color);
+    border-radius: 0.75rem;
+    padding: 0.6rem 0.9rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+}
+
+.es-tier-top {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    gap: 1rem;
+}
+
+.es-tier-name {
+    font-weight: bold;
+    font-size: 1.05rem;
+    flex: 2;
+}
+
+.es-tier-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    flex: 1;
+}
+
+.es-tier-stat-label {
+    font-size: 0.75rem;
+    opacity: 0.5;
+}
+
+.es-tier-stat-value {
+    font-weight: bold;
+}
+
+.es-tier-bar-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.es-tier-bar {
+    flex: 1;
+    margin: 0;
+}
+
+.es-tier-fill-text {
+    font-size: 0.8rem;
+    opacity: 0.55;
+    white-space: nowrap;
+}
+
+.es-performer-entry {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    margin: 0.2rem 0;
+}
+
+.es-performer-label {
+    opacity: 0.55;
+    font-size: 0.85rem;
+}
+
+.es-performer-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+}
+
+.es-performer-name {
+    font-weight: bold;
+}
+
+.es-performer-value {
+    opacity: 0.8;
+}
+
+.es-performer-hr {
+    margin: 0.5rem 0;
+}
+
+.es-tag-row {
+    gap: 0.4rem;
+}
+
+.es-tag-label {
+    margin-right: auto;
+}
+
+.es-tag-list {
+    display: flex;
+    gap: 0.3rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
