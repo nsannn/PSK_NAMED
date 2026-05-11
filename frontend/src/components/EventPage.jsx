@@ -1,7 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useParams } from "react-router-dom";
 import './EventPage.css';
 
-export default function EventPage({ eventId }) {
+export default function EventPage() {
+    const { id } = useParams();
+
     const [event, setEvent] = useState(null);
     const [loading, setLoading] = useState(true);
 
@@ -11,7 +14,7 @@ export default function EventPage({ eventId }) {
     useEffect(() => {
         async function fetchEvent() {
             try {
-                const res = await fetch(`/api/events/${eventId}`);
+                const res = await fetch(`/api/events/${id}`);
 
                 if (!res.ok) {
                     setEvent(null);
@@ -40,7 +43,7 @@ export default function EventPage({ eventId }) {
         }
 
         fetchEvent();
-    }, [eventId]);
+    }, [id]);
 
     // Increase ticket count
     function increaseTicket(ticketId) {

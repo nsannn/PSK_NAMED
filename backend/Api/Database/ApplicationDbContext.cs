@@ -1,6 +1,5 @@
 ﻿using Api.Models;
 using Microsoft.EntityFrameworkCore;
-using Api.Models;
 
 namespace Api.Database
 {

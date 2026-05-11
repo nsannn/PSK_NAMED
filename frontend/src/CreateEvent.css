@@ -28,3 +28,26 @@
     object-fit: cover;
     border-radius: 1rem;
 }
+
+/* Make selected option fully orange with white text */
+.option_selected {
+    background-color: orange;
+    color: white;
+    border: none;
+}
+
+/* Add a smooth hover effect */
+#staff_event_info_button {
+    /* background-color: white; */
+    color: white;
+    border: 1px solid orange;
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    margin: 0.25rem;
+    transition: all 0.2s;
+}
+
+#staff_event_info_button:hover {
+    background-color: #ffc04d; /* lighter orange on hover */
+}

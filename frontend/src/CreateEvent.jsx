@@ -24,7 +24,12 @@ function CreateEvent() {
 
     const handleTierChange = (index, field, value) => {
         const newTiers = [...ticketTiers];
-        newTiers[index][field] = value;
+        if (field === 'quantity' || field === 'price') {
+            // Clamp value to 0 or positive
+            newTiers[index][field] = Math.max(0, Number(value));
+        } else {
+            newTiers[index][field] = value;
+        }
         setTicketTiers(newTiers);
     };
 
@@ -134,11 +139,11 @@ function CreateEvent() {
                                         <div id="staff_info_card_input_group">
                                             <div id="staff_event_card_input" className="align_column">
                                                 <label htmlFor={`tier_qty_${index}`}>Quantity</label>
-                                                <input id={`tier_qty_${index}`} type="number" value={tier.quantity} onChange={e => handleTierChange(index, 'quantity', e.target.value)} />
+                                                <input id={`tier_qty_${index}`} type="number" min={0} value={tier.quantity} onChange={e => handleTierChange(index, 'quantity', e.target.value)} />
                                             </div>
                                             <div id="staff_event_card_input" className="align_column">
                                                 <label htmlFor={`tier_price_${index}`}>Price</label>
-                                                <input id={`tier_price_${index}`} type="number" value={tier.price} onChange={e => handleTierChange(index, 'price', e.target.value)} />
+                                                <input id={`tier_price_${index}`} type="number" min={0} value={tier.price} onChange={e => handleTierChange(index, 'price', e.target.value)} />
                                             </div>
                                         </div>
                                         {ticketTiers.length > 1 && (
