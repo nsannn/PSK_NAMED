@@ -75,15 +75,12 @@ namespace Api.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("numeric");
 
-<<<<<<< HEAD
-=======
                     b.Property<int>("Quantity")
                         .HasColumnType("integer");
 
                     b.Property<int>("Sold")
                         .HasColumnType("integer");
 
->>>>>>> dce03e70a6d13be690f136c5e841f9a1e77e0864
                     b.Property<string>("Type")
                         .IsRequired()
                         .HasColumnType("text");
@@ -95,8 +92,6 @@ namespace Api.Migrations
                     b.ToTable("Tickets");
                 });
 
-<<<<<<< HEAD
-=======
             modelBuilder.Entity("Api.Models.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -137,7 +132,6 @@ namespace Api.Migrations
                     b.ToTable("Users");
                 });
 
->>>>>>> dce03e70a6d13be690f136c5e841f9a1e77e0864
             modelBuilder.Entity("EventTag", b =>
                 {
                     b.Property<Guid>("EventsId")
