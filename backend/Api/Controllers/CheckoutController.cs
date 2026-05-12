@@ -94,7 +94,7 @@ namespace Api.Controllers
                     },
                     // TEMP: Hardcoded localhost URLs
                     SuccessUrl = "http://localhost:3000/checkout/success?session_id={CHECKOUT_SESSION_ID}",
-                    CancelUrl  = "http://localhost:3000/checkout/cancel",
+                    CancelUrl  = $"http://localhost:3000/event/{ev.Id}",
                 };
 
                 var service = new SessionService();
