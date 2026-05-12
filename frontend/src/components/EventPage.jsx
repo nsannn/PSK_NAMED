@@ -1,13 +1,17 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams, useNavigate } from "react-router-dom";
+import { useAuth } from '../context/AuthContext';
 import './EventPage.css';
 
 export default function EventPage() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const { user } = useAuth();
 
     const [event, setEvent] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [checkoutLoading, setCheckoutLoading] = useState(false);
+    const [checkoutError, setCheckoutError] = useState('');
 
     // Ticket counts
     const [ticketCounts, setTicketCounts] = useState({});
@@ -70,6 +74,52 @@ export default function EventPage() {
             return total + (ticket.price * (ticketCounts[ticket.id] || 0));
         }, 0);
     }, [event, ticketCounts]);
+
+    const totalQuantity = useMemo(() => {
+        return Object.values(ticketCounts).reduce((a, b) => a + b, 0);
+    }, [ticketCounts]);
+
+    async function handleCheckout() {
+        if (!user) {
+            // Need to be signed in to purchase
+            alert("Please sign in or register to purchase tickets.");
+            return;
+        }
+
+        if (totalQuantity < 1) {
+            setCheckoutError('Please select at least 1 ticket.');
+            return;
+        }
+
+        setCheckoutError('');
+        setCheckoutLoading(true);
+
+        try {
+            const res = await fetch('/api/checkout/create-session', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'same-origin',
+                body: JSON.stringify({
+                    eventId: event.id,
+                    quantity: totalQuantity,
+                }),
+            });
+
+            let data;
+            const text = await res.text();
+            try { data = text ? JSON.parse(text) : {}; } catch { data = {}; }
+
+            if (!res.ok) {
+                throw new Error(data.message || `Request failed (${res.status})`);
+            }
+
+            // Redirect to Stripe Checkout
+            window.location.href = data.sessionUrl;
+        } catch (err) {
+            setCheckoutError(err.message);
+            setCheckoutLoading(false);
+        }
+    }
 
     if (loading) {
         return (
@@ -209,15 +259,19 @@ export default function EventPage() {
 
                     {/* TOTAL */}
                     <div className="event-total">
-                        Total price: <span>{totalPrice}€</span>
+                        Total price: <span>{totalPrice.toFixed(2)}€</span>
                     </div>
+
+                    {checkoutError && <div className="checkout-card__error" style={{ color: '#f87171', background: 'rgba(220,60,60,0.1)', padding: '0.6rem 1rem', borderRadius: '0.65rem', border: '1px solid rgba(220,60,60,0.25)', marginBottom: '1rem', fontSize: '0.88rem' }}>{checkoutError}</div>}
 
                     {/* BUTTON */}
                     <button 
-                        className="checkout-button"
-                        onClick={() => navigate('/checkout', { state: { event } })}
+                        className={`checkout-button ${!user ? 'checkout-button--auth' : ''}`}
+                        onClick={handleCheckout}
+                        disabled={checkoutLoading || totalQuantity < 1}
+                        style={{ position: 'relative' }}
                     >
-                        Proceed To Checkout
+                        {checkoutLoading ? 'Processing...' : !user ? 'Sign In required' : 'Proceed To Checkout'}
                     </button>
 
                 </div>

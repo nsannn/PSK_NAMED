@@ -7,7 +7,6 @@ import EditEvent from './EditEvent';
 import EventDetails from './EventDetails';
 import EventStatistics from './EventStatistics';
 import EventDashboard from './EventDashboard';
-import CheckoutPage from './components/CheckoutPage';
 import CheckoutSuccess from './components/CheckoutSuccess';
 import CheckoutCancel from './components/CheckoutCancel';
 import EventPage from './components/EventPage';
@@ -24,7 +23,6 @@ function App() {
         <Route path="/event-details/:id" element={<EventDetails />} />
         <Route path="/event-statistics/:id" element={<EventStatistics />} />
         <Route path="/dashboard" element={<EventDashboard />} />
-        <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/checkout/success" element={<CheckoutSuccess />} />
         <Route path="/checkout/cancel" element={<CheckoutCancel />} />
         <Route path="/event/:id" element={<EventPage />} />

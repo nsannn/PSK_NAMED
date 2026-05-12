@@ -61,13 +61,24 @@ DB_USER=postgres
 DB_PASSWORD=postgres  
 JWT_SECRET=  
 
-SMTP_HOST=  
-SMTP_PORT=  
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587 
 SMTP_USER=  
 SMTP_PASS=  
 
 STRIPE_WEBHOOK_SECRET=  
-STRIPE_SECRET_KEY=  
+STRIPE_SECRET_KEY=
 
+
+### STRIPE_WEBHOOK_SECRET
 > To get STRIPE_WEBHOOK_SECRET (add secret once and then dotnet run will start this automatically via StripeListenService)
 > stripe listen --forward-to http://localhost:5134/api/checkout/webhook
+
+### JWT_SECRET:
+> openssl rand -hex 32
+
+### STRIPE_SECRET_KEY and VITE_STRIPE_PUBLISHABLE_KEY=
+> Ask to be added to the Stripe project
+### SMTP_USER= and SMTP_PASS=  
+https://myaccount.google.com/apppasswords?rapt=AEjHL4N5kTiaRJyI3rceOcIvJVQ7rs9apqsSJPjc_ZWuW97OLljgIEbmbaJGJqVTWlRdCOveXpzp9611E5apM2gim1v6SXqKk40E7ddvHzoi863UXy8bC_g
+
