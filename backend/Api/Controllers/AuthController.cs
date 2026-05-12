@@ -88,7 +88,10 @@ namespace Api.Controllers
             var emailLower = req.Email.Trim().ToLowerInvariant();
 
             if (await _db.Users.AnyAsync(u => u.Email == emailLower))
+            {
+                _logger.LogWarning("Registration attempt with existing email: {Email}", emailLower);
                 return Conflict(new { message = "An account with this email already exists." });
+            }
 
             if (!Enum.TryParse<UserRole>(req.Role, out var userRole))
                 return BadRequest(new { message = "Invalid role specified." });
@@ -124,7 +127,10 @@ namespace Api.Controllers
             var user = await _db.Users.FirstOrDefaultAsync(u => u.Email == emailLower);
 
             if (user == null || !BCrypt.Net.BCrypt.Verify(req.Password, user.PasswordHash))
+            {
+                _logger.LogWarning("Failed login attempt for email: {Email}", emailLower);
                 return Unauthorized(new { message = "Invalid email or password." });
+            }
 
             var token = GenerateJwt(user);
             SetTokenCookie(token);

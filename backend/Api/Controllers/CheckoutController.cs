@@ -106,8 +106,8 @@ namespace Api.Controllers
             }
             catch (Stripe.StripeException ex)
             {
-                _logger.LogError(ex, "Stripe exception while creating checkout session.");
-                return StatusCode(502, new { message = "Payment gateway error." });
+                _logger.LogError(ex, "Stripe error creating checkout session for event {EventId}", req.EventId);
+                return StatusCode(502, new { message = $"Stripe error: {ex.Message}" });
             }
         }
 
@@ -215,6 +215,11 @@ namespace Api.Controllers
             {
                 _logger.LogWarning(e, "Stripe webhook signature validation failed.");
                 return BadRequest();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Unhandled error processing Stripe webhook");
+                return StatusCode(500);
             }
         }
     }

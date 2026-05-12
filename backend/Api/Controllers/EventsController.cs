@@ -296,7 +296,7 @@ namespace Api.Controllers
             }
             catch (DbUpdateConcurrencyException ex)
             {
-                _logger.LogWarning(ex, "Concurrency exception occurred while editing event.");
+                _logger.LogWarning(ex, "Concurrency conflict updating event {EventId}", id);
                 return Conflict(new { message = "Event was modified or deleted by another user" });
             }
         }

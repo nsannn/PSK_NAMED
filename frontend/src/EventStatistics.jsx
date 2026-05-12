@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { apiFetch } from './utils/api';
+import { logger } from './utils/logger';
 import './EventStatistics.css';
 import './main.css';
 
@@ -32,13 +34,9 @@ function EventStatistics() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetch('/api/events/' + id)
-            .then(res => {
-                if (!res.ok) throw new Error('Not found');
-                return res.json();
-            })
+        apiFetch('/api/events/' + id)
             .then(data => { setEvent(data); setLoading(false); })
-            .catch(err => { console.error('Failed to fetch event', err); setLoading(false); });
+            .catch(err => { logger.error('Failed to fetch event statistics', err); setLoading(false); });
     }, [id]);
 
     if (loading) return <div className="page-loading">Loading statistics...</div>;

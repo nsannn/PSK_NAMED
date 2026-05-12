@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { apiFetch } from '../utils/api';
+import { logger } from '../utils/logger';
 import './CheckoutSuccess.css';
 
 export default function CheckoutSuccess() {
@@ -20,14 +22,12 @@ export default function CheckoutSuccess() {
 
     async function fetchStatus() {
       try {
-        const res = await fetch(
-          `/api/checkout/session-status?sessionId=${encodeURIComponent(sessionId)}`,
-          { credentials: 'same-origin' }
+        const data = await apiFetch(
+          `/api/checkout/session-status?sessionId=${encodeURIComponent(sessionId)}`
         );
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.message || 'Failed to load session.');
         setInfo(data);
       } catch (err) {
+        logger.error('Failed to load checkout session status', err);
         setError(err.message);
       } finally {
         setLoading(false);

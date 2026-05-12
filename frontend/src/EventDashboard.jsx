@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { apiFetch } from './utils/api';
+import { logger } from './utils/logger';
 import './EventDashboard.css';
 import './main.css';
 
@@ -39,10 +41,9 @@ function EventDashboard() {
     const [sort, setSort] = useState('revenue-desc');
 
     useEffect(() => {
-        fetch('/api/events/myevents')
-            .then(res => res.json())
+        apiFetch('/api/events/myevents')
             .then(data => { setEvents(data); setLoading(false); })
-            .catch(err => { console.error('Failed to fetch events', err); setLoading(false); });
+            .catch(err => { logger.error('Failed to fetch dashboard events', err); setLoading(false); });
     }, []);
 
     if (loading) return <div className="page-loading">Loading dashboard...</div>;

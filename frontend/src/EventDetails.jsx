@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { apiFetch } from './utils/api';
+import { logger } from './utils/logger';
 import './EventDetails.css';
 import './main.css';
 
@@ -13,17 +15,13 @@ function EventDetails() {
     const [isDeleting, setIsDeleting] = useState(false);
 
     useEffect(() => {
-        fetch('/api/events/' + id)
-            .then(res => {
-                if (!res.ok) throw new Error('Not found');
-                return res.json();
-            })
+        apiFetch('/api/events/' + id)
             .then(data => {
                 setEvent(data);
                 setLoading(false);
             })
             .catch(err => {
-                console.error('Failed to fetch event', err);
+                logger.error('Failed to fetch event details', err);
                 setLoading(false);
             });
     }, [id]);
@@ -31,13 +29,10 @@ function EventDetails() {
     const handleDelete = async () => {
         setIsDeleting(true);
         try {
-            const response = await fetch('/api/events/' + id, { method: 'DELETE' });
-            if (response.ok) {
-                navigate('/');
-            } else {
-                alert('Failed to cancel event');
-            }
-        } catch {
+            await apiFetch('/api/events/' + id, { method: 'DELETE' });
+            navigate('/');
+        } catch (err) {
+            logger.error('Failed to cancel event', err);
             alert('Error cancelling event');
         } finally {
             setIsDeleting(false);
