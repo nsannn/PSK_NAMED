@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from '../context/AuthContext';
+import { apiFetch } from '../utils/api';
+import { logger } from '../utils/logger';
 import './EventPage.css';
 
 export default function EventPage() {
@@ -19,15 +21,7 @@ export default function EventPage() {
     useEffect(() => {
         async function fetchEvent() {
             try {
-                const res = await fetch(`/api/events/${id}`);
-
-                if (!res.ok) {
-                    setEvent(null);
-                    return;
-                }
-
-                const data = await res.json();
-
+                const data = await apiFetch(`/api/events/${id}`);
                 setEvent(data);
 
                 // Initialize ticket counts
@@ -40,7 +34,7 @@ export default function EventPage() {
                 setTicketCounts(initialCounts);
 
             } catch (err) {
-                console.error(err);
+                logger.error('Failed to load event details', err);
                 setEvent(null);
             } finally {
                 setLoading(false);
@@ -95,28 +89,19 @@ export default function EventPage() {
         setCheckoutLoading(true);
 
         try {
-            const res = await fetch('/api/checkout/create-session', {
+            const data = await apiFetch('/api/checkout/create-session', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'same-origin',
                 body: JSON.stringify({
                     eventId: event.id,
                     quantity: totalQuantity,
                 }),
             });
 
-            let data;
-            const text = await res.text();
-            try { data = text ? JSON.parse(text) : {}; } catch { data = {}; }
-
-            if (!res.ok) {
-                throw new Error(data.message || `Request failed (${res.status})`);
-            }
-
             // Redirect to Stripe Checkout
             window.location.href = data.sessionUrl;
         } catch (err) {
             setCheckoutError(err.message);
+            logger.error('Failed to create checkout session', err);
             setCheckoutLoading(false);
         }
     }

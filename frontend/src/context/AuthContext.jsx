@@ -1,4 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import { apiFetch } from '../utils/api';
+import { logger } from '../utils/logger';
 
 const AuthContext = createContext(null);
 
@@ -12,16 +14,9 @@ export function AuthProvider({ children }) {
 
   async function fetchMe() {
     try {
-      const res = await fetch('/api/auth/me', {
-        credentials: 'same-origin',
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setUser(data);
-      } else {
-        setUser(null);
-      }
-    } catch {
+      const data = await apiFetch('/api/auth/me');
+      setUser(data);
+    } catch (err) {
       setUser(null);
     } finally {
       setLoading(false);
@@ -29,36 +24,20 @@ export function AuthProvider({ children }) {
   }
 
   async function login(email, password) {
-    const res = await fetch('/api/auth/login', {
+    const data = await apiFetch('/api/auth/login', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'same-origin',
       body: JSON.stringify({ email, password }),
     });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      throw new Error(data.message || 'Login failed');
-    }
 
     setUser(data.user);
     return data;
   }
 
   async function register(firstName, lastName, email, password, confirmPassword, role) {
-    const res = await fetch('/api/auth/register', {
+    const data = await apiFetch('/api/auth/register', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'same-origin',
       body: JSON.stringify({ firstName, lastName, email, password, confirmPassword, role }),
     });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      throw new Error(data.message || 'Registration failed');
-    }
 
     setUser(data.user);
     return data;
@@ -66,12 +45,11 @@ export function AuthProvider({ children }) {
 
   async function logout() {
     try {
-      await fetch('/api/auth/logout', {
+      await apiFetch('/api/auth/logout', {
         method: 'POST',
-        credentials: 'same-origin',
       });
-    } catch {
-      // Ignore network errors on logout
+    } catch (err) {
+      logger.warn('Logout request failed', err);
     } finally {
       setUser(null);
     }

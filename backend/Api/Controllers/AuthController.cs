@@ -67,11 +67,13 @@ namespace Api.Controllers
     {
         private readonly ApplicationDbContext _db;
         private readonly IConfiguration _config;
+        private readonly ILogger<AuthController> _logger;
 
-        public AuthController(ApplicationDbContext db, IConfiguration config)
+        public AuthController(ApplicationDbContext db, IConfiguration config, ILogger<AuthController> logger)
         {
             _db = db;
             _config = config;
+            _logger = logger;
         }
 
         [HttpPost("register")]

@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { apiFetch } from './utils/api';
+import { logger } from './utils/logger';
 import './CreateEvent.css';
 import './main.css';
 
@@ -62,27 +64,20 @@ function CreateEvent() {
         };
 
         try {
-            const response = await fetch('/api/events', {
+            const created = await apiFetch('/api/events', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(eventData)
             });
 
-            if (response.ok) {
-                const created = await response.json();
-                if (posterFile) {
-                    const form = new FormData();
-                    form.append('file', posterFile);
-                    await fetch(`/api/events/${created.id}/poster`, { method: 'POST', body: form });
-                }
-                navigate('/');
-            } else {
-                console.error('Failed to create event:', await response.text());
-                alert('Failed to create event');
+            if (posterFile) {
+                const form = new FormData();
+                form.append('file', posterFile);
+                await apiFetch(`/api/events/${created.id}/poster`, { method: 'POST', body: form });
             }
+            navigate('/');
         } catch (error) {
-            console.error('Error submitting form:', error);
-            alert('Error creating event');
+            logger.error('Error submitting form:', error);
+            alert('Error creating event: ' + error.message);
         } finally {
             setIsSubmitting(false);
         }

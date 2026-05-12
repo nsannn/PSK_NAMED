@@ -13,10 +13,12 @@ namespace Api.Services
     public class EmailService : IEmailService
     {
         private readonly IConfiguration _config;
+        private readonly ILogger<EmailService> _logger;
 
-        public EmailService(IConfiguration config)
+        public EmailService(IConfiguration config, ILogger<EmailService> logger)
         {
             _config = config;
+            _logger = logger;
         }
 
         public async Task SendTicketConfirmationEmailAsync(string toEmail, string eventName, int quantity, string eventDate, string eventLocation)
@@ -29,8 +31,7 @@ namespace Api.Services
 
             if (string.IsNullOrEmpty(user) || string.IsNullOrEmpty(pass))
             {
-                // Can log this later
-                Console.WriteLine("SMTP credentials not configured in .env. Skipping email sending.");
+                _logger.LogWarning("SMTP credentials not configured in .env — skipping email to {ToEmail}", toEmail);
                 return;
             }
 
@@ -82,7 +83,7 @@ namespace Api.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error sending email: {ex.Message}");
+                _logger.LogError(ex, "Failed to send ticket confirmation email to {ToEmail} for event {EventName}", toEmail, eventName);
             }
         }
     }

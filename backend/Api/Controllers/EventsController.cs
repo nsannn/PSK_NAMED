@@ -14,11 +14,13 @@ namespace Api.Controllers
     {
         private readonly ApplicationDbContext _db;
         private readonly IWebHostEnvironment _env;
+        private readonly ILogger<EventsController> _logger;
 
-        public EventsController(ApplicationDbContext db, IWebHostEnvironment env)
+        public EventsController(ApplicationDbContext db, IWebHostEnvironment env, ILogger<EventsController> logger)
         {
             _db = db;
             _env = env;
+            _logger = logger;
         }
 
         private string PostersDir => Path.Combine(_env.ContentRootPath, "Posters");
@@ -292,8 +294,9 @@ namespace Api.Controllers
                 await _db.SaveChangesAsync();
                 return NoContent();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateConcurrencyException ex)
             {
+                _logger.LogWarning(ex, "Concurrency exception occurred while editing event.");
                 return Conflict(new { message = "Event was modified or deleted by another user" });
             }
         }
