@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { apiFetch } from './utils/api';
+import { logger } from './utils/logger';
 import './MyEventsList.css';
 import './main.css';
 
@@ -50,11 +52,10 @@ function MyEventsList() {
         params.set('sort', sort);
 
         try {
-            const res  = await fetch('/api/events/myevents?' + params.toString());
-            const data = await res.json();
+            const data = await apiFetch('/api/events/myevents?' + params.toString());
             setEvents(data);
         } catch (err) {
-            console.error('Failed to fetch events', err);
+            logger.error('Failed to fetch events', err);
         } finally {
             setLoading(false);
         }
@@ -76,14 +77,11 @@ function MyEventsList() {
     const handleDeleteEvent = async () => {
         setIsDeleting(true);
         try {
-            const response = await fetch(`/api/events/${cancellingEventId}`, { method: 'DELETE' });
-            if (response.ok) {
-                setEvents(events.filter(e => e.id !== cancellingEventId));
-                setCancellingEventId(null);
-            } else {
-                alert('Failed to delete event');
-            }
-        } catch {
+            await apiFetch(`/api/events/${cancellingEventId}`, { method: 'DELETE' });
+            setEvents(events.filter(e => e.id !== cancellingEventId));
+            setCancellingEventId(null);
+        } catch (err) {
+            logger.error('Failed to delete event', err);
             alert('Error deleting event');
         } finally {
             setIsDeleting(false);

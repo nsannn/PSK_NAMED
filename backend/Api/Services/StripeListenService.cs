@@ -6,6 +6,12 @@ namespace Api.Services
     public class StripeListenService : IHostedService, IDisposable
     {
         private Process? _process;
+        private readonly ILogger<StripeListenService> _logger;
+
+        public StripeListenService(ILogger<StripeListenService> logger)
+        {
+            _logger = logger;
+        }
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
@@ -24,11 +30,11 @@ namespace Api.Services
             try
             {
                 _process.Start();
-                Console.WriteLine("Started Stripe CLI listener automatically...");
+                _logger.LogInformation("Started Stripe CLI listener automatically...");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Could not start Stripe CLI automatically: {ex.Message}. Make sure you have the Stripe CLI installed.");
+                _logger.LogWarning(ex, "Could not start Stripe CLI automatically. Make sure you have the Stripe CLI installed.");
             }
 
             return Task.CompletedTask;
@@ -39,7 +45,10 @@ namespace Api.Services
             if (_process != null && !_process.HasExited)
             {
                 _process.Kill(true);
-                Console.WriteLine("Stopped Stripe CLI listener.");
+                if (_logger != null) 
+                {
+                    _logger.LogInformation("Stopped Stripe CLI listener.");
+                }
             }
             return Task.CompletedTask;
         }

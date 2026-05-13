@@ -26,12 +26,14 @@ namespace Api.Controllers
         private readonly ApplicationDbContext _db;
         private readonly IEmailService _emailService;
         private readonly IConfiguration _config;
+        private readonly ILogger<CheckoutController> _logger;
 
-        public CheckoutController(ApplicationDbContext db, IEmailService emailService, IConfiguration config)
+        public CheckoutController(ApplicationDbContext db, IEmailService emailService, IConfiguration config, ILogger<CheckoutController> logger)
         {
             _db = db;
             _emailService = emailService;
             _config = config;
+            _logger = logger;
         }
 
         [Authorize]
@@ -104,6 +106,7 @@ namespace Api.Controllers
             }
             catch (Stripe.StripeException ex)
             {
+                _logger.LogError(ex, "Stripe error creating checkout session for event {EventId}", req.EventId);
                 return StatusCode(502, new { message = $"Stripe error: {ex.Message}" });
             }
         }
@@ -138,7 +141,8 @@ namespace Api.Controllers
             }
             catch (Stripe.StripeException ex)
             {
-                return StatusCode(502, new { message = $"Stripe error: {ex.Message}" });
+                _logger.LogError(ex, "Stripe exception while retrieving checkout session status.");
+                return StatusCode(502, new { message = "Payment gateway error." });
             }
         }
 
@@ -209,11 +213,13 @@ namespace Api.Controllers
             }
             catch (StripeException e)
             {
-                return BadRequest(new { message = e.Message });
+                _logger.LogWarning(e, "Stripe webhook signature validation failed.");
+                return BadRequest();
             }
             catch (Exception e)
             {
-                return StatusCode(500, new { message = e.Message });
+                _logger.LogError(e, "Unhandled error processing Stripe webhook");
+                return StatusCode(500);
             }
         }
     }

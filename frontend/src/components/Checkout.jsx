@@ -8,6 +8,7 @@ import {
   useStripe,
   useElements,
 } from '@stripe/react-stripe-js';
+import { logger } from '../utils/logger';
 import './Checkout.css';
 
 // Load Stripe Publishable Key from environment variables
@@ -64,7 +65,7 @@ function CheckoutForm() {
         setError(stripeError.message);
         setLoading(false);
       } else if (paymentIntent.status === 'succeeded') {
-        console.log('Real PaymentIntent succeeded: ', paymentIntent);
+        logger.info('PaymentIntent succeeded', paymentIntent.id);
         setSuccess(true);
         setLoading(false);
         cardNumberElement.clear();
@@ -72,8 +73,8 @@ function CheckoutForm() {
         elements.getElement(CardCvcElement).clear();
       }
     } catch (e) {
-      setError('An error occurred. Check browser console.');
-      console.error(e);
+      setError('An error occurred during payment.');
+      logger.error('Payment processing error', e);
       setLoading(false);
     }
   };

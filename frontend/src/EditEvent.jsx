@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { apiFetch } from './utils/api';
+import { logger } from './utils/logger';
 import './EditEvent.css';
 import './main.css';
 
@@ -30,8 +32,7 @@ function EditEvent() {
 
     useEffect(() => {
         setIsLoading(true);
-        fetch('/api/events/' + id)
-            .then(res => res.json())
+        apiFetch('/api/events/' + id)
             .then(data => {
                 setTitle(data.title || data.name || '');
                 if (data.date) {
@@ -52,7 +53,7 @@ function EditEvent() {
                 })) : [{ name: '', quantity: 0, price: 0 }]);
             })
             .catch(err => {
-                console.error("Failed to fetch event", err);
+                logger.error("Failed to fetch event for edit", err);
                 alert("Failed to load event data.");
             })
             .finally(() => setIsLoading(false));
@@ -108,27 +109,19 @@ function EditEvent() {
         };
 
         try {
-            const response = await fetch('/api/events/' + id, {
+            await apiFetch('/api/events/' + id, {
                 method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
                 body: JSON.stringify(eventData)
             });
 
-            if (response.ok) {
-                if (posterFile) {
-                    const form = new FormData();
-                    form.append('file', posterFile);
-                    await fetch(`/api/events/${id}/poster`, { method: 'POST', body: form });
-                }
-                navigate('/');
-            } else {
-                console.error("Failed to update event:", await response.text());
-                alert("Failed to update event");
+            if (posterFile) {
+                const form = new FormData();
+                form.append('file', posterFile);
+                await apiFetch(`/api/events/${id}/poster`, { method: 'POST', body: form });
             }
+            navigate('/');
         } catch (error) {
-            console.error("Error submitting form:", error);
+            logger.error("Error submitting form:", error);
             alert("Error updating event");
         } finally {
             setIsSubmitting(false);
@@ -138,18 +131,12 @@ function EditEvent() {
     const handleDelete = async () => {
         setIsDeleting(true);
         try {
-            const response = await fetch('/api/events/' + id, {
+            await apiFetch('/api/events/' + id, {
                 method: 'DELETE'
             });
-
-            if (response.ok) {
-                navigate('/');
-            } else {
-                console.error("Failed to delete event:", await response.text());
-                alert("Failed to delete event");
-            }
+            navigate('/');
         } catch (error) {
-            console.error("Error deleting event:", error);
+            logger.error("Error deleting event:", error);
             alert("Error deleting event");
         } finally {
             setIsDeleting(false);
