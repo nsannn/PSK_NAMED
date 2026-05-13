@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>CSS Testing</title>
+        <link rel="stylesheet" href="main.css">
+        <script src="CSS_Test_Scripts.js" defer></script>
+    </head>
+    <body>
+        <div id="transparent_panel" onclick="closeEverything()"></div>
+        <div id="mobile_sidebar">
+            <button id="close_button" onclick="closeMobileSidebar()">
+                <span>X</span>
+            </button>
+            <div id="nav_group">
+                <button>My Events</button>
+                <button>Validate Tickets</button>
+                <button>Partners</button>
+                <button>Contacts</button>
+            </div>
+            <div id="account_group">
+                <button>Settings</button>
+                <button>Log Out</button>
+            </div>
+        </div>
+        <div id="top_bar">
+            <div id="site_logo">Logo</div>
+            <div id="nav_group">
+                <button>My Events</button>
+                <button>Partners</button>
+                <button>Contacts</button>
+            </div>
+            <div id="notification_container">
+                <button id="notification_button" onclick="openNotificationWindow(event)">🔔</button>
+                <div id="notification_window" class="align_column">
+                    <div id="user_notification" class="align_column">
+                        <span>Just a reminder that [Event Name] is on [Date]</span>
+                        <span>We're looking forward to seeing you - have your QR code ready</span>
+                    </div>
+                </div>
+            </div>
+            <div id="account_group">
+                <button id="user_account_button" onclick="openAccountWindow(event)">[Username]</button>
+                <div id="account_window" class="align_column">
+                    <button>Validate Tickets</button>
+                    <button>Settings</button>
+                    <button>Log Out</button>
+                </div>
+            </div>
+            <button id="menu_button" onclick="openMobileSidebar()">
+                <span>☰</span>
+            </button>
+        </div>
+        <div id="ticket_validation_container">
+            <div id="camera_container">
+                <video id="camera" autoplay playsinline></video>
+                <div id="scan_frame"></div>
+            </div>
+            <div id="ticket_info_container" class="align_column">
+                <span id="status">Scanning...</span>
+                <hr/>
+                <div id="ticket_info">Point camera at QR code</div>
+            </div>
+            <canvas id="canvas" hidden></canvas>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+        <script>
+            let video=document.getElementById('camera');
+            let canvas=document.getElementById('canvas');
+            let ctx=canvas.getContext('2d');
+            let statusEl=document.getElementById('status');
+            let ticketInfoEl=document.getElementById('ticket_info');
+
+            let scanning=true;
+            let scanCooldown=false;
+
+            async function startCamera(){
+                try{
+                    let stream=await navigator.mediaDevices.getUserMedia({
+                        video:{
+                            facingMode:"environment"
+                        }
+                    });
+                
+                    video.srcObject=stream;
+                    requestAnimationFrame(scanQRCode);
+                }catch(error){
+                    statusEl.textContent="Camera Error "+error+" Secure context:"+window.isSecureContext+" mediaDevices:"+navigator.mediaDevices;
+                }
+            }
+
+            function scanQRCode(){
+                if(!scanning || scanCooldown){
+                    requestAnimationFrame(scanQRCode);
+                    return;
+                }
+            
+                if(video.readyState===video.HAVE_ENOUGH_DATA){
+                    canvas.width=video.videoWidth;
+                    canvas.height=video.videoHeight;
+
+                    ctx.drawImage(video,0,0,canvas.width,canvas.height);
+
+                    let imageData=ctx.getImageData(0,0,canvas.width,canvas.height);
+                    let qrCode=jsQR(imageData.data,imageData.width,imageData.height);
+
+                    if(qrCode){
+                        handleQRCode(qrCode.data);
+                        startCooldown();
+                    }
+                }
+
+                requestAnimationFrame(scanQRCode);
+            }
+
+            function startCooldown(){
+                scanCooldown=true;
+
+                setTimeout(() => {
+                    statusEl.textContent="Scanning...";
+                    ticketInfoEl.textContent="Point camera at QR code";
+                    scanCooldown=false;
+                },2000);
+            }
+
+            function handleQRCode(qrText){
+                console.log("QR Code content: ",qrText);
+
+                if(qrText==="VALID"){
+                    showResult("valid","Valid Ticket","Ticket type: Standard "+qrText);
+                }else if(qrText==="EXPIRED"){
+                    showResult("expired","Expired Ticket","This ticket is no longer usable. "+qrText)
+                }else{
+                    showResult("invalid","Invalid Ticket","Ticket was not found or QR code is incorrect. "+qrText);
+                }
+            }
+
+            function showResult(type,title,info){
+                statusEl.textContent=title;
+                ticketInfoEl.textContent=info
+            }
+
+            startCamera();
+        </script>
+    </body>
+</html>
