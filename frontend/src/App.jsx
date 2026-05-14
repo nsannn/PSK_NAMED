@@ -10,6 +10,7 @@ import EventDashboard from './EventDashboard';
 import CheckoutSuccess from './components/CheckoutSuccess';
 import CheckoutCancel from './components/CheckoutCancel';
 import EventPage from './components/EventPage';
+import EventOrders from './EventOrders';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import './App.css';
 
@@ -23,6 +24,7 @@ function App() {
           <Route path="/create-event" element={<CreateEvent />} />
           <Route path="/edit-event/:id" element={<EditEvent />} />
           <Route path="/event-details/:id" element={<EventDetails />} />
+          <Route path="/event-orders/:id" element={<EventOrders />} />
           <Route path="/event-statistics/:id" element={<EventStatistics />} />
           <Route path="/dashboard" element={<EventDashboard />} />
           <Route path="/checkout/success" element={<CheckoutSuccess />} />

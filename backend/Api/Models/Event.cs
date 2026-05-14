@@ -8,7 +8,11 @@ namespace Api.Models
         public string Location { get; set; } = string.Empty;
         public DateTime Date { get; set; }
         
+        public Guid? CreatedByUserId { get; set; }
+        public User? CreatedByUser { get; set; }
+        
         public ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
         public ICollection<Tag> Tags { get; set; } = new List<Tag>();
+        public ICollection<Order> Orders { get; set; } = new List<Order>();
     }
 }

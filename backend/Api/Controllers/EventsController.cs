@@ -5,6 +5,8 @@ using Api.Dtos.Ticket;
 using Api.Dtos.Tag;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Api.Controllers
 {
@@ -96,6 +98,7 @@ namespace Api.Controllers
         }
 
         // GET: api/events/myevents
+        [AllowAnonymous]
         [HttpGet("myevents")]
         public async Task<IActionResult> GetMyEvents(
             [FromQuery] string? search,
@@ -108,10 +111,19 @@ namespace Api.Controllers
             [FromQuery] string? location,
             [FromQuery] string? sort)
         {
+            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = string.IsNullOrEmpty(userIdStr) ? Guid.Empty : Guid.Parse(userIdStr);
+            var role = User.FindFirstValue(ClaimTypes.Role);
+
             var query = _db.Events
                 .Include(e => e.Tickets)
                 .Include(e => e.Tags)
                 .AsQueryable();
+
+            if (role == "Manager")
+            {
+                query = query.Where(e => e.CreatedByUserId == userId);
+            }
 
             if (!string.IsNullOrWhiteSpace(search))
                 query = query.Where(e =>
@@ -184,15 +196,20 @@ namespace Api.Controllers
         }
 
         // POST: api/events
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> CreateEvent([FromBody] CreateEventDto createDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = string.IsNullOrEmpty(userIdStr) ? Guid.Empty : Guid.Parse(userIdStr);
+
             var ev = new Event
             {
                 Id = Guid.NewGuid(),
+                CreatedByUserId = userId == Guid.Empty ? null : userId,
                 Title = createDto.Title,
                 Description = createDto.Description,
                 Location = createDto.Location,
