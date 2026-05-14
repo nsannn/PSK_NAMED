@@ -249,7 +249,11 @@ namespace Api.Controllers
             ev.Location = updateDto.Location;
             ev.Date = updateDto.Date.ToUniversalTime();
 
-            await _db.Tickets.Where(t => t.EventId == id).ExecuteDeleteAsync();
+            // await _db.Tickets.Where(t => t.EventId == id).ExecuteDeleteAsync();
+            var tickets = await _db.Tickets
+                .Where(t => t.EventId == id)
+                .ToListAsync();
+            _db.Tickets.RemoveRange(tickets);
 
             foreach (var tierDto in updateDto.TicketTiers)
             {
