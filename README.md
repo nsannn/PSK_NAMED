@@ -46,6 +46,33 @@
    ```
 
 
+## 🧪 Testing Instructions
+
+### 🖥️ Backend Tests
+1. Navigate to the backend directory:
+   ```bash
+   cd PSK_NAMED
+   ```
+2. Run the test suite:
+   ```bash
+   dotnet test
+   ```
+
+⚠️ **Dependency Warning:**
+The package `<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.*" />` in `Api.csproj` currently generates compilation/runtime warnings. Upgrading this dependency to version `9.0.0` resolves the issue and prevents warnings from being thrown. Did NOT check whether it is safe to upgrade.
+
+---
+
+### 🌐 Frontend Tests
+1. Navigate to the frontend directory:
+   ```bash
+   cd PSK_NAMED/frontend
+   ```
+2. Run the test suite:
+   ```bash
+   npm test run
+   ```
+
 # .env files:
 
 ## frontend:
