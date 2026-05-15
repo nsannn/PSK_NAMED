@@ -3,6 +3,7 @@
 
 - [.NET SDK](https://dotnet.microsoft.com/download) ( 8.0 or later)
 - [Node.js](https://nodejs.org/) (v18 or later recommended)
+- Stripe CLI
 
 
 ### 1. Start the Backend (ASP.NET Core)
