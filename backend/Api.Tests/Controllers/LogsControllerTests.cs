@@ -1,9 +1,7 @@
-using System;
 using Api.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Xunit;
 using FluentAssertions;
 
 namespace Api.Tests.Controllers

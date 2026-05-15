@@ -1,92 +1,3 @@
-// using System;
-// using System.Threading.Tasks;
-// using FluentAssertions;
-// using Microsoft.AspNetCore.Hosting;
-// using Microsoft.AspNetCore.Mvc;
-// using Microsoft.EntityFrameworkCore;
-// using Microsoft.Extensions.Logging;
-// using Moq;
-// using Xunit;
-
-// // Change these namespaces to match your project
-// using Api.Controllers;
-// using Api.Database;
-// using Api.Models;
-
-// namespace Api.Tests.Controllers
-// {
-//     public class EventsControllerTests
-//     {
-//         [Fact]
-//         public async Task GetEvent_ReturnsNotFound_WhenEventDoesNotExist()
-//         {
-//             // Arrange
-//             var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-//                 .UseInMemoryDatabase(Guid.NewGuid().ToString())
-//                 .Options;
-
-//             await using var db = new ApplicationDbContext(options);
-
-//             var env = new FakeWebHostEnvironment();
-//             Directory.CreateDirectory(env.WebRootPath);
-//             var logger = Mock.Of<ILogger<EventsController>>();
-
-//             var controller = new EventsController(db, env, logger);
-
-//             // Act
-//             var result = await controller.GetEvent(Guid.NewGuid());
-
-//             // Assert
-//             result.Should().BeOfType<NotFoundResult>();
-//         }
-
-//         [Fact]
-//         public async Task GetEvent_ReturnsEvent_WhenEventExists()
-//         {
-//             // Arrange
-//             var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-//                 .UseInMemoryDatabase(Guid.NewGuid().ToString())
-//                 .Options;
-
-//             var eventId = Guid.NewGuid();
-
-//             await using var db = new ApplicationDbContext(options);
-
-//             db.Events.Add(new Event
-//             {
-//                 Id = eventId,
-
-//                 // Add required properties here
-//                 Title = "Test Event",
-//                 Description = "Test Description",
-//                 Date = DateTime.UtcNow
-//             });
-
-//             await db.SaveChangesAsync();
-
-//             var env = new FakeWebHostEnvironment();
-//             Directory.CreateDirectory(env.WebRootPath);
-//             var logger = Mock.Of<ILogger<EventsController>>();
-
-//             var controller = new EventsController(db, env, logger);
-
-//             // Act
-//             var result = await controller.GetEvent(eventId);
-
-//             // Assert
-//             result.Should().BeOfType<OkObjectResult>();
-
-//             var okResult = result as OkObjectResult;
-
-//             okResult!.Value.Should().NotBeNull();
-//         }
-//     }
-// }
-
-using System;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -94,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Xunit;
 using Api.Controllers;
 using Api.Database;
 using Api.Models;

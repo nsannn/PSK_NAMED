@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using Api.Controllers;
 using Api.Database;
 using Api.Models;
@@ -9,7 +7,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Xunit;
 using FluentAssertions;
 
 namespace Api.Tests.Controllers

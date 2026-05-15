@@ -1,9 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 using Api.Controllers;
 using Api.Database;
 using Api.Services;
@@ -14,7 +10,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
 using FluentAssertions;
-using Xunit;
 
 namespace Api.Tests.Controllers
 {
