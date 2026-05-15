@@ -9,6 +9,7 @@ using Api.Controllers;
 using Api.Database;
 using Api.Models;
 using Api.Dtos.Event;
+using System.Security.Claims;
 
 namespace Api.Tests.Controllers
 {
@@ -34,7 +35,21 @@ namespace Api.Tests.Controllers
             envMock.Setup(e => e.ContentRootPath).Returns(_tempDir);
             var logger = Mock.Of<ILogger<EventsController>>();
 
-            return new EventsController(db, envMock.Object, logger);
+            var controller = new EventsController(db, envMock.Object, logger);
+
+            // Fake authenticated user
+            controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext
+                {
+                    User = new ClaimsPrincipal(new ClaimsIdentity(
+                    [
+                        new Claim(ClaimTypes.NameIdentifier, Guid.NewGuid().ToString())
+                    ], "TestAuth"))
+                }
+            };
+
+            return controller;
         }
 
         private ApplicationDbContext CreateDb(string dbName)
