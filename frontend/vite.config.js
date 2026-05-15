@@ -69,5 +69,19 @@ export default defineConfig(async () => {
   return {
     plugins: [react()],
     server: serverConfig,
+
+    test: {
+      globals: true,
+      environment: 'jsdom',
+      setupFiles: './src/test/setup.js',
+      css: true,
+
+      exclude: [
+        'node_modules',
+        'dist',
+        'e2e',
+        'tests',
+      ],
+    },
   };
 });
