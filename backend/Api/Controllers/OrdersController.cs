@@ -32,7 +32,8 @@ namespace Api.Controllers
             if (ev == null)
                 return NotFound();
 
-            if (ev.CreatedByUserId != userId)
+            var isAdmin = User.IsInRole("Admin");
+            if (ev.CreatedByUserId != userId && !isAdmin)
                 return Forbid();
 
             var orders = await _db.Orders
@@ -69,7 +70,11 @@ namespace Api.Controllers
                 .FirstOrDefaultAsync(o => o.Id == orderId);
 
             if (order == null) return NotFound();
-            if (order.Event.CreatedByUserId != userId) return Forbid();
+            
+            var isAdmin = User.IsInRole("Admin");
+            if (order.Event.CreatedByUserId != userId && !isAdmin)
+             return Forbid();
+            
             if (order.Status == OrderStatus.Refunded) return BadRequest(new { message = "Already refunded." });
 
             try
@@ -115,7 +120,10 @@ namespace Api.Controllers
 
             var ev = await _db.Events.Include(e => e.Tickets).FirstOrDefaultAsync(e => e.Id == eventId);
             if (ev == null) return NotFound();
-            if (ev.CreatedByUserId != userId) return Forbid();
+            
+            var isAdmin = User.IsInRole("Admin");
+            if (ev.CreatedByUserId != userId && !isAdmin)
+             return Forbid();
 
             var orders = await _db.Orders
                 .Where(o => o.EventId == eventId && o.Status == OrderStatus.Paid)
