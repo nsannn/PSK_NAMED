@@ -1,5 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { vi } from 'vitest';
+import { act } from 'react'
 import AuthModal from './AuthModal';
 
 // MOCK AUTH CONTEXT
@@ -104,7 +105,9 @@ describe('AuthModal', () => {
       target: { value: '123456' },
     });
 
-    fireEvent.click(screen.getByRole('button', { name: /sign in/i }));
+    await act(async () => {
+        await fireEvent.click(screen.getByRole('button', { name: /sign in/i }));
+    });
 
     expect(loginMock).toHaveBeenCalled();
   });
