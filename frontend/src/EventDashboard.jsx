@@ -180,7 +180,7 @@ function EventDashboard() {
                                 >
                                     <div className="ed-event-row-top">
                                         <div className="ed-name-col">
-                                            <span className="ed-event-name">{ev.name}</span>
+                                            <span className="ed-event-name" data-testid="event-name">{ev.name}</span>
                                             <span className="ed-event-meta">
                                                 {new Date(ev.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
                                                 {ev.location ? ` · ${ev.location}` : ''}

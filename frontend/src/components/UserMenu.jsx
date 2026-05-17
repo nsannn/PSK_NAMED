@@ -29,7 +29,7 @@ export default function UserMenu() {
         onClick={() => setOpen(!open)}
         aria-label="User menu"
       >
-        <span className="user-menu__avatar">{initials}</span>
+        <span className="user-menu__avatar" data-testid="user-avatar-small">{initials}</span>
         <span className="user-menu__name">{user.firstName}</span>
         <span className={`user-menu__chevron ${open ? 'user-menu__chevron--open' : ''}`}>▾</span>
       </button>

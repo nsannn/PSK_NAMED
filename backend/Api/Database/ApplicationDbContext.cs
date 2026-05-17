@@ -15,6 +15,7 @@ namespace Api.Database
         public DbSet<Ticket> Tickets { get; set; }
         public DbSet<Tag> Tags { get; set; }
         public DbSet<PurchasedTicket> PurchasedTickets { get; set; }
+        public DbSet<Order> Orders { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -26,6 +27,11 @@ namespace Api.Database
                 entity.Property(u => u.Role).HasConversion<string>();
             });
             
+            modelBuilder.Entity<Order>(entity =>
+            {
+                entity.Property(o => o.Status).HasConversion<string>();
+            });
+
             modelBuilder.Entity<Event>()
                 .HasMany(e => e.Tags)
                 .WithMany(t => t.Events);
@@ -35,6 +41,12 @@ namespace Api.Database
                 entity.HasIndex(t => t.EventId);
                 entity.Property(t => t.Status).HasConversion<string>();
             });
+                
+            modelBuilder.Entity<Event>()
+                .HasOne(e => e.CreatedByUser)
+                .WithMany()
+                .HasForeignKey(e => e.CreatedByUserId)
+                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

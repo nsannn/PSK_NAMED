@@ -208,6 +208,7 @@ function EventDetails() {
                                 View as Customer (Test)
                             </button>
                             <button onClick={() => navigate('/edit-event/' + event.id)}>Edit</button>
+                            <button onClick={() => navigate('/event-orders/' + event.id)}>View Orders</button>
                             <button onClick={() => navigate('/event-statistics/' + event.id)}>Report</button>
                             <button>Export Attendees</button>
                             <button onClick={() => setShowCancelModal(true)}>Cancel</button>

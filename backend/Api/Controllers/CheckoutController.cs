@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using Api.Database;
+using Api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,9 +13,7 @@ namespace Api.Controllers
     // TEMP DTO
     public class CreateCheckoutSessionRequest
     {
-        // TEMP: currently uses fictional seeded event ID
         public Guid EventId { get; set; }
-
         public int Quantity { get; set; } = 1;
     }
 
@@ -71,6 +70,15 @@ namespace Api.Controllers
                 {
                     Mode = "payment",
                     CustomerEmail = userEmail,
+                    PaymentIntentData = new SessionPaymentIntentDataOptions
+                    {
+                        Metadata = new Dictionary<string, string>
+                        {
+                            { "eventId", ev.Id.ToString() },
+                            { "userId", userId ?? "" },
+                            { "quantity", req.Quantity.ToString() }
+                        }
+                    },
                     LineItems = new List<SessionLineItemOptions>
                     {
                         new SessionLineItemOptions
@@ -190,6 +198,22 @@ namespace Api.Controllers
                                 if (availableTicketTier != null)
                                 {
                                     availableTicketTier.Sold += quantity;
+                                    
+                                    var order = new Order
+                                    {
+                                        EventId = ev.Id,
+                                        UserId = session.Metadata.TryGetValue("userId", out var uid) && Guid.TryParse(uid, out var userId) ? userId : Guid.Empty,
+                                        CustomerEmail = customerEmail ?? "unknown@example.com",
+                                        Quantity = quantity,
+                                        AmountPaid = (session.AmountTotal ?? 0) / 100m,
+                                        StripeSessionId = session.Id,
+                                        StripePaymentIntentId = session.PaymentIntentId ?? "",
+                                        Status = OrderStatus.Paid,
+                                        CreatedAt = DateTime.UtcNow
+                                    };
+                                    
+                                    _db.Orders.Add(order);
+                                    
                                     await _db.SaveChangesAsync();
                                 }
                             }

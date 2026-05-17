@@ -222,6 +222,7 @@ function MyEventsList() {
                                             key={opt.value}
                                             id="sort_option"
                                             onClick={() => { setSort(opt.value); setShowSortMenu(false); }}
+                                            data-testid="sort-option-test"
                                         >
                                             {opt.label}
                                         </button>
