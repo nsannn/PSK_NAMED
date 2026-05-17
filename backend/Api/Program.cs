@@ -88,6 +88,7 @@ try
     // Add services to the container.
     builder.Services.AddControllers();
     builder.Services.AddScoped<IEmailService, EmailService>();
+    builder.Services.AddScoped<ITicketTokenValidationService,TicketTokenValidationService>();
 
     if (builder.Environment.IsDevelopment())
     {

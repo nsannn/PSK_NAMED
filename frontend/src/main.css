@@ -63,6 +63,7 @@ hr{
     width:100%;
     background-color:var(--primary-detail-border-color);
     margin:1rem auto;
+    transition:background-color 0.2s ease;
 }
 
 /* Utility Classes */
