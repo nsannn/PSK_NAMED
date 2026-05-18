@@ -49,7 +49,7 @@ function EventList() {
         params.set('sort', sort);
 
         try {
-            const data = await apiFetch('/api/events?' + params.toString());
+            const data = await apiFetch('/api/events/myevents?' + params.toString());
             setEvents(data);
         } catch (err) {
             logger.error('Failed to fetch events', err);
