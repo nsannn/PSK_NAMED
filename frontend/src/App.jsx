@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import Navbar from './components/Navbar';
 import MyEventsList from './MyEventsList';
+import EventList from './EventList';
 import CreateEvent from './CreateEvent';
 import EditEvent from './EditEvent';
 import EventDetails from './EventDetails';
@@ -21,6 +22,7 @@ function App() {
         <Navbar />
         <Routes>
           <Route path="/" element={<MyEventsList />} />
+          <Route path="/events" element={<EventList />} />
           <Route path="/create-event" element={<CreateEvent />} />
           <Route path="/edit-event/:id" element={<EditEvent />} />
           <Route path="/event-details/:id" element={<EventDetails />} />
