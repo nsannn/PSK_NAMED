@@ -1,21 +1,26 @@
 import React,{useState,useEffect,useRef} from 'react';
-import "./TicketValidation.css";
 import jsQR from 'jsqr';
 import {apiFetch} from './utils/api';
-import { logger } from './utils/logger';
+import {logger} from './utils/logger';
+import {useAuth} from './context/AuthContext';
+import "./TicketValidation.css";
 
-function TicketValidation(){
+export default function TicketValidation(){
+    const {user,loading}=useAuth();
+    const [status,setStatus]=useState('Scanning...');
+    const [information,setInformation]=useState('Point camera at QR code');
+    const [resultType,setResultType]=useState('');
+
     const videoRef=useRef(null);
     const canvasRef=useRef(null);
     const animFrameRef=useRef(null);
     const streamRef=useRef(null);
     const cooldownRef=useRef(false);
 
-    const [status,setStatus]=useState('Scanning...');
-    const [information,setInformation]=useState('Point camera at QR code');
-    const [resultType,setResultType]=useState('');
-
     useEffect(() => {
+        if(loading || !user)
+            return;
+
         let stopped=false;
 
         async function startCamera(){
@@ -92,7 +97,7 @@ function TicketValidation(){
             if(streamRef.current)
                 streamRef.current.getTracks().forEach(track => track.stop());
         };
-    },[]);
+    },[loading,user]);
 
     async function handleQRCode(qrText){
         cooldownRef.current=true;
@@ -101,7 +106,7 @@ function TicketValidation(){
             setStatus('Checking ticket...');
             setInformation('Please wait.');
 
-            const data=await apiFetch('/api/ticketvalidation/validate?token='+encodeURIComponent(qrText));
+            const data=await apiFetch('/api/purchasedticket/validate?token='+encodeURIComponent(qrText));
 
             showResult(
                 data.status,
@@ -145,33 +150,28 @@ function TicketValidation(){
         ].filter(Boolean).join('\n');
     }
 
-    const handleTicketAddToUser=async() => {
-        const id="93b10632-696c-495d-9a1f-a7b99fcc4022";
-
-        apiFetch('/api/ticketvalidation/'+id)
-            .then(data => {
-                console.log(data);
-            })
-            .catch(err => {
-                logger.error('Failed to fetch ticket token',err);
-            });
-    }
-
     return(
         <div id='ticket_validation_container'>
-            <div id='camera_container'>
-                <video ref={videoRef} id='camera' autoPlay playsInline/>
-                <div id='scan_frame'/>
-            </div>
-            <div id="ticket_info_container" className={`align_column ${resultType}`}>
-                <span id="status">{status}</span>
-                <hr/>
-                <div id="ticket_info">{information}</div>
-                <button onClick={handleTicketAddToUser}>Test Token Gen</button>
-            </div>
-            <canvas ref={canvasRef} id="canvas" hidden></canvas>
+            {loading ? (
+                <div id="loading_anim"/>
+            ):user ? (
+                <>
+                    <div id='camera_container'>
+                        <video ref={videoRef} id='camera' autoPlay playsInline/>
+                        <div id='scan_frame'/>
+                    </div>
+                    <div id="ticket_info_container" className={`align_column ${resultType}`}>
+                        <span id="status">{status}</span>
+                        <hr/>
+                        <div id="ticket_info">{information}</div>
+                    </div>
+                    <canvas ref={canvasRef} id="canvas" hidden></canvas>
+                </>
+            ):(
+                <div id="ticket_info_container" className={`align_column ${resultType}`}>
+                        <span id="status">Please sign in to validate tickets</span>
+                </div>
+            )}
         </div>
-    )
+    );
 }
-
-export default TicketValidation;

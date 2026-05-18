@@ -16,6 +16,9 @@
 		public Guid TicketId {get;set;}
 		public Ticket Ticket {get;set;}=null!;
 
+		public string EventNameSnapshot {get;set;}=string.Empty;
+		public DateTime? EventDateSnapshot {get;set;}
+
 		public string TicketTypeSnapshot {get;set;}=string.Empty;
 		public decimal PriceSnapshot {get;set;}
 
