@@ -106,7 +106,7 @@ export default function TicketValidation(){
             setStatus('Checking ticket...');
             setInformation('Please wait.');
 
-            const data=await apiFetch('/api/purchasedticket/validate?token='+encodeURIComponent(qrText));
+            const data=await apiFetch('/api/purchasedtickets/validate?token='+encodeURIComponent(qrText));
 
             showResult(
                 data.status,

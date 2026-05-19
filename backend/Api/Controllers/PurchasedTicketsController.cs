@@ -6,23 +6,70 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using Api.Dtos.Ticket;
 
 namespace Api.Controllers{
     [ApiController]
     [Route("api/[controller]")]
-    public class PurchasedTicketController : ControllerBase{
+    public class PurchasedTicketsController : ControllerBase{
         private readonly ApplicationDbContext _db;
         private readonly ITicketTokenValidationService _ticketTokenService;
 
-        public PurchasedTicketController(ApplicationDbContext db,ITicketTokenValidationService ticketTokenService){
+        public PurchasedTicketsController(ApplicationDbContext db,ITicketTokenValidationService ticketTokenService){
             _db=db;
             _ticketTokenService=ticketTokenService;
         }
 
-        // GET: api/ticketvalidation/{id}
+        //GET: api/purchasedtickets
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> GetUserPurchasedTickets(){
+            var userIdValue=User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if(!Guid.TryParse(userIdValue, out var userId))
+                return Unauthorized();
+
+            var tickets=await _db.PurchasedTickets
+                .Where(t => t.UserId==userId)
+                .OrderBy(t => t.EventDateSnapshot)
+                .ThenBy(t => t.TicketTypeSnapshot)
+                .ToListAsync();
+
+            var result=tickets
+                .GroupBy(t => new {
+                    t.EventId,
+                    t.EventNameSnapshot,
+                    t.EventDateSnapshot
+                })
+                .Select(group => new MyTicketGroupDto {
+                    EventId=group.Key.EventId,
+                    EventName=group.Key.EventNameSnapshot,
+                    EventDate=group.Key.EventDateSnapshot,
+                    Tickets=group.Select(ticket => new MyTicketDto {
+                        PurchasedTicketId=ticket.Id,
+                        TicketType=ticket.TicketTypeSnapshot,
+                        Price=ticket.PriceSnapshot,
+                        Status=ticket.Status.ToString(),
+                        CreatedAt=ticket.CreatedAt,
+                        UsedAt=ticket.UsedAt
+                    }).ToList()
+                })
+                .ToList();
+
+            return Ok(result);
+        }
+
+        // GET: api/purchasedtickets/{id}
+        [Authorize]
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetTicketToken(Guid id){
+            var userIdValue=User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if(!Guid.TryParse(userIdValue, out var userId))
+                return Unauthorized();
+
             var ticket=await _db.PurchasedTickets
+                .Where(t => t.UserId==userId)
                 .FirstOrDefaultAsync(t => t.Id==id);
             
             if(ticket==null)
@@ -33,7 +80,7 @@ namespace Api.Controllers{
             return Ok(new {qrToken});
         }
 
-        // GET: api/ticketvalidation/validate
+        // GET: api/purchasedtickets/validate
         [Authorize]
         [HttpGet("validate")]
         public async Task<IActionResult> ValidateTicket([FromQuery] String token) {

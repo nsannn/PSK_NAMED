@@ -7,6 +7,7 @@ import EditEvent from './EditEvent';
 import EventDetails from './EventDetails';
 import EventStatistics from './EventStatistics';
 import EventDashboard from './EventDashboard';
+import MyTicketsList from './MyTicketsList';
 import TicketValidation from "./TicketValidation";
 import CheckoutSuccess from './components/CheckoutSuccess';
 import CheckoutCancel from './components/CheckoutCancel';
@@ -31,6 +32,7 @@ function App() {
           <Route path="/checkout/success" element={<CheckoutSuccess />} />
           <Route path="/checkout/cancel" element={<CheckoutCancel />} />
           <Route path="/event/:id" element={<EventPage />} />
+          <Route path="/my-tickets" element={<MyTicketsList />} />
           <Route path="/ticket-validation" element={<TicketValidation />} />
         </Routes>
       </AuthProvider>
