@@ -12,8 +12,8 @@ const SORT_OPTIONS = [
     { value: 'oldest',     label: 'Oldest' },
     { value: 'price-asc',  label: 'Price ↑' },
     { value: 'price-desc', label: 'Price ↓' },
-    { value: 'name-asc',   label: 'Name A–Z' },
-    { value: 'name-desc',  label: 'Name Z–A' },
+    { value: 'name-asc',   label: 'Name A-Z' },
+    { value: 'name-desc',  label: 'Name Z-A' },
 ];
 
 function EventList() {

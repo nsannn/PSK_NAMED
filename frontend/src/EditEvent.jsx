@@ -14,9 +14,9 @@ function EditEvent() {
     const [time, setTime] = useState('');
     const [location, setLocation] = useState('');
     const [description, setDescription] = useState('');
-    
+
     const [ticketTiers, setTicketTiers] = useState([]);
-    
+
     const [eventType, setEventType] = useState('');
     const [tags, setTags] = useState([]);
 
@@ -26,8 +26,8 @@ function EditEvent() {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
 
-    const [hasPoster,     setHasPoster]     = useState(false);
-    const [posterFile,    setPosterFile]    = useState(null);
+    const [hasPoster, setHasPoster] = useState(false);
+    const [posterFile, setPosterFile] = useState(null);
     const [posterPreview, setPosterPreview] = useState(null);
 
     useEffect(() => {
@@ -86,7 +86,7 @@ function EditEvent() {
 
     const handleSubmit = async () => {
         setIsSubmitting(true);
-        
+
         let combinedDate = new Date();
         if (date && time) {
             combinedDate = new Date(date + 'T' + time + ':00');
@@ -160,7 +160,7 @@ function EditEvent() {
                         <span id="window_small_info">This action cannot be undone. All event data will be lost.</span>
                         <div id="delete_controls" className="align_row">
                             <button onClick={() => setShowDeleteModal(false)}>Cancel</button>
-                            <button onClick={handleDelete} disabled={isDeleting} data-testid="confirm_delete">{isDeleting ? 'Deleting...' : 'Delete'}</button>
+                            <button onClick={handleDelete} disabled={isDeleting}>{isDeleting ? 'Deleting...' : 'Delete'}</button>
                         </div>
                     </div>
                 </>
@@ -176,7 +176,7 @@ function EditEvent() {
                             <div id="staff_info_card_name">
                                 <span>Event Details</span>
                             </div>
-                            <hr/>
+                            <hr />
                             <div id="staff_event_card_input" className="align_column">
                                 <label htmlFor="staff_event_name">Event Name</label>
                                 <input id="staff_event_name" type="text" placeholder="Event Name" value={title} onChange={(e) => setTitle(e.target.value)} />
@@ -272,10 +272,10 @@ function EditEvent() {
                             <div id="staff_info_card_name">
                                 <span>Event Type</span>
                             </div>
-                            <hr/>
+                            <hr />
                             <div id="staff_event_info_list" className="align_row edit-event-type-tags-container">
                                 {['Concert', 'Festival', 'Conference', 'Exhibition', 'Sports'].map(type => (
-                                    <button 
+                                    <button
                                         key={type}
                                         id="staff_event_info_button"
                                         className={eventType === type ? 'option_selected' : ''}
@@ -290,10 +290,10 @@ function EditEvent() {
                             <div id="staff_info_card_name">
                                 <span>Tags</span>
                             </div>
-                            <hr/>
+                            <hr />
                             <div id="staff_event_info_list" className="align_row edit-event-type-tags-container">
                                 {['Online', 'Outdoor', 'Indoor', 'Family'].map(tag => (
-                                    <button 
+                                    <button
                                         key={tag}
                                         id="staff_event_info_button"
                                         className={tags.includes(tag) ? 'option_selected' : ''}
@@ -304,7 +304,7 @@ function EditEvent() {
                                 ))}
                             </div>
                         </div>
-                        <button id="staff_event_controls" className="staff_event_delete edit-event-delete-button" data-testid="staff_event_delete" onClick={() => setShowDeleteModal(true)}>Delete</button>
+                        <button id="staff_event_controls" className="staff_event_delete edit-event-delete-button" onClick={() => setShowDeleteModal(true)}>Delete</button>
                         <button id="staff_event_controls" onClick={() => navigate('/')}>Cancel</button>
                         <button id="staff_event_controls" onClick={handleSubmit} disabled={isSubmitting}>{isSubmitting ? 'Saving...' : 'Save Changes'}</button>
                     </div>

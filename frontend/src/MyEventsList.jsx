@@ -6,49 +6,49 @@ import './MyEventsList.css';
 import './main.css';
 
 const EVENT_TYPES = ['Concert', 'Festival', 'Conference', 'Exhibition', 'Sports'];
-const TAG_OPTIONS  = ['Online', 'Outdoor', 'Indoor', 'Family'];
+const TAG_OPTIONS = ['Online', 'Outdoor', 'Indoor', 'Family'];
 const SORT_OPTIONS = [
-    { value: 'newest',     label: 'Newest' },
-    { value: 'oldest',     label: 'Oldest' },
-    { value: 'price-asc',  label: 'Price ↑' },
+    { value: 'newest', label: 'Newest' },
+    { value: 'oldest', label: 'Oldest' },
+    { value: 'price-asc', label: 'Price ↑' },
     { value: 'price-desc', label: 'Price ↓' },
-    { value: 'name-asc',   label: 'Name A–Z' },
-    { value: 'name-desc',  label: 'Name Z–A' },
+    { value: 'name-asc', label: 'Name A-Z' },
+    { value: 'name-desc', label: 'Name Z-A' },
 ];
 
 function MyEventsList() {
     const navigate = useNavigate();
 
-    const [events, setEvents]   = useState([]);
+    const [events, setEvents] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    const [search,            setSearch]            = useState('');
+    const [search, setSearch] = useState('');
     const [selectedEventType, setSelectedEventType] = useState('');
-    const [selectedTags,      setSelectedTags]      = useState([]);
-    const [minPrice,          setMinPrice]           = useState('');
-    const [maxPrice,          setMaxPrice]           = useState('');
-    const [dateFrom,          setDateFrom]           = useState('');
-    const [dateTo,            setDateTo]             = useState('');
-    const [locationFilter,    setLocationFilter]     = useState('');
-    const [sort,              setSort]               = useState('newest');
-    const [showSortMenu,      setShowSortMenu]       = useState(false);
+    const [selectedTags, setSelectedTags] = useState([]);
+    const [minPrice, setMinPrice] = useState('');
+    const [maxPrice, setMaxPrice] = useState('');
+    const [dateFrom, setDateFrom] = useState('');
+    const [dateTo, setDateTo] = useState('');
+    const [locationFilter, setLocationFilter] = useState('');
+    const [sort, setSort] = useState('newest');
+    const [showSortMenu, setShowSortMenu] = useState(false);
 
     const [cancellingEventId, setCancellingEventId] = useState(null);
-    const [isDeleting,        setIsDeleting]         = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const debounceRef = useRef(null);
 
     const fetchEvents = useCallback(async () => {
         setLoading(true);
         const params = new URLSearchParams();
-        if (search)            params.set('search',    search);
+        if (search) params.set('search', search);
         if (selectedEventType) params.set('eventType', selectedEventType);
         if (selectedTags.length > 0) params.set('tags', selectedTags.join(','));
-        if (minPrice)          params.set('minPrice',  minPrice);
-        if (maxPrice)          params.set('maxPrice',  maxPrice);
-        if (dateFrom)          params.set('dateFrom',  dateFrom);
-        if (dateTo)            params.set('dateTo',    dateTo);
-        if (locationFilter)    params.set('location',  locationFilter);
+        if (minPrice) params.set('minPrice', minPrice);
+        if (maxPrice) params.set('maxPrice', maxPrice);
+        if (dateFrom) params.set('dateFrom', dateFrom);
+        if (dateTo) params.set('dateTo', dateTo);
+        if (locationFilter) params.set('location', locationFilter);
         params.set('sort', sort);
 
         try {
@@ -222,7 +222,6 @@ function MyEventsList() {
                                             key={opt.value}
                                             id="sort_option"
                                             onClick={() => { setSort(opt.value); setShowSortMenu(false); }}
-                                            data-testid="sort-option-test"
                                         >
                                             {opt.label}
                                         </button>
