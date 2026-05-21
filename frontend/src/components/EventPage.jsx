@@ -250,7 +250,7 @@ export default function EventPage() {
                     {checkoutError && <div className="checkout-card__error" style={{ color: '#f87171', background: 'rgba(220,60,60,0.1)', padding: '0.6rem 1rem', borderRadius: '0.65rem', border: '1px solid rgba(220,60,60,0.25)', marginBottom: '1rem', fontSize: '0.88rem' }}>{checkoutError}</div>}
 
                     {/* BUTTON */}
-                    <button 
+                    <button
                         className={`checkout-button ${!user ? 'checkout-button--auth' : ''}`}
                         onClick={handleCheckout}
                         disabled={checkoutLoading || totalQuantity < 1}

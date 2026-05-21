@@ -40,34 +40,34 @@ function EventStatistics() {
     }, [id]);
 
     if (loading) return <div className="page-loading">Loading statistics...</div>;
-    if (!event)  return <div className="page-loading">Event not found.</div>;
+    if (!event) return <div className="page-loading">Event not found.</div>;
 
     const tickets = event.tickets ?? [];
 
-    const totalSold     = tickets.reduce((s, t) => s + t.sold, 0);
+    const totalSold = tickets.reduce((s, t) => s + t.sold, 0);
     const totalCapacity = tickets.reduce((s, t) => s + t.quantity, 0);
-    const totalRevenue  = tickets.reduce((s, t) => s + t.sold * t.price, 0);
-    const potentialRev  = tickets.reduce((s, t) => s + t.quantity * t.price, 0);
-    const fillRate      = totalCapacity > 0 ? (totalSold / totalCapacity) * 100 : 0;
-    const avgPerTicket  = totalSold > 0 ? totalRevenue / totalSold : 0;
-    const revenueLeft   = potentialRev - totalRevenue;
-    const minPrice      = tickets.length > 0 ? Math.min(...tickets.map(t => t.price)) : 0;
-    const maxPrice      = tickets.length > 0 ? Math.max(...tickets.map(t => t.price)) : 0;
-    const avgPrice      = tickets.length > 0 ? tickets.reduce((s, t) => s + t.price, 0) / tickets.length : 0;
-    const revFillPct    = potentialRev > 0 ? (totalRevenue / potentialRev) * 100 : 0;
+    const totalRevenue = tickets.reduce((s, t) => s + t.sold * t.price, 0);
+    const potentialRev = tickets.reduce((s, t) => s + t.quantity * t.price, 0);
+    const fillRate = totalCapacity > 0 ? (totalSold / totalCapacity) * 100 : 0;
+    const avgPerTicket = totalSold > 0 ? totalRevenue / totalSold : 0;
+    const revenueLeft = potentialRev - totalRevenue;
+    const minPrice = tickets.length > 0 ? Math.min(...tickets.map(t => t.price)) : 0;
+    const maxPrice = tickets.length > 0 ? Math.max(...tickets.map(t => t.price)) : 0;
+    const avgPrice = tickets.length > 0 ? tickets.reduce((s, t) => s + t.price, 0) / tickets.length : 0;
+    const revFillPct = potentialRev > 0 ? (totalRevenue / potentialRev) * 100 : 0;
 
     const tierStats = tickets.map(t => ({
         ...t,
-        fill:    t.quantity > 0 ? (t.sold / t.quantity) * 100 : 0,
+        fill: t.quantity > 0 ? (t.sold / t.quantity) * 100 : 0,
         revenue: t.sold * t.price,
-        share:   totalRevenue > 0 ? (t.sold * t.price / totalRevenue) * 100 : 0,
+        share: totalRevenue > 0 ? (t.sold * t.price / totalRevenue) * 100 : 0,
     }));
 
     const topRevenueT = tierStats.length > 0 ? tierStats.reduce((a, b) => a.revenue >= b.revenue ? a : b) : null;
-    const topFillT    = tierStats.length > 0 ? tierStats.reduce((a, b) => a.fill >= b.fill ? a : b) : null;
+    const topFillT = tierStats.length > 0 ? tierStats.reduce((a, b) => a.fill >= b.fill ? a : b) : null;
 
     const eventTypeTags = (event.tags ?? []).filter(t => EVENT_TYPES.includes(t.name));
-    const regularTags   = (event.tags ?? []).filter(t => !EVENT_TYPES.includes(t.name));
+    const regularTags = (event.tags ?? []).filter(t => !EVENT_TYPES.includes(t.name));
 
     const formattedDate = new Date(event.date).toLocaleDateString('en-GB', {
         day: '2-digit', month: 'short', year: 'numeric',
@@ -86,9 +86,9 @@ function EventStatistics() {
             {/* Row 1: three KPI cards */}
             <div className="es-row">
                 <InfoCard title="Sales Overview" className="es-kpi">
-                    <StatRow label="Tickets Sold"   value={totalSold} />
+                    <StatRow label="Tickets Sold" value={totalSold} />
                     <StatRow label="Total Capacity" value={totalCapacity} />
-                    <StatRow label="Available"      value={totalCapacity - totalSold} />
+                    <StatRow label="Available" value={totalCapacity - totalSold} />
                     <div id="event_sold_tickets_container" className="es-progress">
                         <div id="event_sold_tickets" style={{ width: fillRate.toFixed(1) + '%' }} />
                     </div>
@@ -96,9 +96,9 @@ function EventStatistics() {
                 </InfoCard>
 
                 <InfoCard title="Revenue Overview" className="es-kpi">
-                    <StatRow label="Total Revenue"     value={`€${totalRevenue.toFixed(2)}`} />
+                    <StatRow label="Total Revenue" value={`€${totalRevenue.toFixed(2)}`} />
                     <StatRow label="Potential Revenue" value={`€${potentialRev.toFixed(2)}`} />
-                    <StatRow label="Revenue Left"      value={`€${revenueLeft.toFixed(2)}`} />
+                    <StatRow label="Revenue Left" value={`€${revenueLeft.toFixed(2)}`} />
                     <div id="event_sold_tickets_container" className="es-progress">
                         <div id="event_sold_tickets" style={{ width: revFillPct.toFixed(1) + '%' }} />
                     </div>
@@ -106,9 +106,9 @@ function EventStatistics() {
                 </InfoCard>
 
                 <InfoCard title="Pricing" className="es-kpi">
-                    <StatRow label="Min Price"  value={`€${minPrice.toFixed(2)}`} />
-                    <StatRow label="Max Price"  value={`€${maxPrice.toFixed(2)}`} />
-                    <StatRow label="Avg Price"  value={`€${avgPrice.toFixed(2)}`} />
+                    <StatRow label="Min Price" value={`€${minPrice.toFixed(2)}`} />
+                    <StatRow label="Max Price" value={`€${maxPrice.toFixed(2)}`} />
+                    <StatRow label="Avg Price" value={`€${avgPrice.toFixed(2)}`} />
                     <StatRow label="Tier Count" value={tickets.length} />
                 </InfoCard>
             </div>
@@ -121,14 +121,14 @@ function EventStatistics() {
                     ) : (
                         <div className="es-tier-list">
                             {tierStats.map(tier => (
-                                <div key={tier.id} className="es-tier-item" data-testid={`tier-${tier.type.toLowerCase()}`}>
+                                <div key={tier.id} className="es-tier-item">
                                     <div className="es-tier-top">
                                         <span className="es-tier-name">{tier.type}</span>
                                         {[
                                             { label: 'Sold / Total', value: `${tier.sold} / ${tier.quantity}` },
-                                            { label: 'Price',        value: `€${tier.price.toFixed(2)}` },
-                                            { label: 'Revenue',      value: `€${tier.revenue.toFixed(2)}` },
-                                            { label: 'Rev. Share',   value: `${tier.share.toFixed(1)}%` },
+                                            { label: 'Price', value: `€${tier.price.toFixed(2)}` },
+                                            { label: 'Revenue', value: `€${tier.revenue.toFixed(2)}` },
+                                            { label: 'Rev. Share', value: `${tier.share.toFixed(1)}%` },
                                         ].map(s => (
                                             <div key={s.label} className="es-tier-stat">
                                                 <span className="es-tier-stat-label">{s.label}</span>
@@ -176,7 +176,7 @@ function EventStatistics() {
                 </InfoCard>
 
                 <InfoCard title="Event Info" className="es-flex-2">
-                    <StatRow label="Date"     value={formattedDate} />
+                    <StatRow label="Date" value={formattedDate} />
                     <StatRow label="Location" value={event.location} />
                     {eventTypeTags.length > 0 && (
                         <div id="event_selling_info" className="align_row es-tag-row">

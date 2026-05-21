@@ -7,12 +7,12 @@ import './main.css';
 
 const SORT_OPTIONS = [
     { value: 'revenue-desc', label: 'Revenue ↓' },
-    { value: 'revenue-asc',  label: 'Revenue ↑' },
-    { value: 'fill-desc',    label: 'Fill Rate ↓' },
-    { value: 'fill-asc',     label: 'Fill Rate ↑' },
-    { value: 'date-desc',    label: 'Newest' },
-    { value: 'date-asc',     label: 'Oldest' },
-    { value: 'name-asc',     label: 'Name A–Z' },
+    { value: 'revenue-asc', label: 'Revenue ↑' },
+    { value: 'fill-desc', label: 'Fill Rate ↓' },
+    { value: 'fill-asc', label: 'Fill Rate ↑' },
+    { value: 'date-desc', label: 'Newest' },
+    { value: 'date-asc', label: 'Oldest' },
+    { value: 'name-asc', label: 'Name A-Z' },
 ];
 
 function StatRow({ label, value }) {
@@ -48,12 +48,12 @@ function EventDashboard() {
 
     if (loading) return <div className="page-loading">Loading dashboard...</div>;
 
-    const totalEvents   = events.length;
-    const totalSold     = events.reduce((s, e) => s + e.ticketsSold, 0);
+    const totalEvents = events.length;
+    const totalSold = events.reduce((s, e) => s + e.ticketsSold, 0);
     const totalCapacity = events.reduce((s, e) => s + e.ticketsTotal, 0);
-    const totalRevenue  = events.reduce((s, e) => s + (e.revenueAmount ?? 0), 0);
-    const overallFill   = totalCapacity > 0 ? (totalSold / totalCapacity) * 100 : 0;
-    const now           = new Date();
+    const totalRevenue = events.reduce((s, e) => s + (e.revenueAmount ?? 0), 0);
+    const overallFill = totalCapacity > 0 ? (totalSold / totalCapacity) * 100 : 0;
+    const now = new Date();
 
     const topByRevenue = events.length > 0
         ? events.reduce((a, b) => (a.revenueAmount ?? 0) >= (b.revenueAmount ?? 0) ? a : b)
@@ -69,7 +69,7 @@ function EventDashboard() {
     const sorted = [...events].sort((a, b) => {
         switch (sort) {
             case 'revenue-desc': return (b.revenueAmount ?? 0) - (a.revenueAmount ?? 0);
-            case 'revenue-asc':  return (a.revenueAmount ?? 0) - (b.revenueAmount ?? 0);
+            case 'revenue-asc': return (a.revenueAmount ?? 0) - (b.revenueAmount ?? 0);
             case 'fill-desc': {
                 const fa = a.ticketsTotal > 0 ? a.ticketsSold / a.ticketsTotal : 0;
                 const fb = b.ticketsTotal > 0 ? b.ticketsSold / b.ticketsTotal : 0;
@@ -80,10 +80,10 @@ function EventDashboard() {
                 const fb = b.ticketsTotal > 0 ? b.ticketsSold / b.ticketsTotal : 0;
                 return fa - fb;
             }
-            case 'date-asc':  return new Date(a.date) - new Date(b.date);
+            case 'date-asc': return new Date(a.date) - new Date(b.date);
             case 'date-desc': return new Date(b.date) - new Date(a.date);
-            case 'name-asc':  return a.name.localeCompare(b.name);
-            default:          return 0;
+            case 'name-asc': return a.name.localeCompare(b.name);
+            default: return 0;
         }
     });
 
@@ -99,17 +99,17 @@ function EventDashboard() {
             <div className="ed-kpi-grid">
                 <KpiCard title="Total Events">
                     <StatRow label="All Events" value={totalEvents} />
-                    <StatRow label="Upcoming"   value={events.filter(e => new Date(e.date) >= now).length} />
-                    <StatRow label="Past"       value={events.filter(e => new Date(e.date) < now).length} />
+                    <StatRow label="Upcoming" value={events.filter(e => new Date(e.date) >= now).length} />
+                    <StatRow label="Past" value={events.filter(e => new Date(e.date) < now).length} />
                 </KpiCard>
 
                 <KpiCard title="Total Revenue">
-                    <StatRow label="Earned"        value={`€${totalRevenue.toFixed(2)}`} />
+                    <StatRow label="Earned" value={`€${totalRevenue.toFixed(2)}`} />
                     <StatRow label="Avg per Event" value={`€${totalEvents > 0 ? (totalRevenue / totalEvents).toFixed(2) : '0.00'}`} />
                 </KpiCard>
 
                 <KpiCard title="Ticket Sales">
-                    <StatRow label="Sold"           value={totalSold} />
+                    <StatRow label="Sold" value={totalSold} />
                     <StatRow label="Total Capacity" value={totalCapacity} />
                     <div id="event_sold_tickets_container">
                         <div id="event_sold_tickets" style={{ width: overallFill.toFixed(1) + '%' }} />
@@ -180,7 +180,7 @@ function EventDashboard() {
                                 >
                                     <div className="ed-event-row-top">
                                         <div className="ed-name-col">
-                                            <span className="ed-event-name" data-testid="event-name">{ev.name}</span>
+                                            <span className="ed-event-name">{ev.name}</span>
                                             <span className="ed-event-meta">
                                                 {new Date(ev.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
                                                 {ev.location ? ` · ${ev.location}` : ''}
@@ -188,10 +188,10 @@ function EventDashboard() {
                                         </div>
                                         <div className="ed-stats-col">
                                             {[
-                                                { label: 'Tickets',   value: `${ev.ticketsSold} / ${ev.ticketsTotal}` },
+                                                { label: 'Tickets', value: `${ev.ticketsSold} / ${ev.ticketsTotal}` },
                                                 { label: 'Fill Rate', value: `${fill.toFixed(1)}%` },
-                                                { label: 'Revenue',   value: `€${(ev.revenueAmount ?? 0).toFixed(2)}` },
-                                                { label: 'From',      value: `€${Number(ev.price).toFixed(2)}` },
+                                                { label: 'Revenue', value: `€${(ev.revenueAmount ?? 0).toFixed(2)}` },
+                                                { label: 'From', value: `€${Number(ev.price).toFixed(2)}` },
                                             ].map(stat => (
                                                 <div key={stat.label} className="ed-stat-chip">
                                                     <span className="ed-stat-label">{stat.label}</span>

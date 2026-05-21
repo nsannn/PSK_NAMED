@@ -27,10 +27,10 @@ export default function Navbar() {
   return (
     <>
       <nav className="navbar" id="navbar">
-        <div 
-          className="navbar__logo" 
-          id="site-logo" 
-          onClick={() => navigate('/')} 
+        <div
+          className="navbar__logo"
+          id="site-logo"
+          onClick={() => navigate('/')}
           style={{ cursor: 'pointer' }}
         >
           Named
@@ -46,8 +46,8 @@ export default function Navbar() {
           {user ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
               <div id="notification_container">
-                <button 
-                  id="notification_button" 
+                <button
+                  id="notification_button"
                   className="btn btn--outline"
                   style={{ width: '40px', height: '40px', padding: '0', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem' }}
                   title="Notifications"
@@ -81,7 +81,7 @@ export default function Navbar() {
 
       {/* Mobile sidebar */}
       <div className={`mobile-overlay ${mobileOpen ? 'mobile-overlay--visible' : ''}`}
-           onClick={() => setMobileOpen(false)} />
+        onClick={() => setMobileOpen(false)} />
       <aside className={`mobile-sidebar ${mobileOpen ? 'mobile-sidebar--open' : ''}`} id="mobile-sidebar">
         <div className="mobile-sidebar__links">
           <button className="mobile-sidebar__link" onClick={() => navigate('/dashboard')}>Dashboard</button>
@@ -91,8 +91,8 @@ export default function Navbar() {
         <div className="mobile-sidebar__actions">
           {user ? (
             <>
-              <button 
-                className="btn btn--outline btn--full" 
+              <button
+                className="btn btn--outline btn--full"
                 style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem' }}
               >
                 🔔 Notifications
