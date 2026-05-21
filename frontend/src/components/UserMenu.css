@@ -138,10 +138,18 @@
   cursor: pointer;
   transition: background 0.15s, color 0.15s;
   font-family: 'Inter', sans-serif;
+}
+
+.user-menu__item#btn-logout{
   border-radius: 0 0 0.75rem 0.75rem;
 }
 
 .user-menu__item:hover {
+  background: var(--surface-3);
+  color: #f0f0f0;
+}
+
+.user-menu__item#btn-logout:hover {
   background: var(--surface-3);
   color: #ff6b6b;
 }

@@ -54,6 +54,10 @@ namespace Api.Database
                     .WithMany()
                     .HasForeignKey(t => t.TicketId)
                     .OnDelete(DeleteBehavior.SetNull);
+                entity.HasOne(t => t.Order)
+                    .WithMany(o => o.PurchasedTickets)
+                    .HasForeignKey(t => t.OrderId)
+                    .OnDelete(DeleteBehavior.SetNull);
             });
         }
     }
