@@ -120,6 +120,18 @@ namespace Api.Controllers{
                     UsedAt=ticket.UsedAt
                 });
 
+            if(ticket.Status == PurchasedTicketStatus.Refunded)
+                return Ok(new TicketValidationDto {
+                    Status = "refunded",
+                    Title = "Refunded Ticket",
+                    Message = "This ticket was refunded and is no longer valid.",
+                    PurchasedTicketId = ticket.Id,
+                    EventName = ticket.EventNameSnapshot,
+                    TicketType = ticket.TicketTypeSnapshot,
+                    Price = ticket.PriceSnapshot,
+                    EventDate = ticket.EventDateSnapshot
+                });
+
             if(ticket.EventDateSnapshot<DateTime.UtcNow)
                 return Ok(new TicketValidationDto{
                     Status="expired",

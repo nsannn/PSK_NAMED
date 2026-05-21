@@ -67,6 +67,7 @@ namespace Api.Controllers
             var order = await _db.Orders
                 .Include(o => o.Event)
                 .Include(o => o.Event.Tickets)
+                .Include(o => o.PurchasedTickets)
                 .FirstOrDefaultAsync(o => o.Id == orderId);
 
             if (order == null) return NotFound();
@@ -91,11 +92,15 @@ namespace Api.Controllers
                     order.Status = OrderStatus.Refunded;
                     order.RefundedAt = DateTime.UtcNow;
 
-                    var priceInfo = (order.AmountPaid / order.Quantity);
-                    var ticketTier = order.Event.Tickets.FirstOrDefault(t => t.Price == priceInfo) ?? order.Event.Tickets.FirstOrDefault();
-                    if (ticketTier != null && ticketTier.Sold >= order.Quantity)
-                    {
-                        ticketTier.Sold -= order.Quantity;
+                    foreach(var ticketGroup in order.PurchasedTickets.GroupBy(t => t.TicketId)) {
+                        var ticketTier = order.Event.Tickets.FirstOrDefault(t => t.Id == ticketGroup.Key);
+
+                        if(ticketTier != null)
+                            ticketTier.Sold = Math.Max(0, ticketTier.Sold - ticketGroup.Count());
+                    }
+
+                    foreach(var purchasedTicket in order.PurchasedTickets) {
+                        purchasedTicket.Status = PurchasedTicketStatus.Refunded;
                     }
 
                     await _db.SaveChangesAsync();
@@ -126,6 +131,7 @@ namespace Api.Controllers
              return Forbid();
 
             var orders = await _db.Orders
+                .Include(o => o.PurchasedTickets)
                 .Where(o => o.EventId == eventId && o.Status == OrderStatus.Paid)
                 .ToListAsync();
 
@@ -148,11 +154,15 @@ namespace Api.Controllers
                         order.Status = OrderStatus.Refunded;
                         order.RefundedAt = DateTime.UtcNow;
                         
-                        var priceInfo = (order.AmountPaid / order.Quantity);
-                        var ticketTier = ev.Tickets.FirstOrDefault(t => t.Price == priceInfo) ?? ev.Tickets.FirstOrDefault();
-                        if (ticketTier != null && ticketTier.Sold >= order.Quantity)
-                        {
-                            ticketTier.Sold -= order.Quantity;
+                        foreach(var ticketGroup in order.PurchasedTickets.GroupBy(t => t.TicketId)) {
+                            var ticketTier = order.Event.Tickets.FirstOrDefault(t => t.Id == ticketGroup.Key);
+
+                            if(ticketTier != null)
+                                ticketTier.Sold = Math.Max(0, ticketTier.Sold - ticketGroup.Count());
+                        }
+
+                        foreach(var purchasedTicket in order.PurchasedTickets) {
+                            purchasedTicket.Status = PurchasedTicketStatus.Refunded;
                         }
                         
                         refundCount++;

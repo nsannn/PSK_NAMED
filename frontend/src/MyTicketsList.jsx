@@ -21,6 +21,7 @@ export default function MyTicketsList(){
         async function loadTickets(){
             const data=await apiFetch('/api/purchasedtickets');
             setTicketGroups(data);
+            console.log(data)
         }
 
         loadTickets();
@@ -100,7 +101,7 @@ export default function MyTicketsList(){
                         <button id="my_tickets_option" className={statusFilter==='all' ? 'selected':''} onClick={() => setStatusFilter('all')}>All</button>
                         <button id="my_tickets_option" className={statusFilter==='active' ? 'selected':''} onClick={() => setStatusFilter('active')}>Active</button>
                         <button id="my_tickets_option" className={statusFilter==='used' ? 'selected':''} onClick={() => setStatusFilter('used')}>Used</button>
-                        <button id="my_tickets_option" className={statusFilter==='cancelled' ? 'selected':''} onClick={() => setStatusFilter('cancelled')}>Cancelled</button>
+                        <button id="my_tickets_option" className={statusFilter==='refunded' ? 'selected':''} onClick={() => setStatusFilter('refunded')}>Refunded</button>
                     </div>
                     <div id="my_tickets_group_list" className="align_column">
                         {filteredTicketGroup.length===0 ? (
@@ -125,7 +126,9 @@ export default function MyTicketsList(){
                                         <div key={ticket.purchasedTicketId} id="my_tickets_ticket">
                                             <span>{ticket.ticketType}</span>
                                             <span>Status: {ticket.status}</span>
-                                            <button onClick={() => openQRCodeWindow(ticket)}>Show QR Code</button>
+                                            {ticket.status != "Refunded" && (
+                                                <button onClick={() => openQRCodeWindow(ticket)}>Show QR Code</button>
+                                            )}
                                         </div>
                                     ))}
                                 </div>
