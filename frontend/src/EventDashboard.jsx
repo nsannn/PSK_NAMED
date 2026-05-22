@@ -178,30 +178,34 @@ function EventDashboard() {
                                     className="ed-event-row"
                                     onClick={() => navigate('/event-details/' + ev.id)}
                                 >
-                                    <div className="ed-event-row-top">
-                                        <div className="ed-name-col">
+                                    <div className="ed-name-col">
+                                        <div className="ed-event-header">
                                             <span className="ed-event-name">{ev.name}</span>
                                             <span className="ed-event-meta">
                                                 {new Date(ev.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
                                                 {ev.location ? ` · ${ev.location}` : ''}
                                             </span>
                                         </div>
-                                        <div className="ed-stats-col">
-                                            {[
-                                                { label: 'Tickets',   value: `${ev.ticketsSold} / ${ev.ticketsTotal}` },
-                                                { label: 'Fill Rate', value: `${fill.toFixed(1)}%` },
-                                                { label: 'Revenue',   value: `€${(ev.revenueAmount ?? 0).toFixed(2)}` },
-                                                { label: 'From',      value: `€${Number(ev.price).toFixed(2)}` },
-                                            ].map(stat => (
-                                                <div key={stat.label} className="ed-stat-chip">
-                                                    <span className="ed-stat-label">{stat.label}</span>
-                                                    <span className="ed-stat-value">{stat.value}</span>
-                                                </div>
-                                            ))}
+                                        <div className="ed-fill-label">
+                                            <div className="ed-event-bar-track">
+                                                <div className="ed-event-bar-fill" style={{ width: fill.toFixed(1) + '%' }} />
+                                            </div>
+                                            <span>Fill rate <strong>{fill.toFixed(1)}%</strong></span>
                                         </div>
                                     </div>
-                                    <div id="event_sold_tickets_container" className="ed-event-bar">
-                                        <div id="event_sold_tickets" style={{ width: fill.toFixed(1) + '%' }} />
+                                    <div className="ed-stats-col">
+                                        <div className="ed-stat-chip">
+                                            <span className="ed-stat-label">Tickets</span>
+                                            <span className="ed-stat-value">{ev.ticketsSold} / {ev.ticketsTotal}</span>
+                                        </div>
+                                        <div className="ed-stat-chip">
+                                            <span className="ed-stat-label">Revenue</span>
+                                            <span className="ed-stat-value">€{(ev.revenueAmount ?? 0).toFixed(2)}</span>
+                                        </div>
+                                        <div className="ed-stat-chip">
+                                            <span className="ed-stat-label">From</span>
+                                            <span className="ed-stat-value">€{Number(ev.price).toFixed(2)}</span>
+                                        </div>
                                     </div>
                                 </div>
                             );
