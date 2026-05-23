@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Api.Models
 {
     public class Event
@@ -10,5 +12,8 @@ namespace Api.Models
         
         public ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
         public ICollection<Tag> Tags { get; set; } = new List<Tag>();
+
+        [Timestamp]
+        public uint Version { get; set; }
     }
 }

@@ -94,14 +94,14 @@ hr{
 
 /* Transparent Panel with Low Opacity */
 #transparent_panel{
-    display:none;
+    display:block;
     position:fixed;
     top:0;
     left:0;
     width:100%;
     height:100%;
-    background-color:var(--background-color);
-    opacity:0;
+    background-color:rgba(0,0,0,0.45);
+    opacity:1;
     z-index:1000;
     transition:opacity 0.2s ease;
 }
@@ -432,7 +432,7 @@ input[type="submit"]{
 
 /* Confirmation Window of Delete Action */
 #delete_confirmation_window{
-    display:none;
+    display:block;
     position:fixed;
     top:15rem;
     left:50%;
@@ -445,7 +445,7 @@ input[type="submit"]{
     font-size:1.2rem;
     font-weight:bold;
     transform:translate(-50%,0%);
-    opacity:0;
+    opacity:1;
     z-index:1010;
     transition:opacity 0.3s ease,top 0.4s ease;
 }
