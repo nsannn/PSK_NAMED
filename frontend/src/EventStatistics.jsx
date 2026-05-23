@@ -121,7 +121,7 @@ function EventStatistics() {
                     ) : (
                         <div className="es-tier-list">
                             {tierStats.map(tier => (
-                                <div key={tier.id} className="es-tier-item">
+                                <div key={tier.id} className="es-tier-item" data-testid={`tier-${tier.type.toLowerCase()}`}>
                                     <div className="es-tier-top">
                                         <span className="es-tier-name">{tier.type}</span>
                                         {[

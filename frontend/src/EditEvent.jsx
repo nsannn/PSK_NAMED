@@ -206,7 +206,7 @@ function EditEvent() {
                         <span id="window_small_info">This action cannot be undone. All event data will be lost.</span>
                         <div id="delete_controls" className="align_row">
                             <button onClick={() => setShowDeleteModal(false)}>Cancel</button>
-                            <button onClick={handleDelete} disabled={isDeleting}>{isDeleting ? 'Deleting...' : 'Delete'}</button>
+                            <button onClick={handleDelete} disabled={isDeleting} data-testid="confirm_delete">{isDeleting ? 'Deleting...' : 'Delete'}</button>
                         </div>
                     </div>
                 </>
@@ -362,7 +362,7 @@ function EditEvent() {
                             </div>
                             {errors.tags && <span className="field-error-text" style={{width: '100%'}}>{errors.tags}</span>}
                         </div>
-                        <button id="staff_event_controls" className="staff_event_delete edit-event-delete-button" onClick={() => setShowDeleteModal(true)}>Delete</button>
+                        <button id="staff_event_controls" className="staff_event_delete edit-event-delete-button" data-testid="staff_event_delete" onClick={() => setShowDeleteModal(true)}>Delete</button>
                         <button id="staff_event_controls" onClick={() => navigate('/')}>Cancel</button>
                         <button id="staff_event_controls" onClick={handleSubmit} disabled={isSubmitting} className={showSaveError ? 'button-error-anim' : ''}>{isSubmitting ? 'Saving...' : 'Save Changes'}</button>
                     </div>
