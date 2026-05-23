@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>CSS Testing</title>
+        <link rel="stylesheet" href="main.css">
+        <script src="CSS_Test_Scripts.js" defer></script>
+    </head>
+    <body>
+        <div id="transparent_panel" onclick="closeEverything()"></div>
+        <div id="mobile_sidebar">
+            <button id="close_button" onclick="closeMobileSidebar()">
+                <span>X</span>
+            </button>
+            <div id="nav_group">
+                <button>Events</button>
+                <button>Partners</button>
+                <button>Contacts</button>
+            </div>
+            <div id="account_group">
+                <button>Bought Tickets</button>
+                <button>Settings</button>
+                <button>Log Out</button>
+            </div>
+        </div>
+        <div id="qr_code_window">
+            <div id="qr_code">
+                QR Code
+            </div>
+            <button onclick="closeQRCodeWindow()">Close</button>
+        </div>
+        <div id="top_bar">
+            <div id="site_logo">Logo</div>
+            <div id="nav_group">
+                <button>Events</button>
+                <button>Partners</button>
+                <button>Contacts</button>
+            </div>
+            <div id="notification_container">
+                <button id="notification_button" onclick="openNotificationWindow(event)">🔔</button>
+                <div id="notification_window" class="align_column">
+                    <div id="user_notification" class="align_column">
+                        <span>Just a reminder that [Event Name] is on [Date]</span>
+                        <span>We're looking forward to seeing you - have your QR code ready</span>
+                    </div>
+                </div>
+            </div>
+            <div id="account_group">
+                <button id="user_account_button" onclick="openAccountWindow(event)">[Username]</button>
+                <div id="account_window" class="align_column">
+                    <button>Bought Tickets</button>
+                    <button>Settings</button>
+                    <button>Log Out</button>
+                </div>
+            </div>
+            <button id="menu_button" onclick="openMobileSidebar()">
+                <span>☰</span>
+            </button>
+        </div>
+        <div id="my_tickets_container">
+            <div id="my_tickets_card" class="align_column">
+                <span id="my_tickets_card_name">Tickets</span>
+                <hr/>
+                <button id="my_tickets_option">All</button>
+                <button id="my_tickets_option">Active</button>
+                <button id="my_tickets_option">Used</button>
+                <button id="my_tickets_option">Canceled</button>
+            </div>
+            <div id="my_tickets_group_list" class="align_column">
+                <div id="my_tickets_group">
+                    <div id="my_tickets_group_info">
+                        <div id="my_tickets_group_info_text" class="align_column">
+                            <span>[Event Name]</span>
+                            <span>[Ticket Count] Tickets</span>
+                        </div>
+                        <button onclick="openTicketGroup()">View Tickets</button>
+                    </div>
+                    <div id="my_tickets_ticket_list" class="align_column">
+                        <div id="my_tickets_ticket">
+                            <span>[Ticket Name] [Ticket Number]</span>
+                            <span>Status: Can be used</span>
+                            <button onclick="openQRCodeWindow()">Show QR Code</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
