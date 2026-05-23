@@ -29,6 +29,12 @@ function EditEvent() {
     const [hasPoster,     setHasPoster]     = useState(false);
     const [posterFile,    setPosterFile]    = useState(null);
     const [posterPreview, setPosterPreview] = useState(null);
+    const [posterUrlTimestamp, setPosterUrlTimestamp] = useState(Date.now());
+
+    const [version, setVersion] = useState(0);
+    const [conflictData, setConflictData] = useState(null);
+    const [showConflictModal, setShowConflictModal] = useState(false);
+    const [forceOverwrite, setForceOverwrite] = useState(false);
 
     useEffect(() => {
         setIsLoading(true);
@@ -44,9 +50,11 @@ function EditEvent() {
                 setDescription(data.description || '');
                 setEventType(data.eventType || 'Festival');
                 setTags(data.tags ? data.tags.map(t => t.name) : []);
+                setVersion(data.version);
                 setHasPoster(data.hasPoster ?? false);
+                setPosterUrlTimestamp(Date.now());
                 setTicketTiers(data.tickets && data.tickets.length > 0 ? data.tickets.map(t => ({
-                    name: t.name,
+                    name: t.type ?? '',
                     quantity: t.quantity || 0,
                     price: t.price || 0,
                     id: t.id
@@ -84,7 +92,7 @@ function EditEvent() {
         setPosterPreview(URL.createObjectURL(file));
     };
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (overwrite = false) => {
         setIsSubmitting(true);
         
         let combinedDate = new Date();
@@ -100,6 +108,8 @@ function EditEvent() {
             date: combinedDate.toISOString(),
             eventType,
             tags,
+            version,
+            forceOverwrite: overwrite,
             ticketTiers: ticketTiers.map(t => ({
                 id: t.id,
                 name: t.name,
@@ -109,20 +119,40 @@ function EditEvent() {
         };
 
         try {
-            await apiFetch('/api/events/' + id, {
+            const updatedEvent = await apiFetch('/api/events/' + id, {
                 method: 'PUT',
                 body: JSON.stringify(eventData)
             });
 
+            const uploadVersion = updatedEvent?.version ?? version;
+            setVersion(uploadVersion);
+
             if (posterFile) {
                 const form = new FormData();
                 form.append('file', posterFile);
-                await apiFetch(`/api/events/${id}/poster`, { method: 'POST', body: form });
+                form.append('version', uploadVersion);
+                form.append('forceOverwrite', overwrite);
+                const uploadResult = await apiFetch(`/api/events/${id}/poster`, { method: 'POST', body: form });
+                setHasPoster(true);
+                if (uploadResult?.version) {
+                    setVersion(uploadResult.version);
+                }
+                setPosterUrlTimestamp(Date.now());
             }
+
             navigate('/');
         } catch (error) {
-            logger.error("Error submitting form:", error);
-            alert("Error updating event");
+            if (error.status === 409) {
+                if (error.data?.currentData) {
+                    setConflictData(error.data.currentData);
+                    setShowConflictModal(true);
+                } else {
+                    alert("Conflict detected but server returned no current data.");
+                }
+            } else {
+                logger.error("Error submitting form:", error);
+                alert(`Error updating event: ${error.message || 'Unknown error'}`);
+            }
         } finally {
             setIsSubmitting(false);
         }
@@ -150,6 +180,61 @@ function EditEvent() {
 
     return (
         <>
+            {showConflictModal && (
+                <>
+                    <div id="transparent_panel" onClick={() => setShowConflictModal(false)}></div>
+                    <div id="delete_confirmation_window" className="align_column">
+                        <span id="window_name"> Conflict Detected</span>
+                        <hr />
+                        <span id="window_info">Another user modified this event.</span>
+                        <span id="window_small_info">Choose what to do.</span>
+                        <div id="delete_controls" className="align_row">
+                            <button
+                                onClick={() => {
+                                    setTitle(conflictData.title || '');
+                                    setDescription(conflictData.description || '');
+                                    setLocation(conflictData.location || '');
+
+                                    if (conflictData.date) {
+                                        const d = new Date(conflictData.date);
+
+                                        setDate(d.toISOString().substring(0, 10));
+                                        setTime(d.toISOString().substring(11, 16));
+                                    }
+
+                                    setTags(conflictData.tags?.map(t => t.name) || []);
+                                    setHasPoster(conflictData.hasPoster ?? false);
+                                    setPosterFile(null);
+                                    setPosterPreview(null);
+
+                                    setTicketTiers(
+                                        conflictData.tickets?.map(t => ({
+                                            id: t.id,
+                                            name: t.type,
+                                            quantity: t.quantity,
+                                            price: t.price
+                                        })) || []
+                                    );
+
+                                    setVersion(conflictData.version);
+                                    setPosterUrlTimestamp(Date.now());
+                                    setShowConflictModal(false);
+                                }}
+                            > Reload Latest</button>
+
+                            <button
+                                onClick={async () => {
+                                    setShowConflictModal(false);
+                                    await handleSubmit(true);
+                                }}
+                            >Overwrite Anyway</button>
+
+                            <button onClick={() => setShowConflictModal(false)}>Cancel</button>
+                        </div>
+                    </div>
+                </>
+            )}
+
             {showDeleteModal && (
                 <>
                     <div id="transparent_panel" onClick={() => setShowDeleteModal(false)}></div>
@@ -211,16 +296,28 @@ function EditEvent() {
                                     <div id="staff_event_ticket_tier" className="align_column" key={index}>
                                         <div id="staff_event_card_input" className="align_column">
                                             <label htmlFor={'staff_ticket_tier_name_' + index}>Tier Name</label>
-                                            <input id={'staff_ticket_tier_name_' + index} type="text" placeholder="Tier Name" value={tier.name} onChange={(e) => handleTierChange(index, 'name', e.target.value)} />
+                                            <input id={'staff_ticket_tier_name_' + index} type="text" placeholder="Tier Name" value={tier.name ?? ''} onChange={(e) => handleTierChange(index, 'name', e.target.value)} />
                                         </div>
                                         <div id="staff_info_card_input_group">
                                             <div id="staff_event_card_input" className="align_column">
                                                 <label htmlFor={'staff_ticket_tier_quantity_' + index}>Quantity</label>
-                                                <input id={'staff_ticket_tier_quantity_' + index} type="number" value={tier.quantity} onChange={(e) => handleTierChange(index, 'quantity', e.target.value)} />
+                                                <input id={'staff_ticket_tier_quantity_' + index} type="number" min="1" step="1" value={tier.quantity ?? ''} onChange={(e) => {
+                                                    const value = e.target.value;
+
+                                                    if (value === '' || Number(value) >= 1) {
+                                                        handleTierChange(index, 'quantity', value)
+                                                    }
+                                                }} />
                                             </div>
                                             <div id="staff_event_card_input" className="align_column">
                                                 <label htmlFor={'staff_ticket_tier_price_' + index}>Price</label>
-                                                <input id={'staff_ticket_tier_price_' + index} type="number" value={tier.price} onChange={(e) => handleTierChange(index, 'price', e.target.value)} />
+                                                <input id={'staff_ticket_tier_price_' + index} type="number" min="0" step="0.01" value={tier.price ?? ''} onChange={(e) => {
+                                                    const value = e.target.value;
+
+                                                    if (value === '' || Number(value) >= 0) {
+                                                        handleTierChange(index, 'price', value)
+                                                    }
+                                                    }} />
                                             </div>
                                         </div>
                                         <button id="staff_event_ticket_tier_delete_button" onClick={() => {
@@ -248,7 +345,7 @@ function EditEvent() {
                                     />
                                 ) : hasPoster ? (
                                     <img
-                                        src={`/api/events/${id}/poster`}
+                                        src={`/api/events/${id}/poster?ts=${posterUrlTimestamp}`}
                                         alt="Event poster"
                                         className="edit-event-poster-img"
                                         onError={() => setHasPoster(false)}
@@ -306,7 +403,7 @@ function EditEvent() {
                         </div>
                         <button id="staff_event_controls" className="staff_event_delete edit-event-delete-button" data-testid="staff_event_delete" onClick={() => setShowDeleteModal(true)}>Delete</button>
                         <button id="staff_event_controls" onClick={() => navigate('/')}>Cancel</button>
-                        <button id="staff_event_controls" onClick={handleSubmit} disabled={isSubmitting}>{isSubmitting ? 'Saving...' : 'Save Changes'}</button>
+                        <button id="staff_event_controls" onClick={() => handleSubmit()} disabled={isSubmitting}>{isSubmitting ? 'Saving...' : 'Save Changes'}</button>
                     </div>
                 </div>
             </div>

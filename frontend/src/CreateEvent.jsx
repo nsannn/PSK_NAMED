@@ -134,11 +134,23 @@ function CreateEvent() {
                                         <div id="staff_info_card_input_group">
                                             <div id="staff_event_card_input" className="align_column">
                                                 <label htmlFor={`tier_qty_${index}`}>Quantity</label>
-                                                <input id={`tier_qty_${index}`} type="number" min={0} value={tier.quantity} onChange={e => handleTierChange(index, 'quantity', e.target.value)} />
+                                                <input id={`tier_qty_${index}`} type="number" min={0} step={1} value={tier.quantity} onChange={e => {
+                                                    const value = e.target.value;
+
+                                                    if (value === '' || Number(value) >= 0) {
+                                                        handleTierChange(index, 'quantity', value);
+                                                    }
+                                                }} />
                                             </div>
                                             <div id="staff_event_card_input" className="align_column">
                                                 <label htmlFor={`tier_price_${index}`}>Price</label>
-                                                <input id={`tier_price_${index}`} type="number" min={0} value={tier.price} onChange={e => handleTierChange(index, 'price', e.target.value)} />
+                                                <input id={`tier_price_${index}`} type="number" min={0} step={0.01} value={tier.price} onChange={e => {
+                                                    const value = e.target.value;
+
+                                                    if (value === '' || Number(value) >= 0) {
+                                                        handleTierChange(index, 'price', value);
+                                                    }
+                                                }} />
                                             </div>
                                         </div>
                                         {ticketTiers.length > 1 && (
