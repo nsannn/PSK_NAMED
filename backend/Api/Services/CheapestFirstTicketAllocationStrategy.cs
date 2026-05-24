@@ -2,12 +2,8 @@ using Api.Models;
 
 namespace Api.Services
 {
-    /// <summary>
-    /// Default allocation strategy: picks the cheapest ticket tier that can
-    /// satisfy the full requested quantity in one shot.
     /// To switch to a different algorithm (e.g. split across tiers, VIP-first),
     /// implement ITicketAllocationStrategy and change the registration in Program.cs.
-    /// </summary>
     public class CheapestFirstTicketAllocationStrategy : ITicketAllocationStrategy
     {
         public Order? Allocate(
