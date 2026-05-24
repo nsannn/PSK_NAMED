@@ -151,7 +151,13 @@ namespace Api.Tests.Controllers
             };
 
             var result = await controller.UpdateEvent(evId, updateDto);
-            result.Should().BeOfType<NoContentResult>();
+            var okResult = result as OkObjectResult;
+            okResult.Should().NotBeNull();
+
+            var updatedEvent = okResult!.Value as EventDto;
+            updatedEvent.Should().NotBeNull();
+            updatedEvent!.Title.Should().Be("New Title");
+
             db.Events.First(e => e.Id == evId).Title.Should().Be("New Title");
         }
 
@@ -206,7 +212,8 @@ namespace Api.Tests.Controllers
             fileMock.Setup(f => f.CopyToAsync(It.IsAny<Stream>(), default))
                 .Returns<Stream, System.Threading.CancellationToken>((s, t) => Task.CompletedTask);
 
-            var result = await controller.UploadPoster(evId, fileMock.Object);
+            var version = db.Events.First(e => e.Id == evId).Version;
+            var result = await controller.UploadPoster(evId, fileMock.Object, version);
             result.Should().BeOfType<OkObjectResult>();
 
             var posterPath = Directory.EnumerateFiles(Path.Combine(_tempDir, "Posters"), evId + ".*").FirstOrDefault();
