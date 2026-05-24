@@ -320,6 +320,9 @@ namespace Api.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+            if (createDto.Date.ToUniversalTime() <= DateTime.UtcNow)
+                return BadRequest("Event date must be in the future.");
+
             var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var userId = string.IsNullOrEmpty(userIdStr) ? Guid.Empty : Guid.Parse(userIdStr);
 

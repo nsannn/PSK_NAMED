@@ -45,12 +45,19 @@ function CreateEvent() {
         setPosterPreview(URL.createObjectURL(file));
     };
 
-    const handleSubmit = async () => {
-        setIsSubmitting(true);
+    const todayStr = new Date().toISOString().split('T')[0];
 
+    const handleSubmit = async () => {
         let combinedDate = new Date();
         if (date && time)
             combinedDate = new Date(date + 'T' + time + ':00');
+
+        if (combinedDate <= new Date()) {
+            alert('Event date must be in the future.');
+            return;
+        }
+
+        setIsSubmitting(true);
 
         const eventData = {
             title, description, location,
@@ -102,7 +109,7 @@ function CreateEvent() {
                             <div id="staff_info_card_input_group">
                                 <div id="staff_event_card_input" className="align_column">
                                     <label htmlFor="staff_event_date">Date</label>
-                                    <input id="staff_event_date" type="date" value={date} onChange={e => setDate(e.target.value)} />
+                                    <input id="staff_event_date" type="date" value={date} min={todayStr} onChange={e => setDate(e.target.value)} />
                                 </div>
                                 <div id="staff_event_card_input" className="align_column">
                                     <label htmlFor="staff_event_time">Time</label>
