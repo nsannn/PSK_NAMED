@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { apiFetch } from './utils/api';
+import { apiFetch } from '../../utils/api';
 import './EventOrders.css';
-import './main.css';
+import '../../main.css';
 
 function EventOrders() {
     const { id } = useParams();

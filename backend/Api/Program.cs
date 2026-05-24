@@ -91,7 +91,18 @@ try
     {
         x.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
     });
-    builder.Services.AddScoped<IEmailService, EmailService>();
+    // Strategy pattern: swap CheapestFirstTicketAllocationStrategy for any other
+    // ITicketAllocationStrategy implementation here without touching controller code.
+    builder.Services.AddScoped<ITicketAllocationStrategy, CheapestFirstTicketAllocationStrategy>();
+
+    // Decorator pattern: LoggingEmailServiceDecorator wraps EmailService, adding
+    // structured send/failure logging. Change the inner type or add more decorators
+    // here without modifying EmailService or its callers.
+    builder.Services.AddScoped<EmailService>();
+    builder.Services.AddScoped<IEmailService>(sp =>
+        new LoggingEmailServiceDecorator(
+            sp.GetRequiredService<EmailService>(),
+            sp.GetRequiredService<ILogger<LoggingEmailServiceDecorator>>()));
 
     if (builder.Environment.IsDevelopment())
     {

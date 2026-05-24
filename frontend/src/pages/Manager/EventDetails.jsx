@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { apiFetch } from './utils/api';
-import { logger } from './utils/logger';
+import { apiFetch } from '../../utils/api';
+import { logger } from '../../utils/logger';
 import './EventDetails.css';
-import './main.css';
+import '../../main.css';
 
 function EventDetails() {
     const navigate = useNavigate();

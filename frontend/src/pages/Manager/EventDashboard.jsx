@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { apiFetch } from './utils/api';
-import { logger } from './utils/logger';
+import { apiFetch } from '../../utils/api';
+import { logger } from '../../utils/logger';
 import './EventDashboard.css';
-import './main.css';
+import '../../main.css';
 
 const SORT_OPTIONS = [
     { value: 'revenue-desc', label: 'Revenue ↓' },

@@ -1,7 +1,7 @@
 import React from 'react';
 import { describe, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import EditEvent from './EditEvent';
+import EditEvent from '../pages/Manager/EditEvent';
 
 const mockNavigate = vi.fn();
 const mockApiFetch = vi.fn();
@@ -17,12 +17,12 @@ vi.mock('react-router-dom', async () => {
 });
 
 // Mock api utils
-vi.mock('./utils/api', () => ({
+vi.mock('../utils/api', () => ({
   apiFetch: (...args) => mockApiFetch(...args),
 }));
 
 // Mock logger
-vi.mock('./utils/logger', () => ({
+vi.mock('../utils/logger', () => ({
   logger: {
     error: vi.fn(),
   },
@@ -96,7 +96,7 @@ describe('EditEvent', () => {
       );
     });
 
-    expect(mockNavigate).toHaveBeenCalledWith('/');
+    expect(mockNavigate).toHaveBeenCalledWith('/my-events');
   });
 
   test('opens delete modal', async () => {

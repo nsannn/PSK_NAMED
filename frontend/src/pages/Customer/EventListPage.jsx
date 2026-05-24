@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { apiFetch } from './utils/api';
+import { apiFetch } from '../../utils/api';
 import './EventListPage.css';
 
 const EVENT_TYPES = ['Concert', 'Festival', 'Conference', 'Exhibition', 'Sports'];

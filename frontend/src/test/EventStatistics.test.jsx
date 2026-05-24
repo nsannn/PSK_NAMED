@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import { describe, vi, beforeEach } from 'vitest';
-import EventStatistics from './EventStatistics';
+import EventStatistics from '../pages/Manager/EventStatistics';
 
 const mockApiFetch = vi.fn();
 
@@ -16,12 +16,12 @@ vi.mock('react-router-dom', async () => {
 });
 
 // Mock your api
-vi.mock('./utils/api', () => ({
+vi.mock('../utils/api', () => ({
   apiFetch: (...args) => mockApiFetch(...args),
 }));
 
 // Mock your logger
-vi.mock('./utils/logger', () => ({
+vi.mock('../utils/logger', () => ({
   logger: {
     error: vi.fn(),
   },

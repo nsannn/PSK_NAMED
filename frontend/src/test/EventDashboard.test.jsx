@@ -2,7 +2,7 @@ import { describe, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 // import userEvent from '@testing-library/user-event';
 import { act } from 'react'
-import EventDashboard from './EventDashboard';
+import EventDashboard from '../pages/Manager/EventDashboard';
 
 const navigateMock = vi.fn();
 
@@ -10,17 +10,17 @@ vi.mock('react-router-dom', () => ({
   useNavigate: () => navigateMock,
 }));
 
-vi.mock('./utils/api', () => ({
+vi.mock('../utils/api', () => ({
   apiFetch: vi.fn(),
 }));
 
-vi.mock('./utils/logger', () => ({
+vi.mock('../utils/logger', () => ({
   logger: {
     error: vi.fn(),
   },
 }));
 
-import { apiFetch } from './utils/api';
+import { apiFetch } from '../utils/api';
 
 describe('EventDashboard', () => {
   beforeEach(() => {

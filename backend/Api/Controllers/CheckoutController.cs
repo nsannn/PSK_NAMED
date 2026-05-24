@@ -24,13 +24,20 @@ namespace Api.Controllers
     {
         private readonly ApplicationDbContext _db;
         private readonly IEmailService _emailService;
+        private readonly ITicketAllocationStrategy _ticketAllocation;
         private readonly IConfiguration _config;
         private readonly ILogger<CheckoutController> _logger;
 
-        public CheckoutController(ApplicationDbContext db, IEmailService emailService, IConfiguration config, ILogger<CheckoutController> logger)
+        public CheckoutController(
+            ApplicationDbContext db,
+            IEmailService emailService,
+            ITicketAllocationStrategy ticketAllocation,
+            IConfiguration config,
+            ILogger<CheckoutController> logger)
         {
             _db = db;
             _emailService = emailService;
+            _ticketAllocation = ticketAllocation;
             _config = config;
             _logger = logger;
         }
@@ -193,27 +200,21 @@ namespace Api.Controllers
                                 eventDate = ev.Date.ToString("MMMM d, yyyy");
                                 eventLocation = ev.Location;
 
-                                // Deduct ticket quantity
-                                var availableTicketTier = ev.Tickets.FirstOrDefault(t => t.Quantity - t.Sold >= quantity);
-                                if (availableTicketTier != null)
+                                var userId = session.Metadata.TryGetValue("userId", out var uid) && Guid.TryParse(uid, out var parsedUid) ? parsedUid : Guid.Empty;
+                                var amountPaid = (session.AmountTotal ?? 0) / 100m;
+
+                                var order = _ticketAllocation.Allocate(
+                                    ev,
+                                    userId,
+                                    customerEmail ?? "unknown@example.com",
+                                    quantity,
+                                    amountPaid,
+                                    session.Id,
+                                    session.PaymentIntentId ?? "");
+
+                                if (order != null)
                                 {
-                                    availableTicketTier.Sold += quantity;
-                                    
-                                    var order = new Order
-                                    {
-                                        EventId = ev.Id,
-                                        UserId = session.Metadata.TryGetValue("userId", out var uid) && Guid.TryParse(uid, out var userId) ? userId : Guid.Empty,
-                                        CustomerEmail = customerEmail ?? "unknown@example.com",
-                                        Quantity = quantity,
-                                        AmountPaid = (session.AmountTotal ?? 0) / 100m,
-                                        StripeSessionId = session.Id,
-                                        StripePaymentIntentId = session.PaymentIntentId ?? "",
-                                        Status = OrderStatus.Paid,
-                                        CreatedAt = DateTime.UtcNow
-                                    };
-                                    
                                     _db.Orders.Add(order);
-                                    
                                     await _db.SaveChangesAsync();
                                 }
                             }

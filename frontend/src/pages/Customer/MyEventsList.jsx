@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { apiFetch } from './utils/api';
-import { logger } from './utils/logger';
+import { apiFetch } from '../../utils/api';
+import { logger } from '../../utils/logger';
 import './MyEventsList.css';
-import './main.css';
+import '../../main.css';
 
 const EVENT_TYPES = ['Concert', 'Festival', 'Conference', 'Exhibition', 'Sports'];
 const TAG_OPTIONS  = ['Online', 'Outdoor', 'Indoor', 'Family'];

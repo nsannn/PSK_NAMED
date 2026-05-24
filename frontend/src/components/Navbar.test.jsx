@@ -4,9 +4,11 @@ import { vi } from 'vitest';
 import Navbar from './Navbar';
 
 // MOCK AUTH
+let mockUser = null;
+
 vi.mock('../context/AuthContext', () => ({
   useAuth: () => ({
-    user: null,
+    user: mockUser,
   }),
 }));
 
@@ -33,6 +35,7 @@ vi.mock('./AuthModal', () => ({
 describe('Navbar', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockUser = null;
   });
 
   test('renders sign in and register buttons', () => {
@@ -63,6 +66,8 @@ describe('Navbar', () => {
   });
 
   test('navigates to dashboard', () => {
+    mockUser = { role: 'Manager', email: 'manager@test.com' };
+
     render(
       <MemoryRouter>
         <Navbar />

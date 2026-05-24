@@ -1,7 +1,7 @@
 import { describe, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { act } from 'react'
-import EventDetails from './EventDetails';
+import EventDetails from '../pages/Manager/EventDetails';
 
 const navigateMock = vi.fn();
 
@@ -10,17 +10,17 @@ vi.mock('react-router-dom', () => ({
   useParams: () => ({ id: '1' }),
 }));
 
-vi.mock('./utils/api', () => ({
+vi.mock('../utils/api', () => ({
   apiFetch: vi.fn(),
 }));
 
-vi.mock('./utils/logger', () => ({
+vi.mock('../utils/logger', () => ({
   logger: {
     error: vi.fn(),
   },
 }));
 
-import { apiFetch } from './utils/api';
+import { apiFetch } from '../utils/api';
 
 const mockEvent = {
   id: 1,

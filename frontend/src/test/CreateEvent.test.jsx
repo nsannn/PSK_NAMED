@@ -1,7 +1,7 @@
 import React from 'react';
 import { describe, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import CreateEvent from './CreateEvent';
+import CreateEvent from '../pages/Manager/CreateEvent';
 
 // mocks
 const mockNavigate = vi.fn();
@@ -17,12 +17,12 @@ vi.mock('react-router-dom', async () => {
 });
 
 // api mock
-vi.mock('./utils/api', () => ({
+vi.mock('../utils/api', () => ({
     apiFetch: (...args) => mockApiFetch(...args),
 }));
 
 // logger mock
-vi.mock('./utils/logger', () => ({
+vi.mock('../utils/logger', () => ({
     logger: {
         error: vi.fn(),
     },
@@ -101,7 +101,7 @@ describe('CreateEvent', () => {
             expect(mockApiFetch).toHaveBeenCalled();
         });
 
-        expect(mockNavigate).toHaveBeenCalledWith('/');
+        expect(mockNavigate).toHaveBeenCalledWith('/my-events');
     });
 
     test('handles submit failure', async () => {
