@@ -51,3 +51,80 @@
     background-color: #d32f2f;
     color: white;
 }
+
+/* Conflict Modal */
+.conflict-modal {
+    width: 24rem !important;
+    gap: 0.25rem;
+}
+
+.conflict-modal #window_name {
+    font-size: 1.4rem;
+    letter-spacing: 0.01em;
+}
+
+.conflict-modal #window_info {
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin: 0 0 0.1rem 0;
+}
+
+.conflict-modal #window_small_info {
+    font-size: 0.95rem;
+    color: #a09898;
+    margin: 0 0 0.25rem 0;
+}
+
+.conflict-modal__actions {
+    width: 100%;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+}
+
+.conflict-btn {
+    width: 100%;
+    padding: 0.6rem 1rem;
+    border-radius: 0.75rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.15s ease, opacity 0.2s ease;
+    text-align: center;
+}
+
+.conflict-btn:hover {
+    transform: scale(1.02);
+}
+
+.conflict-btn--primary {
+    background-color: var(--primary-detail-color);
+    border: 2px solid var(--primary-detail-border-color);
+    color: var(--primary-text-color);
+}
+
+.conflict-btn--primary:hover {
+    background-color: var(--primary-detail-hover-color);
+}
+
+.conflict-btn--danger {
+    background-color: var(--quaternary-color);
+    border: 2px solid var(--primary-attention-border-color);
+    color: var(--primary-attention-hover-color);
+}
+
+.conflict-btn--danger:hover {
+    background-color: var(--primary-attention-color);
+    color: var(--primary-text-color);
+    border-color: var(--primary-attention-color);
+}
+
+.conflict-btn--ghost {
+    background-color: transparent;
+    border: 2px solid var(--quaternary-border-color);
+    color: #a09898;
+}
+
+.conflict-btn--ghost:hover {
+    background-color: var(--quaternary-color);
+    color: var(--primary-text-color);
+}

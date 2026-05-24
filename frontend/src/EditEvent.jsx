@@ -182,13 +182,15 @@ function EditEvent() {
             {showConflictModal && (
                 <>
                     <div id="transparent_panel" onClick={() => setShowConflictModal(false)}></div>
-                    <div id="delete_confirmation_window" className="align_column">
-                        <span id="window_name"> Conflict Detected</span>
+                    <div id="delete_confirmation_window" className="align_column conflict-modal">
+                        <span id="window_name">⚠ Conflict Detected</span>
                         <hr />
                         <span id="window_info">Another user modified this event.</span>
-                        <span id="window_small_info">Choose what to do.</span>
-                        <div id="delete_controls" className="align_row">
+                        <br></br>
+                        <span id="window_small_info">Your changes were not saved. Choose how to proceed.</span>
+                        <div className="conflict-modal__actions align_column">
                             <button
+                                className="conflict-btn conflict-btn--primary"
                                 onClick={() => {
                                     setTitle(conflictData.title || '');
                                     setDescription(conflictData.description || '');
@@ -219,16 +221,20 @@ function EditEvent() {
                                     setPosterUrlTimestamp(Date.now());
                                     setShowConflictModal(false);
                                 }}
-                            > Reload Latest</button>
+                            >Reload Latest Version</button>
 
                             <button
+                                className="conflict-btn conflict-btn--danger"
                                 onClick={async () => {
                                     setShowConflictModal(false);
                                     await handleSubmit(true);
                                 }}
                             >Overwrite Anyway</button>
 
-                            <button onClick={() => setShowConflictModal(false)}>Cancel</button>
+                            <button
+                                className="conflict-btn conflict-btn--ghost"
+                                onClick={() => setShowConflictModal(false)}
+                            >Cancel</button>
                         </div>
                     </div>
                 </>

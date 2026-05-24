@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { apiFetch } from './utils/api';
 import './EventListPage.css';
 
 const EVENT_TYPES = ['Concert', 'Festival', 'Conference', 'Exhibition', 'Sports'];
@@ -37,11 +38,10 @@ function EventListPage() {
         params.set('sort', sort);
 
         try {
-            const res  = await fetch('/api/events?' + params.toString());
-            const data = await res.json();
+            const data = await apiFetch('/api/events?' + params.toString());
             setEvents(Array.isArray(data) ? data : []);
         } catch (err) {
-            console.error('Failed to fetch events', err);
+            setEvents([]);
         } finally {
             setLoading(false);
         }

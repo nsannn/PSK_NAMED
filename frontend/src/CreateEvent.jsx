@@ -223,7 +223,7 @@ function CreateEvent() {
                             </div>
                         </div>
 
-                        <button id="staff_event_controls" onClick={() => navigate('/my-events')}>Cancel</button>
+                        <button id="staff_event_controls" onClick={() => navigate('/my-events')} disabled={isSubmitting}>Cancel</button>
                         <button id="staff_event_controls" onClick={handleSubmit} disabled={isSubmitting}>
                             {isSubmitting ? 'Creating...' : 'Create Event'}
                         </button>
