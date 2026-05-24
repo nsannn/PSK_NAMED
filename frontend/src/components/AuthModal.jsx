@@ -131,7 +131,6 @@ export default function AuthModal({ mode, onSwitchMode, onClose }) {
             >
               <option value="Customer">Customer</option>
               <option value="Manager">Manager</option>
-              <option value="SuperAdmin">Super Admin</option>
             </select>
           )}
 

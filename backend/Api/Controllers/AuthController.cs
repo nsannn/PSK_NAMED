@@ -93,7 +93,7 @@ namespace Api.Controllers
                 return Conflict(new { message = "An account with this email already exists." });
             }
 
-            if (!Enum.TryParse<UserRole>(req.Role, out var userRole))
+            if (!Enum.TryParse<UserRole>(req.Role, out var userRole) || userRole == UserRole.SuperAdmin)
                 return BadRequest(new { message = "Invalid role specified." });
 
             var user = new User
