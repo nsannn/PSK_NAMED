@@ -1,10 +1,8 @@
 namespace Api.Services
 {
-    /// <summary>
     /// Decorator for IEmailService that adds structured logging around every send
     /// without modifying EmailService itself.
     /// Registered in Program.cs by wrapping the concrete EmailService instance.
-    /// </summary>
     public class LoggingEmailServiceDecorator : IEmailService
     {
         private readonly IEmailService _inner;
