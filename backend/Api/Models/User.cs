@@ -5,7 +5,8 @@ namespace Api.Models
     public enum UserRole
     {
         Customer,
-        Manager
+        Manager,
+        SuperAdmin
     }
 
     public class User

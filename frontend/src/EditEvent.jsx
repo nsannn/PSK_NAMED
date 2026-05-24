@@ -119,7 +119,7 @@ function EditEvent() {
                 form.append('file', posterFile);
                 await apiFetch(`/api/events/${id}/poster`, { method: 'POST', body: form });
             }
-            navigate('/');
+            navigate('/my-events');
         } catch (error) {
             logger.error("Error submitting form:", error);
             alert("Error updating event");
@@ -134,7 +134,7 @@ function EditEvent() {
             await apiFetch('/api/events/' + id, {
                 method: 'DELETE'
             });
-            navigate('/');
+            navigate('/my-events');
         } catch (error) {
             logger.error("Error deleting event:", error);
             alert("Error deleting event");
@@ -305,7 +305,7 @@ function EditEvent() {
                             </div>
                         </div>
                         <button id="staff_event_controls" className="staff_event_delete edit-event-delete-button" data-testid="staff_event_delete" onClick={() => setShowDeleteModal(true)}>Delete</button>
-                        <button id="staff_event_controls" onClick={() => navigate('/')}>Cancel</button>
+                        <button id="staff_event_controls" onClick={() => navigate('/my-events')}>Cancel</button>
                         <button id="staff_event_controls" onClick={handleSubmit} disabled={isSubmitting}>{isSubmitting ? 'Saving...' : 'Save Changes'}</button>
                     </div>
                 </div>

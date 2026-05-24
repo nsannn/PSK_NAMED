@@ -30,7 +30,7 @@ function EventDetails() {
         setIsDeleting(true);
         try {
             await apiFetch('/api/events/' + id, { method: 'DELETE' });
-            navigate('/');
+            navigate('/my-events');
         } catch (err) {
             logger.error('Failed to cancel event', err);
             alert('Error cancelling event');

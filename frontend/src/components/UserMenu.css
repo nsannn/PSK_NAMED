@@ -119,6 +119,14 @@
   margin-top: 0.15rem;
 }
 
+.user-menu__role[data-role="SuperAdmin"] {
+  color: #f5c842;
+}
+
+.user-menu__role[data-role="Customer"] {
+  color: rgba(255, 255, 255, 0.5);
+}
+
 .user-menu__divider {
   height: 2px;
   background: var(--border-1);

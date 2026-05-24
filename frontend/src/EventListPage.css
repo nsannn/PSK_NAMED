@@ -1,0 +1,276 @@
+/* ============================================================
+   EventListPage — customer-facing event browsing
+   ============================================================ */
+
+.elp-page {
+    width: 100%;
+    min-height: calc(100vh - 70px);
+    align-items: flex-start;
+    padding: 1.5rem 0;
+    box-sizing: border-box;
+}
+
+/* ---- Filter sidebar ---- */
+.elp-filters {
+    width: 220px;
+    min-width: 180px;
+    flex-shrink: 0;
+    margin: 0 1rem 0 1.5rem;
+    gap: 0.5rem;
+}
+
+.elp-filters-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 0.5rem;
+}
+
+.elp-filter-group {
+    background-color: var(--tertiary-color);
+    border: 2px solid var(--tertiary-border-color);
+    border-radius: 0.75rem;
+    padding: 0.6rem 0.75rem;
+    gap: 0.4rem;
+}
+
+.elp-filter-name {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.75);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.elp-filter-group hr {
+    border: none;
+    border-top: 1px solid var(--primary-detail-border-color);
+    margin: 0.25rem 0;
+    width: 100%;
+}
+
+.elp-filter-options {
+    flex-wrap: wrap;
+    gap: 0.35rem;
+}
+
+.elp-filter-btn {
+    background-color: var(--quaternary-color);
+    color: white;
+    border: 1px solid var(--primary-detail-border-color);
+    border-radius: 0.5rem;
+    padding: 0.3rem 0.6rem;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: background-color 0.15s;
+}
+
+.elp-filter-btn:hover {
+    border-color: var(--primary-detail-border-color);
+    background-color: var(--quaternary-selected-color);
+}
+
+.elp-price-row {
+    gap: 0.4rem;
+    align-items: center;
+}
+
+.elp-price-input,
+.elp-date-input {
+    flex: 1;
+    min-width: 0;
+    background-color: var(--quaternary-color);
+    border: 1px solid var(--primary-detail-border-color);
+    border-radius: 0.4rem;
+    color: white;
+    padding: 0.3rem 0.4rem;
+    font-size: 0.78rem;
+}
+
+.elp-separator {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.85rem;
+}
+
+.elp-city-input {
+    width: 100%;
+    box-sizing: border-box;
+    background-color: var(--quaternary-color);
+    border: 1px solid var(--primary-detail-border-color);
+    border-radius: 0.4rem;
+    color: white;
+    padding: 0.3rem 0.5rem;
+    font-size: 0.85rem;
+}
+
+/* ---- Main content ---- */
+.elp-main {
+    flex: 1;
+    min-width: 0;
+    margin-right: 1.5rem;
+    gap: 1rem;
+}
+
+.elp-search-bar {
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.elp-search-input {
+    flex: 1;
+    background-color: var(--tertiary-color);
+    border: 2px solid var(--tertiary-border-color);
+    border-radius: 0.75rem;
+    color: white;
+    padding: 0.55rem 1rem;
+    font-size: 0.95rem;
+}
+
+.elp-search-input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.elp-sort-select {
+    background-color: var(--tertiary-color);
+    border: 2px solid var(--tertiary-border-color);
+    border-radius: 0.75rem;
+    color: white;
+    padding: 0.5rem 0.8rem;
+    font-size: 0.88rem;
+    cursor: pointer;
+}
+
+.elp-sort-select option {
+    background-color: var(--secondary-color);
+}
+
+.elp-empty {
+    color: rgba(255, 255, 255, 0.5);
+    padding: 2rem;
+    font-size: 1rem;
+}
+
+/* ---- Event grid ---- */
+.elp-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+    width: 100%;
+}
+
+.elp-card {
+    background-color: var(--tertiary-color);
+    border: 2px solid var(--tertiary-border-color);
+    border-radius: 1rem;
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color 0.2s, transform 0.15s;
+    display: flex;
+    flex-direction: column;
+}
+
+.elp-card:hover {
+    border-color: var(--primary-detail-border-color);
+    transform: translateY(-2px);
+}
+
+.elp-card-poster {
+    width: 100%;
+    height: 160px;
+    background-color: var(--quaternary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.elp-card-poster-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.elp-card-no-poster {
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 0.85rem;
+}
+
+.elp-card-body {
+    padding: 0.85rem 1rem;
+    flex: 1;
+    gap: 0.3rem;
+}
+
+.elp-card-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: white;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.elp-card-meta {
+    font-size: 0.82rem;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.elp-card-desc {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.45);
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    margin-top: 0.2rem;
+}
+
+.elp-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: auto;
+    padding-top: 0.6rem;
+}
+
+.elp-card-price {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--primary-detail-border-color);
+}
+
+.elp-card-btn {
+    background-color: var(--primary-detail-border-color);
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.35rem 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.15s;
+}
+
+.elp-card-btn:hover {
+    opacity: 0.85;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 768px) {
+    .elp-page {
+        flex-direction: column;
+    }
+
+    .elp-filters {
+        width: calc(100% - 3rem);
+        margin: 0 1.5rem;
+    }
+
+    .elp-main {
+        margin: 0 1rem;
+    }
+
+    .elp-grid {
+        grid-template-columns: 1fr;
+    }
+}

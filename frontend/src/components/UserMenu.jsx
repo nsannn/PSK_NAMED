@@ -40,7 +40,9 @@ export default function UserMenu() {
           <div className="user-menu__info">
             <span className="user-menu__fullname">{user.firstName} {user.lastName}</span>
             <span className="user-menu__email">{user.email}</span>
-            <span className="user-menu__role">{user.role}</span>
+            <span className="user-menu__role" data-role={user.role}>
+              {user.role === 'SuperAdmin' ? '★ Super Admin' : user.role}
+            </span>
           </div>
         </div>
         <div className="user-menu__divider" />

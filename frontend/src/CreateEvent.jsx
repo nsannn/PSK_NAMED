@@ -74,7 +74,7 @@ function CreateEvent() {
                 form.append('file', posterFile);
                 await apiFetch(`/api/events/${created.id}/poster`, { method: 'POST', body: form });
             }
-            navigate('/');
+            navigate('/my-events');
         } catch (error) {
             logger.error('Error submitting form:', error);
             alert('Error creating event: ' + error.message);
@@ -211,7 +211,7 @@ function CreateEvent() {
                             </div>
                         </div>
 
-                        <button id="staff_event_controls" onClick={() => navigate('/')}>Cancel</button>
+                        <button id="staff_event_controls" onClick={() => navigate('/my-events')}>Cancel</button>
                         <button id="staff_event_controls" onClick={handleSubmit} disabled={isSubmitting}>
                             {isSubmitting ? 'Creating...' : 'Create Event'}
                         </button>

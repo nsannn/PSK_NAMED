@@ -12,6 +12,9 @@ export default function Navbar() {
   const [modalMode, setModalMode] = useState(null); // 'login' | 'register' | null
   const [mobileOpen, setMobileOpen] = useState(false);
 
+  const role = user?.role ?? null;
+  const isManager   = role === 'Manager' || role === 'SuperAdmin';
+
   function openLogin() {
     setModalMode('login');
     setMobileOpen(false);
@@ -27,17 +30,42 @@ export default function Navbar() {
   return (
     <>
       <nav className="navbar" id="navbar">
-        <div 
-          className="navbar__logo" 
-          id="site-logo" 
-          onClick={() => navigate('/')} 
+        <div
+          className="navbar__logo"
+          id="site-logo"
+          onClick={() => navigate('/')}
           style={{ cursor: 'pointer' }}
         >
           Named
         </div>
 
         <div className="navbar__links" id="nav-links">
-          <button className={`navbar__link ${isActive('/dashboard')}`} onClick={() => navigate('/dashboard')}>Dashboard</button>
+          {/* Always visible */}
+          <button
+            className={`navbar__link ${isActive('/')}`}
+            onClick={() => navigate('/')}
+          >
+            Events
+          </button>
+
+          {/* Manager / SuperAdmin links */}
+          {isManager && (
+            <>
+              <button
+                className={`navbar__link ${isActive('/my-events')}`}
+                onClick={() => navigate('/my-events')}
+              >
+                My Events
+              </button>
+              <button
+                className={`navbar__link ${isActive('/dashboard')}`}
+                onClick={() => navigate('/dashboard')}
+              >
+                Dashboard
+              </button>
+            </>
+          )}
+
           <button className="navbar__link">Partners</button>
           <button className="navbar__link">Contacts</button>
         </div>
@@ -46,8 +74,8 @@ export default function Navbar() {
           {user ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
               <div id="notification_container">
-                <button 
-                  id="notification_button" 
+                <button
+                  id="notification_button"
                   className="btn btn--outline"
                   style={{ width: '40px', height: '40px', padding: '0', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem' }}
                   title="Notifications"
@@ -84,15 +112,21 @@ export default function Navbar() {
            onClick={() => setMobileOpen(false)} />
       <aside className={`mobile-sidebar ${mobileOpen ? 'mobile-sidebar--open' : ''}`} id="mobile-sidebar">
         <div className="mobile-sidebar__links">
-          <button className="mobile-sidebar__link" onClick={() => navigate('/dashboard')}>Dashboard</button>
+          <button className="mobile-sidebar__link" onClick={() => { navigate('/'); setMobileOpen(false); }}>Events</button>
+          {isManager && (
+            <>
+              <button className="mobile-sidebar__link" onClick={() => { navigate('/my-events'); setMobileOpen(false); }}>My Events</button>
+              <button className="mobile-sidebar__link" onClick={() => { navigate('/dashboard'); setMobileOpen(false); }}>Dashboard</button>
+            </>
+          )}
           <button className="mobile-sidebar__link">Partners</button>
           <button className="mobile-sidebar__link">Contacts</button>
         </div>
         <div className="mobile-sidebar__actions">
           {user ? (
             <>
-              <button 
-                className="btn btn--outline btn--full" 
+              <button
+                className="btn btn--outline btn--full"
                 style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem' }}
               >
                 🔔 Notifications

@@ -31,6 +31,91 @@ namespace Api.Controllers
             Directory.Exists(PostersDir) &&
             Directory.EnumerateFiles(PostersDir, id + ".*").Any();
 
+        // GET: api/events  (public — customer event browsing)
+        [AllowAnonymous]
+        [HttpGet]
+        public async Task<IActionResult> GetAllEvents(
+            [FromQuery] string? search,
+            [FromQuery] string? eventType,
+            [FromQuery] string? tags,
+            [FromQuery] decimal? minPrice,
+            [FromQuery] decimal? maxPrice,
+            [FromQuery] string? dateFrom,
+            [FromQuery] string? dateTo,
+            [FromQuery] string? location,
+            [FromQuery] string? sort)
+        {
+            var query = _db.Events
+                .Include(e => e.Tickets)
+                .Include(e => e.Tags)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(search))
+                query = query.Where(e =>
+                    e.Title.ToLower().Contains(search.ToLower()) ||
+                    e.Description.ToLower().Contains(search.ToLower()));
+
+            if (!string.IsNullOrWhiteSpace(location))
+                query = query.Where(e => e.Location.ToLower().Contains(location.ToLower()));
+
+            if (!string.IsNullOrWhiteSpace(eventType))
+                query = query.Where(e => e.Tags.Any(t => t.Name.ToLower() == eventType.ToLower()));
+
+            if (!string.IsNullOrWhiteSpace(tags))
+            {
+                foreach (var tag in tags.Split(',').Select(t => t.Trim().ToLower()).Where(t => t.Length > 0))
+                {
+                    var captured = tag;
+                    query = query.Where(e => e.Tags.Any(t => t.Name.ToLower() == captured));
+                }
+            }
+
+            if (minPrice.HasValue)
+                query = query.Where(e => e.Tickets.Any(t => t.Price >= minPrice.Value));
+
+            if (maxPrice.HasValue)
+                query = query.Where(e => e.Tickets.Any(t => t.Price <= maxPrice.Value));
+
+            if (DateTime.TryParse(dateFrom, out var from))
+                query = query.Where(e => e.Date >= from.ToUniversalTime());
+
+            if (DateTime.TryParse(dateTo, out var to))
+                query = query.Where(e => e.Date <= to.ToUniversalTime().AddDays(1));
+
+            query = sort switch
+            {
+                "oldest"     => query.OrderBy(e => e.Date),
+                "price-asc"  => query.OrderBy(e => e.Tickets.Min(t => (decimal?)t.Price)),
+                "price-desc" => query.OrderByDescending(e => e.Tickets.Min(t => (decimal?)t.Price)),
+                "name-asc"   => query.OrderBy(e => e.Title),
+                "name-desc"  => query.OrderByDescending(e => e.Title),
+                _            => query.OrderByDescending(e => e.Date)
+            };
+
+            var events = await query.ToListAsync();
+
+            var result = events.Select(ev =>
+            {
+                var price = ev.Tickets.Any() ? ev.Tickets.Min(t => t.Price) : 0;
+                return new MyEventDto
+                {
+                    Id            = ev.Id,
+                    Name          = ev.Title,
+                    Date          = ev.Date.ToString("yyyy-MM-dd"),
+                    Location      = ev.Location,
+                    Description   = ev.Description,
+                    TicketsSold   = ev.Tickets.Sum(t => t.Sold),
+                    TicketsTotal  = ev.Tickets.Sum(t => t.Quantity),
+                    Revenue       = "0",
+                    RevenueAmount = 0,
+                    Price         = price,
+                    HasPoster     = EventHasPoster(ev.Id)
+                };
+            });
+
+            return Ok(result);
+        }
+
         // GET: api/events/{id}
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetEvent(Guid id)
@@ -71,6 +156,7 @@ namespace Api.Controllers
         }
 
         // POST: api/events/{id}/poster
+        [Authorize(Roles = "Manager,SuperAdmin")]
         [HttpPost("{id:guid}/poster")]
         public async Task<IActionResult> UploadPoster(Guid id, IFormFile file)
         {
@@ -98,7 +184,7 @@ namespace Api.Controllers
         }
 
         // GET: api/events/myevents
-        [AllowAnonymous]
+        [Authorize(Roles = "Manager,SuperAdmin")]
         [HttpGet("myevents")]
         public async Task<IActionResult> GetMyEvents(
             [FromQuery] string? search,
@@ -120,6 +206,7 @@ namespace Api.Controllers
                 .Include(e => e.Tags)
                 .AsQueryable();
 
+            // Managers only see their own events; SuperAdmin sees all events
             if (role == "Manager")
             {
                 query = query.Where(e => e.CreatedByUserId == userId);
@@ -196,7 +283,7 @@ namespace Api.Controllers
         }
 
         // POST: api/events
-        [Authorize]
+        [Authorize(Roles = "Manager,SuperAdmin")]
         [HttpPost]
         public async Task<IActionResult> CreateEvent([FromBody] CreateEventDto createDto)
         {
@@ -247,6 +334,7 @@ namespace Api.Controllers
         }
 
         // PUT: api/events/{id}
+        [Authorize(Roles = "Manager,SuperAdmin")]
         [HttpPut("{id:guid}")]
         public async Task<IActionResult> UpdateEvent(Guid id, [FromBody] UpdateEventDto updateDto)
         {
@@ -323,6 +411,7 @@ namespace Api.Controllers
         }
 
         // DELETE: api/events/{id}
+        [Authorize(Roles = "Manager,SuperAdmin")]
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> DeleteEvent(Guid id)
         {
