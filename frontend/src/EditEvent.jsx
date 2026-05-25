@@ -103,7 +103,13 @@ function EditEvent() {
         setPosterPreview(URL.createObjectURL(file));
     };
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (overwriteOrEvent = false) => {
+        const overwrite = typeof overwriteOrEvent === 'boolean' ? overwriteOrEvent : false;
+
+        if (overwriteOrEvent && typeof overwriteOrEvent.preventDefault === 'function') {
+            overwriteOrEvent.preventDefault();
+        }
+
         const newErrors = {};
 
         if (!(title || '').trim()) newErrors.title = "Event Name is required.";
