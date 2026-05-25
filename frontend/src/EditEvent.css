@@ -1,5 +1,15 @@
 /* EditEvent page styles */
 
+#transparent_panel {
+    position: fixed;
+    z-index: 1000;
+}
+
+#delete_confirmation_window {
+    position: fixed;
+    z-index: 1001;
+}
+
 .page-loading {
     color: var(--text-1);
     padding: 2rem;

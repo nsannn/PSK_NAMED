@@ -72,7 +72,7 @@ namespace Api.Controllers
 
         // POST: api/events/{id}/poster
         [HttpPost("{id:guid}/poster")]
-        public async Task<IActionResult> UploadPoster(Guid id, IFormFile file)
+        public async Task<IActionResult> UploadPoster(Guid id, [FromForm] IFormFile file, [FromForm] uint version, [FromForm] bool forceOverwrite = false)
         {
             var ev = await _db.Events.FindAsync(id);
             if (ev == null)
@@ -85,6 +85,13 @@ namespace Api.Controllers
             if (ext is not (".jpg" or ".jpeg" or ".png" or ".webp"))
                 return BadRequest(new { message = "Only JPG, PNG, and WebP images are allowed." });
 
+            if (!forceOverwrite)
+            {
+                _db.Entry(ev)
+                    .Property(e => e.Version)
+                    .OriginalValue = version;
+            }
+
             Directory.CreateDirectory(PostersDir);
 
             foreach (var existing in Directory.EnumerateFiles(PostersDir, id + ".*"))
@@ -94,7 +101,30 @@ namespace Api.Controllers
             await using var stream = System.IO.File.Create(filePath);
             await file.CopyToAsync(stream);
 
-            return Ok(new { url = $"/api/events/{id}/poster" });
+            try {
+                TouchEvent(ev);
+                await _db.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException ex)            {
+                _logger.LogWarning(ex, "Concurrency conflict uploading poster for event {EventId}", id);
+                
+                if (System.IO.File.Exists(filePath))
+                    System.IO.File.Delete(filePath);
+                
+                var current = await _db.Events
+                    .Include(e => e.Tickets)
+                    .Include(e => e.Tags)
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(e => e.Id == id);
+
+                return Conflict(new
+                {
+                    message = "Event was modified or deleted by another user",
+                    currentData = current == null ? null : MapToDto(current, EventHasPoster(current.Id))
+                });
+            }
+
+            return Ok(new { url = $"/api/events/{id}/poster", version = ev.Version });
         }
 
         // GET: api/events/myevents
@@ -261,6 +291,13 @@ namespace Api.Controllers
             if (ev == null)
                 return NotFound();
 
+            if (!updateDto.ForceOverwrite)
+            {
+                _db.Entry(ev)
+                    .Property(e => e.Version)
+                    .OriginalValue = updateDto.Version;
+            }
+
             ev.Title = updateDto.Title;
             ev.Description = updateDto.Description;
             ev.Location = updateDto.Location;
@@ -312,13 +349,26 @@ namespace Api.Controllers
 
             try
             {
+                TouchEvent(ev);
                 await _db.SaveChangesAsync();
-                return NoContent();
+                var updatedEvent = MapToDto(ev, EventHasPoster(ev.Id));
+                return Ok(updatedEvent);
             }
             catch (DbUpdateConcurrencyException ex)
             {
                 _logger.LogWarning(ex, "Concurrency conflict updating event {EventId}", id);
-                return Conflict(new { message = "Event was modified or deleted by another user" });
+
+                var current = await _db.Events
+                    .Include(e => e.Tickets)
+                    .Include(e => e.Tags)
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(e => e.Id == id);
+
+                return Conflict(new
+                {
+                    message = "Event was modified or deleted by another user",
+                    currentData = current == null ? null : MapToDto(current, EventHasPoster(current.Id))
+                });
             }
         }
 
@@ -341,6 +391,12 @@ namespace Api.Controllers
             return NoContent();
         }
 
+        // Touch the event to update its concurrency token
+        private void TouchEvent(Event ev)
+        {
+            _db.Entry(ev).Property(e => e.Title).IsModified = true;
+        }
+
         private static EventDto MapToDto(Event ev, bool hasPoster) => new()
         {
             Id = ev.Id,
@@ -348,6 +404,7 @@ namespace Api.Controllers
             Description = ev.Description,
             Location = ev.Location,
             Date = ev.Date,
+            Version = ev.Version,
             HasPoster = hasPoster,
 
             Tags = ev.Tags.Select(t => new TagDto

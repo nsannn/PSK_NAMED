@@ -26,5 +26,7 @@ namespace Api.Dtos.Event
         [Required]
         [MinLength(1, ErrorMessage = "At least one ticket tier is required.")]
         public List<CreateTicketTierDto> TicketTiers { get; set; } = new List<CreateTicketTierDto>();
+        public uint Version { get; set; }
+        public bool ForceOverwrite { get; set; }
     }
 }
