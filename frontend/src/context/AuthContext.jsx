@@ -30,6 +30,12 @@ export function AuthProvider({ children }) {
     });
 
     setUser(data.user);
+    // refresh the page so all parts of the app reflect the authenticated state
+    try {
+      window.location.reload();
+    } catch (err) {
+      // ignore - non-browser environments
+    }
     return data;
   }
 
@@ -40,6 +46,11 @@ export function AuthProvider({ children }) {
     });
 
     setUser(data.user);
+    try {
+      window.location.reload();
+    } catch (err) {
+      // ignore
+    }
     return data;
   }
 
@@ -52,6 +63,11 @@ export function AuthProvider({ children }) {
       logger.warn('Logout request failed', err);
     } finally {
       setUser(null);
+      try {
+        window.location.reload();
+      } catch (err) {
+        // ignore
+      }
     }
   }
 

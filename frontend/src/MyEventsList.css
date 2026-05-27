@@ -1,22 +1,33 @@
+/* MyEventsList page styles */
+
 .page-loading {
-    color: white;
-    padding-left: 20px;
+    color: var(--text-1);
+    padding: 3rem 1.5rem;
+    text-align: center;
+    font-size: 1.1rem;
+    animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
 
 .sort-container {
     position: relative;
+    margin: auto 0.5rem auto auto;
 }
 
 .sort-menu-open {
-    display: flex;
+    display: flex !important;
     flex-direction: column;
-    opacity: 1;
-    margin: 0;
+    opacity: 1 !important;
+    margin: 0.5rem 0 0 0 !important;
 }
 
 .event-card-poster-img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border-radius: 2rem;
+    border-radius: 0.75rem;
 }

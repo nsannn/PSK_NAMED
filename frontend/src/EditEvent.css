@@ -1,4 +1,4 @@
-/* EditEvent Page Styles */
+/* EditEvent page styles */
 
 #transparent_panel {
     position: fixed;
@@ -11,17 +11,19 @@
 }
 
 .page-loading {
-    color: white;
+    color: var(--text-1);
     padding: 2rem;
+    text-align: center;
 }
 
-
 .edit-event-main-column-left {
-    width: 70%;
+    flex: 7;
+    min-width: 0;
 }
 
 .edit-event-main-column-right {
-    width: 28%;
+    flex: 3;
+    min-width: 0;
 }
 
 .edit-event-info-card-scrollable {
@@ -48,6 +50,10 @@
 }
 
 .edit-event-delete-button {
-    background-color: #d32f2f;
-    color: white;
+    background-color: var(--primary-attention-color) !important;
+    border-color: var(--primary-attention-border-color) !important;
+}
+
+.edit-event-delete-button:hover {
+    background-color: var(--primary-attention-hover-color) !important;
 }

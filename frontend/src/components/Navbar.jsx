@@ -45,11 +45,10 @@ export default function Navbar() {
         <div className="navbar__actions" id="nav-actions">
           {user ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-              <div id="notification_container">
+              <div id="notification_container" className="navbar__notification-container">
                 <button 
                   id="notification_button" 
-                  className="btn btn--outline"
-                  style={{ width: '40px', height: '40px', padding: '0', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem' }}
+                  className="btn btn--outline navbar__notification-btn"
                   title="Notifications"
                 >
                   🔔
