@@ -1,5 +1,6 @@
 using Api.Database;
 using Api.Models;
+using Api.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -14,14 +15,16 @@ namespace Api.Controllers
     {
         private readonly ApplicationDbContext _db;
         private readonly ILogger<OrdersController> _logger;
+        private readonly IRefundStrategy _refundStrategy;
 
-        public OrdersController(ApplicationDbContext db, ILogger<OrdersController> logger)
+        public OrdersController(ApplicationDbContext db, ILogger<OrdersController> logger, IRefundStrategy refundStrategy)
         {
             _db = db;
             _logger = logger;
+            _refundStrategy = refundStrategy;
         }
 
-        [Authorize(Roles = "Manager,Admin")]
+        [Authorize(Roles = "Manager,SuperAdmin")]
         [HttpGet("event/{eventId}")]
         public async Task<IActionResult> GetEventOrders(Guid eventId)
         {
@@ -32,7 +35,7 @@ namespace Api.Controllers
             if (ev == null)
                 return NotFound();
 
-            var isAdmin = User.IsInRole("Admin");
+            var isAdmin = User.IsInRole("SuperAdmin");
             if (ev.CreatedByUserId != userId && !isAdmin)
                 return Forbid();
 
@@ -57,7 +60,7 @@ namespace Api.Controllers
             return Ok(orders);
         }
 
-        [Authorize(Roles = "Manager,Admin")]
+        [Authorize(Roles = "Manager,SuperAdmin")]
         [HttpPost("{orderId}/refund")]
         public async Task<IActionResult> RefundOrder(Guid orderId)
         {
@@ -72,7 +75,7 @@ namespace Api.Controllers
 
             if (order == null) return NotFound();
             
-            var isAdmin = User.IsInRole("Admin");
+            var isAdmin = User.IsInRole("SuperAdmin");
             if (order.Event.CreatedByUserId != userId && !isAdmin)
              return Forbid();
             
@@ -80,9 +83,12 @@ namespace Api.Controllers
 
             try
             {
+                var refundAmount = _refundStrategy.CalculateRefundAmount((long)order.AmountPaid);
+
                 var refundOptions = new RefundCreateOptions
                 {
-                    PaymentIntent = order.StripePaymentIntentId
+                    PaymentIntent = order.StripePaymentIntentId,
+                    Amount = refundAmount
                 };
                 var service = new RefundService();
                 var stripeRefund = await service.CreateAsync(refundOptions);
@@ -104,7 +110,7 @@ namespace Api.Controllers
                     }
 
                     await _db.SaveChangesAsync();
-                    return Ok(new { message = "Refund successful." });
+                    return Ok(new { message = $"Refund successful ({_refundStrategy.PolicyName}).", refundedAmount = refundAmount });
                 }
 
                 return BadRequest(new { message = "Refund failed in Stripe." });
@@ -116,7 +122,7 @@ namespace Api.Controllers
             }
         }
 
-        [Authorize(Roles = "Manager,Admin")]
+        [Authorize(Roles = "Manager,SuperAdmin")]
         [HttpPost("event/{eventId}/refund-all")]
         public async Task<IActionResult> RefundAllOrders(Guid eventId)
         {
@@ -126,7 +132,7 @@ namespace Api.Controllers
             var ev = await _db.Events.Include(e => e.Tickets).FirstOrDefaultAsync(e => e.Id == eventId);
             if (ev == null) return NotFound();
             
-            var isAdmin = User.IsInRole("Admin");
+            var isAdmin = User.IsInRole("SuperAdmin");
             if (ev.CreatedByUserId != userId && !isAdmin)
              return Forbid();
 
@@ -143,19 +149,22 @@ namespace Api.Controllers
                 try
                 {
                     if (string.IsNullOrEmpty(order.StripePaymentIntentId)) continue;
-                    
+
+                    var refundAmount = _refundStrategy.CalculateRefundAmount((long)order.AmountPaid);
+
                     var stripeRefund = await service.CreateAsync(new RefundCreateOptions
                     {
-                        PaymentIntent = order.StripePaymentIntentId
+                        PaymentIntent = order.StripePaymentIntentId,
+                        Amount = refundAmount
                     });
-                    
+
                     if (stripeRefund.Status == "succeeded" || stripeRefund.Status == "pending")
                     {
                         order.Status = OrderStatus.Refunded;
                         order.RefundedAt = DateTime.UtcNow;
-                        
+
                         foreach(var ticketGroup in order.PurchasedTickets.GroupBy(t => t.TicketId)) {
-                            var ticketTier = order.Event.Tickets.FirstOrDefault(t => t.Id == ticketGroup.Key);
+                            var ticketTier = ev.Tickets.FirstOrDefault(t => t.Id == ticketGroup.Key);
 
                             if(ticketTier != null)
                                 ticketTier.Sold = Math.Max(0, ticketTier.Sold - ticketGroup.Count());
@@ -164,7 +173,7 @@ namespace Api.Controllers
                         foreach(var purchasedTicket in order.PurchasedTickets) {
                             purchasedTicket.Status = PurchasedTicketStatus.Refunded;
                         }
-                        
+
                         refundCount++;
                     }
                 }
@@ -175,7 +184,7 @@ namespace Api.Controllers
             }
 
             await _db.SaveChangesAsync();
-            return Ok(new { message = $"Refunded {refundCount} orders." });
+            return Ok(new { message = $"Refunded {refundCount} orders ({_refundStrategy.PolicyName})." });
         }
     }
 }

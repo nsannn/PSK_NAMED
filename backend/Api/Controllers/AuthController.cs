@@ -96,6 +96,10 @@ namespace Api.Controllers
             if (!Enum.TryParse<UserRole>(req.Role, out var userRole))
                 return BadRequest(new { message = "Invalid role specified." });
 
+            // SuperAdmin can only be assigned directly in the database
+            if (userRole == UserRole.SuperAdmin)
+                return BadRequest(new { message = "Invalid role specified." });
+
             var user = new User
             {
                 FirstName = req.FirstName.Trim(),

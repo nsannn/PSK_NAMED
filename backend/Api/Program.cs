@@ -91,7 +91,13 @@ try
     {
         x.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
     });
-    builder.Services.AddScoped<IEmailService, EmailService>();
+    builder.Services.AddScoped<IRefundStrategy, FullRefundStrategy>();
+
+    builder.Services.AddScoped<EmailService>();
+    builder.Services.AddScoped<IEmailService>(sp =>
+        new LoggingEmailServiceDecorator(
+            sp.GetRequiredService<EmailService>(),
+            sp.GetRequiredService<ILogger<LoggingEmailServiceDecorator>>()));
     builder.Services.AddScoped<ITicketTokenValidationService,TicketTokenValidationService>();
 
     if (builder.Environment.IsDevelopment())

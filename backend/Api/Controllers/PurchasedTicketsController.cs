@@ -81,7 +81,7 @@ namespace Api.Controllers{
         }
 
         // GET: api/purchasedtickets/validate
-        [Authorize(Roles = "Manager,Admin")]
+        [Authorize(Roles = "Manager,Validator,SuperAdmin")]
         [HttpGet("validate")]
         public async Task<IActionResult> ValidateTicket([FromQuery] String token) {
             var staffUserIdValue=User.FindFirstValue(ClaimTypes.NameIdentifier);

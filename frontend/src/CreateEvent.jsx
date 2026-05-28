@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from './context/AuthContext';
 import { apiFetch } from './utils/api';
 import { logger } from './utils/logger';
 import './CreateEvent.css';
@@ -7,6 +8,9 @@ import './main.css';
 
 function CreateEvent() {
     const navigate = useNavigate();
+    const { user, loading: authLoading } = useAuth();
+    const role = user?.role;
+    const canManage = role === 'Manager' || role === 'SuperAdmin';
 
     const [title,       setTitle]       = useState('');
     const [date,        setDate]        = useState('');
@@ -22,6 +26,9 @@ function CreateEvent() {
 
     const [posterFile,    setPosterFile]    = useState(null);
     const [posterPreview, setPosterPreview] = useState(null);
+
+    if (authLoading) return <div className="page-loading">Loading...</div>;
+    if (!canManage) return <div className="page-loading">You do not have permission to create events.</div>;
 
     const handleAddTier = () =>
         setTicketTiers([...ticketTiers, { name: '', quantity: 0, price: 0 }]);
@@ -55,7 +62,13 @@ function CreateEvent() {
         const newErrors = {};
 
         if (!(title || '').trim()) newErrors.title = "Event Name is required.";
-        if (!date) newErrors.date = "Date is required.";
+        if (!date) {
+            newErrors.date = "Date is required.";
+        } else {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            if (new Date(date) < today) newErrors.date = "Event date cannot be in the past.";
+        }
         if (!time) newErrors.time = "Time is required.";
         if (!(location || '').trim()) newErrors.location = "Location is required.";
         if (!(description || '').trim()) newErrors.description = "Description is required.";
@@ -68,10 +81,22 @@ function CreateEvent() {
         } else {
             const tierErrors = [];
             let hasTierError = false;
+            const seenNames = {};
             for (let i = 0; i < ticketTiers.length; i++) {
                 const tier = ticketTiers[i];
                 const tErr = {};
-                if (!(tier.name || '').trim()) tErr.name = "Tier Name is required.";
+                const trimmedName = (tier.name || '').trim().toLowerCase();
+                if (!trimmedName) {
+                    tErr.name = "Tier Name is required.";
+                } else if (seenNames[trimmedName] !== undefined) {
+                    tErr.name = "Duplicate tier name.";
+                    if (!tierErrors[seenNames[trimmedName]].name) {
+                        tierErrors[seenNames[trimmedName]].name = "Duplicate tier name.";
+                        hasTierError = true;
+                    }
+                } else {
+                    seenNames[trimmedName] = i;
+                }
                 if (tier.quantity === '' || Number(tier.quantity) <= 0) tErr.quantity = "Quantity must be greater than 0.";
                 if (tier.price === '' || Number(tier.price) <= 0) tErr.price = "Price must be greater than 0.";
                 tierErrors.push(tErr);
@@ -113,6 +138,7 @@ function CreateEvent() {
             if (posterFile) {
                 const form = new FormData();
                 form.append('file', posterFile);
+                form.append('version', created.version);
                 await apiFetch(`/api/events/${created.id}/poster`, { method: 'POST', body: form });
             }
             navigate('/');
@@ -144,7 +170,7 @@ function CreateEvent() {
                             <div id="staff_info_card_input_group">
                                 <div id="staff_event_card_input" className="align_column">
                                     <label htmlFor="staff_event_date">Date</label>
-                                    <input id="staff_event_date" type="date" value={date} onChange={e => setDate(e.target.value)} className={errors.date ? "input-error" : ""} />
+                                    <input id="staff_event_date" type="date" value={date} min={new Date().toISOString().split('T')[0]} onChange={e => setDate(e.target.value)} className={errors.date ? "input-error" : ""} />
                                     {errors.date && <span className="field-error-text">{errors.date}</span>}
                                 </div>
                                 <div id="staff_event_card_input" className="align_column">
