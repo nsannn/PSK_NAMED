@@ -1,8 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
+import { useNavigate } from "react-router-dom";
 import { useAuth } from '../context/AuthContext';
 import './UserMenu.css';
 
 export default function UserMenu() {
+  const navigate = useNavigate();
   const { user, logout } = useAuth();
   const [open, setOpen] = useState(false);
   const menuRef = useRef(null);
@@ -44,6 +46,12 @@ export default function UserMenu() {
           </div>
         </div>
         <div className="user-menu__divider" />
+        {user.role=="Customer" && (
+          <button className="user-menu__item" onClick={() => navigate('/my-tickets')}>My Tickets</button>
+        )}
+        {(user.role=="Manager" || user.role=="SuperAdmin") && (
+          <button className="user-menu__item" onClick={() => navigate('/ticket-validation')}>Ticket Validation</button>
+        )}
         <button className="user-menu__item" id="btn-logout" onClick={logout}>
           Logout
         </button>

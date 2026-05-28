@@ -3,6 +3,7 @@ using System;
 using Api.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260516145355_AddTicketValidation")]
+    partial class AddTicketValidation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -26,9 +29,6 @@ namespace Api.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("CreatedByUserId")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("Date")
@@ -46,66 +46,9 @@ namespace Api.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<uint>("Version")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("xid")
-                        .HasColumnName("xmin");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("CreatedByUserId");
 
                     b.ToTable("Events");
-                });
-
-            modelBuilder.Entity("Api.Models.Order", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<decimal>("AmountPaid")
-                        .HasColumnType("numeric");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CustomerEmail")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("EventId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("RefundedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("StripePaymentIntentId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("StripeSessionId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EventId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("Api.Models.PurchasedTicket", b =>
@@ -117,17 +60,7 @@ namespace Api.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime?>("EventDateSnapshot")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<Guid>("EventId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("EventNameSnapshot")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid?>("OrderId")
                         .HasColumnType("uuid");
 
                     b.Property<decimal>("PriceSnapshot")
@@ -156,8 +89,6 @@ namespace Api.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("EventId");
-
-                    b.HasIndex("OrderId");
 
                     b.HasIndex("TicketId");
 
@@ -267,52 +198,18 @@ namespace Api.Migrations
                     b.ToTable("EventTag");
                 });
 
-            modelBuilder.Entity("Api.Models.Event", b =>
-                {
-                    b.HasOne("Api.Models.User", "CreatedByUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedByUserId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.Navigation("CreatedByUser");
-                });
-
-            modelBuilder.Entity("Api.Models.Order", b =>
-                {
-                    b.HasOne("Api.Models.Event", "Event")
-                        .WithMany("Orders")
-                        .HasForeignKey("EventId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Api.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Event");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Api.Models.PurchasedTicket", b =>
                 {
                     b.HasOne("Api.Models.Event", "Event")
                         .WithMany()
                         .HasForeignKey("EventId")
-                        .OnDelete(DeleteBehavior.SetNull)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("Api.Models.Order", "Order")
-                        .WithMany("PurchasedTickets")
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("Api.Models.Ticket", "Ticket")
                         .WithMany()
                         .HasForeignKey("TicketId")
-                        .OnDelete(DeleteBehavior.SetNull)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Api.Models.User", "UsedByStaff")
@@ -326,8 +223,6 @@ namespace Api.Migrations
                         .IsRequired();
 
                     b.Navigation("Event");
-
-                    b.Navigation("Order");
 
                     b.Navigation("Ticket");
 
@@ -364,14 +259,7 @@ namespace Api.Migrations
 
             modelBuilder.Entity("Api.Models.Event", b =>
                 {
-                    b.Navigation("Orders");
-
                     b.Navigation("Tickets");
-                });
-
-            modelBuilder.Entity("Api.Models.Order", b =>
-                {
-                    b.Navigation("PurchasedTickets");
                 });
 #pragma warning restore 612, 618
         }

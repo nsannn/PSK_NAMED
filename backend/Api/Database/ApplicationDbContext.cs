@@ -14,6 +14,7 @@ namespace Api.Database
         public DbSet<Event> Events { get; set; }
         public DbSet<Ticket> Tickets { get; set; }
         public DbSet<Tag> Tags { get; set; }
+        public DbSet<PurchasedTicket> PurchasedTickets { get; set; }
         public DbSet<Order> Orders { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -40,6 +41,24 @@ namespace Api.Database
                 .WithMany()
                 .HasForeignKey(e => e.CreatedByUserId)
                 .OnDelete(DeleteBehavior.SetNull);
+            
+            modelBuilder.Entity<PurchasedTicket>(entity => {
+                entity.HasIndex(t => t.UserId);
+                entity.HasIndex(t => t.EventId);
+                entity.Property(t => t.Status).HasConversion<string>();
+                entity.HasOne(t => t.Event)
+                    .WithMany()
+                    .HasForeignKey(t => t.EventId)
+                    .OnDelete(DeleteBehavior.SetNull);
+                entity.HasOne(t => t.Ticket)
+                    .WithMany()
+                    .HasForeignKey(t => t.TicketId)
+                    .OnDelete(DeleteBehavior.SetNull);
+                entity.HasOne(t => t.Order)
+                    .WithMany(o => o.PurchasedTickets)
+                    .HasForeignKey(t => t.OrderId)
+                    .OnDelete(DeleteBehavior.SetNull);
+            });
         }
     }
 }

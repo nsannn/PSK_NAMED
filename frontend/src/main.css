@@ -16,6 +16,7 @@ hr {
     width: 100%;
     background-color: var(--primary-detail-border-color);
     margin: 1rem auto;
+    transition:background-color 0.2s ease;
 }
 
 /* ─── Utility Classes ─── */
@@ -28,6 +29,26 @@ hr {
 .align_column {
     display: flex;
     flex-direction: column;
+}
+
+#loading_anim{
+    animation:spin 2s linear infinite;
+    align-self:center;
+    border:16px solid var(--primary-detail-color);
+    border-top:16px solid #000;
+    border-radius:50%;
+    position:fixed;
+    inset:0px;
+    margin:auto;
+    width:120px;
+    height:120px;
+    z-index:1;
+}
+
+@keyframes spin{
+    0%{transform:rotate(0deg);}
+
+    100%{transform:rotate(360deg);}
 }
 
 #info_name {
@@ -60,6 +81,14 @@ hr {
     z-index: 1000;
     transition: opacity 0.2s ease;
 }
+
+    #transparent_panel.open{
+        opacity:0.8;
+    }
+
+    #transparent_panel.closing{
+        opacity:0;
+    }
 
 .overlay--visible {
     display: block !important;

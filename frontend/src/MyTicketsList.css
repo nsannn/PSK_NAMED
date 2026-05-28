@@ -1,0 +1,302 @@
+#qr_code_window{
+    display:flex;
+    flex-direction:column;
+    position:fixed;
+    top:6rem;
+    left:50%;
+    background-color:var(--tertiary-color);
+    border:3px solid var(--tertiary-border-color);
+    border-radius:0.8rem;
+    width:20rem;
+    padding:1.5rem;
+    color:var(--primary-text-color);
+    font-size:1.2rem;
+    font-weight:bold;
+    transform:translate(-50%,0%);
+    opacity:0;
+    z-index:1010;
+    transition:opacity 0.3s ease,transform 0.4s ease;
+}
+
+    #qr_code_window.open{
+        opacity:1;
+        transform:translate(-50%,0);
+    }
+
+    #qr_code_window.closing{
+        opacity:0;
+        transform:translate(-50%,3rem);
+    }
+
+    #qr_code_window > button{
+        background-color:var(--secondary-color);
+        border:1px solid var(--secondary-border-color);
+        border-radius:1rem;
+        width:90%;
+        margin:0.5rem auto 0 auto;
+        color:var(--primary-text-color);
+        font-size:1.4rem;
+        font-weight:bold;
+        padding:0.5rem;
+        transition:background-color 0.3s ease,transform 0.3s ease;
+    }
+
+    #qr_code_window > button:hover{
+        background-color:var(--secondary-hover-color);
+        transform:scale(1.05);
+    }
+
+#qr_code{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin:0 auto 1rem auto;
+}
+
+#qr_code canvas{
+    background:white;
+    border-radius:0.5rem;
+    padding:0.5rem;
+}
+
+#my_tickets_container{
+    display:flex;
+    flex-direction:row;
+    width:90%;
+    margin:1rem auto auto auto;
+}
+
+#my_tickets_container #status{
+    margin:0.5rem auto;
+    font-size:1.5rem;
+    font-weight:bold;
+}
+
+#my_tickets_card{
+    background-color:var(--tertiary-color);
+    border:2px solid var(--tertiary-border-color);
+    border-radius:1rem;
+    width:15%;
+    margin:0 auto auto 0;
+    padding:1rem;
+}
+
+#my_tickets_card_name{
+    margin:0 auto 0 0;
+    font-size:1.5rem;
+    font-weight:bold;
+}
+
+#my_tickets_option{
+    background-color:var(--secondary-color);
+    border:2px solid var(--secondary-border-color);
+    border-radius:1rem;
+    width:90%;
+    margin:0.2rem auto;
+    color:var(--primary-text-color);
+    font-size:1.2rem;
+    font-weight:bold;
+    padding:0.3rem;
+    transition:background-color 0.3s ease,transform 0.3s ease;
+}
+
+    #my_tickets_option.selected{
+        background-color:var(--secondary-hover-color);
+        transform:scale(1.03);
+    }
+
+    #my_tickets_option:hover{
+        background-color:var(--secondary-hover-color);
+        transform:scale(1.05);
+    }
+
+#my_tickets_group_list{
+    background-color:var(--tertiary-color);
+    border:2px solid var(--tertiary-border-color);
+    border-radius:1rem;
+    width:80%;
+    margin:0 0 auto auto;
+}
+
+#my_tickets_message{
+    margin:0.5rem auto;
+    font-size:1.4rem;
+    font-weight:bold;
+}
+
+#my_tickets_group{
+    background-color:var(--secondary-color);
+    border:2px solid var(--secondary-border-color);
+    border-radius:1rem;
+    width:95%;
+    margin:0.5rem auto;
+    transition:height 0.3s ease;
+}
+
+    #my_tickets_group:first-child{
+        margin-top:1rem;
+    }
+
+    #my_tickets_group:last-child{
+        margin-bottom:1rem;
+    }
+
+#my_tickets_group_info{
+    display:flex;
+    flex-direction:row;
+    background-color:var(--primary-color);
+    border:none;
+    border-radius:1rem;
+    margin:0;
+    padding:0.5rem;
+}
+
+    #my_tickets_group_info > button{
+        background-color:var(--tertiary-color);
+        border:1px solid var(--tertiary-border-color);
+        border-radius:1rem;
+        width:12rem;
+        margin:auto 1rem auto auto;
+        color:var(--primary-text-color);
+        font-size:1.4rem;
+        font-weight:bold;
+        padding:0.5rem;
+        transition:background-color 0.3s ease,transform 0.3s ease;
+    }
+
+        #my_tickets_group_info > button:hover{
+            background-color:var(--tertiary-hover-color);
+            transform:scale(1.05);
+        }
+
+#my_tickets_group_info_text{
+    max-width:80%;
+    margin:auto auto auto 0.5rem;
+}
+
+    #my_tickets_group_info_text > span:first-child{
+        max-height:5rem;
+        margin:0 auto 0.5rem 0;
+        font-size:1.4rem;
+        font-weight:bold;
+        overflow-y:auto;
+    }
+
+    #my_tickets_group_info_text > span{
+        margin:0 auto 0.5rem 0.5rem;
+        font-size:1.1rem;
+    }
+
+#my_tickets_group_info_details{
+    display:flex;
+    flex-direction:row;
+    margin:0.5rem 0;
+}
+
+    #my_tickets_group_info_details > span{
+        margin:0 1rem;
+        font-size:1.1rem;
+    }
+
+#my_tickets_ticket_list{
+    display:flex;
+    width:100%;
+    max-height:0;
+    margin:0 auto;
+    opacity:0;
+    overflow:auto;
+    transition:max-height 0.3s ease,margin 0.3s ease,opacity 0.3s ease;
+}
+
+    #my_tickets_ticket_list.open_group_tickets{
+        max-height:20rem;
+        margin:0.5rem auto;
+        opacity:1;
+    }
+
+#my_tickets_ticket{
+    display:flex;
+    flex-direction:row;
+    background-color:var(--quaternary-color);
+    border:none;
+    border-radius:0.5rem;
+    width:90%;
+    margin:0.2rem auto;
+    padding:0.5rem;
+}
+
+    #my_tickets_ticket > span:first-child{
+        max-height:5rem;
+        margin:0.5rem 1rem 0.5rem 0;
+        font-size:1.1rem;
+        font-weight:bold;
+        overflow-y:auto;
+    }
+
+    #my_tickets_ticket > span{
+        margin:0.5rem auto 0.5rem 0.5rem;
+        font-size:1.1rem;
+    }
+
+    #my_tickets_ticket > button{
+        background-color:var(--tertiary-color);
+        border:1px solid var(--tertiary-border-color);
+        border-radius:0.5rem;
+        width:10rem;
+        margin:auto 0.5rem auto auto;
+        color:var(--primary-text-color);
+        font-size:1.2rem;
+        font-weight:bold;
+        padding:0.5rem;
+        transition:background-color 0.3s ease,transform 0.3s ease;
+    }
+
+        #my_tickets_ticket > button:hover{
+            background-color:var(--tertiary-hover-color);
+            transform:scale(1.05);
+        }
+
+@media (max-width: 1030px) {
+    #my_tickets_container{
+        flex-direction:column;
+    }
+
+    #my_tickets_card{
+        width:auto;
+        margin:0 0.3rem 0.5rem 0.3rem;
+    }
+
+    #my_tickets_group_list{
+        width:auto;
+        margin:0.5rem 0.3rem 1rem 0.3rem;
+    }
+
+    #my_tickets_group_info{
+        flex-direction:column;
+    }
+
+        #my_tickets_group_info > button{
+            width:90%;
+            margin:0.5rem auto;
+        }
+
+    #my_tickets_group_info_text{
+        width:100%;
+        max-width:none;
+        margin:0 auto 0.2rem auto;
+    }
+
+    #my_tickets_group_info_details{
+        flex-direction:column;
+        margin:0.3rem 0;
+    }
+
+    #my_tickets_ticket{
+        flex-direction:column;
+    }
+
+        #my_tickets_ticket > button{
+            width:100%;
+            margin:0.5rem auto;
+        }
+}

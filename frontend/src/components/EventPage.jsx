@@ -89,12 +89,20 @@ export default function EventPage() {
         setCheckoutLoading(true);
 
         try {
+            var tickets=event.tickets.filter(ticket => {
+                if(ticketCounts[ticket.id]>0)
+                    return true;
+            });
+            
             const data = await apiFetch('/api/checkout/create-session', {
                 method: 'POST',
                 body: JSON.stringify({
                     eventId: event.id,
-                    quantity: totalQuantity,
-                }),
+                    tickets: tickets.map(ticket => ({
+                        ticketId: ticket.id,
+                        quantity: ticketCounts[ticket.id]
+                    }))
+                })
             });
 
             // Redirect to Stripe Checkout

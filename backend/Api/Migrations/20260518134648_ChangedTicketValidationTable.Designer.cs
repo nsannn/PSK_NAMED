@@ -3,6 +3,7 @@ using System;
 using Api.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260518134648_ChangedTicketValidationTable")]
+    partial class ChangedTicketValidationTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -45,12 +48,6 @@ namespace Api.Migrations
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<uint>("Version")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("xid")
-                        .HasColumnName("xmin");
 
                     b.HasKey("Id");
 
@@ -127,9 +124,6 @@ namespace Api.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("OrderId")
-                        .HasColumnType("uuid");
-
                     b.Property<decimal>("PriceSnapshot")
                         .HasColumnType("numeric");
 
@@ -156,8 +150,6 @@ namespace Api.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("EventId");
-
-                    b.HasIndex("OrderId");
 
                     b.HasIndex("TicketId");
 
@@ -304,11 +296,6 @@ namespace Api.Migrations
                         .OnDelete(DeleteBehavior.SetNull)
                         .IsRequired();
 
-                    b.HasOne("Api.Models.Order", "Order")
-                        .WithMany("PurchasedTickets")
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
                     b.HasOne("Api.Models.Ticket", "Ticket")
                         .WithMany()
                         .HasForeignKey("TicketId")
@@ -326,8 +313,6 @@ namespace Api.Migrations
                         .IsRequired();
 
                     b.Navigation("Event");
-
-                    b.Navigation("Order");
 
                     b.Navigation("Ticket");
 
@@ -367,11 +352,6 @@ namespace Api.Migrations
                     b.Navigation("Orders");
 
                     b.Navigation("Tickets");
-                });
-
-            modelBuilder.Entity("Api.Models.Order", b =>
-                {
-                    b.Navigation("PurchasedTickets");
                 });
 #pragma warning restore 612, 618
         }

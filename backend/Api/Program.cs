@@ -92,6 +92,7 @@ try
         x.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
     });
     builder.Services.AddScoped<IEmailService, EmailService>();
+    builder.Services.AddScoped<ITicketTokenValidationService,TicketTokenValidationService>();
 
     if (builder.Environment.IsDevelopment())
     {
