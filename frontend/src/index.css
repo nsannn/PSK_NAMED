@@ -16,6 +16,11 @@
   --accent-hover: #dd7a1d;
   --accent-border: #aa5404;
 
+  /* Danger (red) */
+  --danger: #ba0303;
+  --danger-hover: #f01919;
+  --danger-border: #cd0c0c;
+
   /* Text */
   --text-0: #e0dcdc;
   --text-1: #b0acac;
@@ -28,6 +33,35 @@
   --track-color: #332b25;
   --thumb-color: #cb5908;
   --thumb-hover-color: #e37221;
+
+  /* ─── Legacy aliases (used by main.css / older components) ─── */
+  --background-color: var(--bg);
+  --primary-color: var(--surface-0);
+  --secondary-color: var(--surface-1);
+  --tertiary-color: var(--surface-2);
+  --quaternary-color: var(--surface-3);
+
+  --primary-hover-color: #2a2828;
+  --secondary-hover-color: #2d2c2c;
+  --tertiary-hover-color: #2b2929;
+  --quaternary-hover-color: #444141;
+
+  --quaternary-selected-color: #817c7c;
+
+  --primary-detail-color: var(--accent);
+  --primary-detail-hover-color: var(--accent-hover);
+  --primary-attention-color: var(--danger);
+  --primary-attention-hover-color: var(--danger-hover);
+
+  --primary-border-color: var(--border-1);
+  --secondary-border-color: #201e1e;
+  --tertiary-border-color: var(--border-2);
+  --quaternary-border-color: var(--border-3);
+  --primary-detail-border-color: var(--accent-border);
+  --primary-attention-border-color: var(--danger-border);
+
+  --primary-text-color: var(--text-0);
+  --secondary-text-color: #101010;
 
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   font-size: 16px;

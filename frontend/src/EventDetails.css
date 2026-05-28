@@ -1,14 +1,19 @@
+/* EventDetails page styles */
+
 .page-loading {
-    color: white;
+    color: var(--text-1);
     padding: 2rem;
+    text-align: center;
 }
 
 .details-col-left {
-    width: 70%;
+    flex: 7;
+    min-width: 0;
 }
 
 .details-col-right {
-    width: 28%;
+    flex: 3;
+    min-width: 0;
 }
 
 .details-full-row {
@@ -19,10 +24,12 @@
 
 .details-ticket-tiers-card {
     max-height: 30rem;
+    overflow-y: auto;
 }
 
 .details-textarea-readonly {
     cursor: default;
+    font-family: inherit;
 }
 
 .details-no-items {
@@ -40,4 +47,14 @@
 .tag-empty {
     margin: 0.3rem auto 0.5rem;
     opacity: 0.6;
+}
+
+/* Action button overrides for EventDetails */
+.details-btn-public {
+    background-color: var(--primary-detail-color) !important;
+    border-color: var(--primary-detail-border-color) !important;
+}
+
+.details-btn-public:hover {
+    background-color: var(--primary-detail-hover-color) !important;
 }

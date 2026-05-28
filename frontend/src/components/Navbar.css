@@ -9,7 +9,9 @@
   position: sticky;
   top: 0;
   z-index: 900;
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  background: rgba(30, 30, 30, 0.85); /* Slightly transparent surface-1 for blur effect */
 }
 
 .navbar__logo {
@@ -43,6 +45,33 @@
   background: var(--surface-2);
   color: var(--text-0);
   transform: scale(1.04);
+}
+
+.navbar__link--active {
+  color: var(--accent);
+  background: rgba(205, 99, 0, 0.1);
+  border-radius: 2rem;
+}
+
+.navbar__link--active:hover {
+  background: rgba(205, 99, 0, 0.15);
+  color: var(--accent);
+}
+
+.navbar__notification-container {
+  display: flex;
+  align-items: center;
+}
+
+.navbar__notification-btn {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
 }
 
 .navbar__actions {

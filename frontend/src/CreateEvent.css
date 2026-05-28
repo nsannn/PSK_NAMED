@@ -1,9 +1,13 @@
+/* CreateEvent page styles */
+
 .ce-col-left {
-    width: 70%;
+    flex: 7;
+    min-width: 0;
 }
 
 .ce-col-right {
-    width: 28%;
+    flex: 3;
+    min-width: 0;
 }
 
 .ce-ticket-tiers-card {
@@ -29,25 +33,13 @@
     border-radius: 1rem;
 }
 
-/* Make selected option fully orange with white text */
+/* Selected option (orange pill) */
 .option_selected {
-    background-color: orange;
-    color: white;
-    border: none;
+    background-color: var(--primary-detail-color) !important;
+    color: var(--primary-text-color) !important;
+    border-color: var(--primary-detail-border-color) !important;
 }
 
-/* Add a smooth hover effect */
-#staff_event_info_button {
-    /* background-color: white; */
-    color: white;
-    border: 1px solid orange;
-    border-radius: 0.5rem;
-    padding: 0.5rem 1rem;
-    cursor: pointer;
-    margin: 0.25rem;
-    transition: all 0.2s;
-}
-
-#staff_event_info_button:hover {
-    background-color: #ffc04d; /* lighter orange on hover */
+.option_selected:hover {
+    background-color: var(--primary-detail-hover-color) !important;
 }

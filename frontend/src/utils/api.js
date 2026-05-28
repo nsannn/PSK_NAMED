@@ -1,11 +1,12 @@
 import { logger } from './logger';
 
 export class ApiError extends Error {
-    constructor(message, status, traceId) {
+    constructor(message, status, traceId, data = null) {
         super(message);
         this.name = 'ApiError';
         this.status = status;
         this.traceId = traceId;
+        this.data = data;
     }
 }
 
@@ -50,7 +51,7 @@ export async function apiFetch(url, options = {}) {
             const traceId = data.traceId || null;
             
             logger.warn(`API Error: ${response.status} ${url}`, { message, traceId });
-            throw new ApiError(message, response.status, traceId);
+            throw new ApiError(message, response.status, traceId, data);
         }
 
         return data;

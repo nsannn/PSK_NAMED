@@ -74,10 +74,10 @@ function EventOrders() {
         <>
             {refundModal.show && (
                 <>
-                    <div id="transparent_panel" style={{ display: 'block', opacity: 0.5 }} onClick={() => setRefundModal({show: false, orderId: null})}></div>
-                    <div id="delete_confirmation_window" className="align_column" style={{ display: 'flex', opacity: 1, zIndex: 1000}}>
+                    <div className="overlay--visible" onClick={() => setRefundModal({show: false, orderId: null})}></div>
+                    <div id="delete_confirmation_window" className="align_column overlay--visible" style={{ zIndex: 1000 }}>
                         <span id="window_name">Confirm Refund</span>
-                        <hr style={{width: '100%'}}/>
+                        <hr className="orders-hr" />
                         <span id="window_info">Are you sure you want to refund this order?</span>
                         <div id="delete_controls" className="align_row">
                             <button onClick={() => setRefundModal({show: false, orderId: null})}>Cancel</button>
@@ -91,10 +91,10 @@ function EventOrders() {
 
             {refundAllModal && (
                 <>
-                    <div id="transparent_panel" style={{ display: 'block', opacity: 0.5 }} onClick={() => setRefundAllModal(false)}></div>
-                    <div id="delete_confirmation_window" className="align_column" style={{ display: 'flex', opacity: 1, zIndex: 1000}}>
+                    <div className="overlay--visible" onClick={() => setRefundAllModal(false)}></div>
+                    <div id="delete_confirmation_window" className="align_column overlay--visible" style={{ zIndex: 1000 }}>
                         <span id="window_name">Confirm Wholesale Refund</span>
-                        <hr style={{width: '100%'}}/>
+                        <hr className="orders-hr" />
                         <span id="window_info">Are you sure you want to refund ALL {paidOrders.length} paid orders? This action cannot be undone.</span>
                         <div id="delete_controls" className="align_row">
                             <button onClick={() => setRefundAllModal(false)}>Cancel</button>
@@ -106,10 +106,10 @@ function EventOrders() {
                 </>
             )}
 
-            <div className="align_column" style={{ width: '100%', alignItems: 'center' }}>
-                <div id="staff_main_row_part" style={{ width: '90%', marginTop: '2rem', justifyContent: 'space-between' }}>
+            <div className="align_column orders-page-container">
+                <div id="staff_main_row_part" className="orders-header-row">
                     <span id="staff_page_name">Orders: {event?.name || event?.title}</span>
-                    <div className="align_row">
+                    <div className="align_row orders-actions-row">
                         <Link to={`/event-details/${id}`} className="orders-link-btn">
                             Back to Details
                         </Link>
@@ -121,54 +121,56 @@ function EventOrders() {
                     </div>
                 </div>
 
-                <div id="staff_main_row_part" style={{ width: '90%' }}>
-                    <div id="staff_main_column_part" className="align_column" style={{ width: '100%' }}>
+                <div id="staff_main_row_part" className="orders-main-row">
+                    <div id="staff_main_column_part" className="align_column orders-main-col">
                         <div id="staff_info_card" className="align_column">
-                            <table className="orders-table">
-                                <thead>
-                                    <tr>
-                                        <th>Email</th>
-                                        <th>Quantity</th>
-                                        <th>Amount</th>
-                                        <th>Date</th>
-                                        <th>Status</th>
-                                        <th style={{textAlign: 'center'}}>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {orders.length === 0 ? (
+                            <div className="orders-table-wrapper">
+                                <table className="orders-table">
+                                    <thead>
                                         <tr>
-                                            <td colSpan="6" className="orders-empty-state">
-                                                No orders found for this event yet.
-                                            </td>
+                                            <th>Email</th>
+                                            <th>Quantity</th>
+                                            <th>Amount</th>
+                                            <th>Date</th>
+                                            <th>Status</th>
+                                            <th className="text-center">Action</th>
                                         </tr>
-                                    ) : (
-                                        orders.map(order => (
-                                            <tr key={order.id}>
-                                                <td><b>{order.customerEmail}</b></td>
-                                                <td>{order.quantity}</td>
-                                                <td>€{order.amountPaid.toFixed(2)}</td>
-                                                <td>{new Date(order.createdAt).toLocaleDateString()} {new Date(order.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</td>
-                                                <td>
-                                                    <span className={`status-badge ${order.status.toLowerCase()}`}>
-                                                        {order.status}
-                                                    </span>
-                                                </td>
-                                                <td style={{textAlign: 'center'}}>
-                                                    {order.status === 'Paid' && (
-                                                        <button 
-                                                            className="small-refund-btn"
-                                                            onClick={() => setRefundModal({ show: true, orderId: order.id })}
-                                                        >
-                                                            Refund
-                                                        </button>
-                                                    )}
+                                    </thead>
+                                    <tbody>
+                                        {orders.length === 0 ? (
+                                            <tr>
+                                                <td colSpan="6" className="orders-empty-state">
+                                                    No orders found for this event yet.
                                                 </td>
                                             </tr>
-                                        ))
-                                    )}
-                                </tbody>
-                            </table>
+                                        ) : (
+                                            orders.map(order => (
+                                                <tr key={order.id}>
+                                                    <td><b>{order.customerEmail}</b></td>
+                                                    <td>{order.quantity}</td>
+                                                    <td>€{order.amountPaid.toFixed(2)}</td>
+                                                    <td>{new Date(order.createdAt).toLocaleDateString()} {new Date(order.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</td>
+                                                    <td>
+                                                        <span className={`status-badge ${order.status.toLowerCase()}`}>
+                                                            {order.status}
+                                                        </span>
+                                                    </td>
+                                                    <td className="text-center">
+                                                        {order.status === 'Paid' && (
+                                                            <button 
+                                                                className="small-refund-btn"
+                                                                onClick={() => setRefundModal({ show: true, orderId: order.id })}
+                                                            >
+                                                                Refund
+                                                            </button>
+                                                        )}
+                                                    </td>
+                                                </tr>
+                                            ))
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
