@@ -13,5 +13,13 @@ namespace Api.Dtos.Event
         public decimal RevenueAmount { get; set; }
         public decimal Price { get; set; }
         public bool HasPoster { get; set; }
+        public List<MyEventTierDto> Tiers { get; set; } = new();
+    }
+
+    public class MyEventTierDto
+    {
+        public string Name { get; set; } = string.Empty;
+        public int Quantity { get; set; }
+        public int Sold { get; set; }
     }
 }

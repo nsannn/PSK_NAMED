@@ -46,9 +46,12 @@ export default function EventPage() {
 
     // Increase ticket count
     function increaseTicket(ticketId) {
+        const ticket = event?.tickets?.find(t => t.id === ticketId);
+        const available = ticket ? (ticket.quantity - ticket.sold) : 0;
+        
         setTicketCounts(prev => ({
             ...prev,
-            [ticketId]: prev[ticketId] + 1
+            [ticketId]: Math.min(available, prev[ticketId] + 1)
         }));
     }
 
@@ -147,9 +150,9 @@ export default function EventPage() {
                 <div className="single-event-left">
 
                     <div className="single-event-poster">
-                        {event.posterUrl ? (
+                        {event.hasPoster ? (
                             <img
-                                src={event.posterUrl}
+                                src={`/api/events/${event.id}/poster`}
                                 alt={event.title}
                             />
                         ) : (
@@ -217,7 +220,7 @@ export default function EventPage() {
 
                                 <div className="ticket-name-price">
                                     <span>
-                                        {ticket.type}
+                                        {ticket.type} <span style={{ fontSize: '0.8em', color: '#888', marginLeft: '8px' }}>({ticket.quantity - ticket.sold} left)</span>
                                     </span>
 
                                     <span>
@@ -239,6 +242,7 @@ export default function EventPage() {
 
                                     <button
                                         onClick={() => increaseTicket(ticket.id)}
+                                        disabled={(ticketCounts[ticket.id] || 0) >= (ticket.quantity - ticket.sold)}
                                     >
                                         +
                                     </button>

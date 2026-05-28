@@ -186,11 +186,26 @@ function EventDashboard() {
                                                 {ev.location ? ` · ${ev.location}` : ''}
                                             </span>
                                         </div>
+                                        <div className="ed-tiers-breakdown">
+                                            {(ev.tiers && ev.tiers.length > 0) ? ev.tiers.map((tier, i) => {
+                                                const tierFill = tier.quantity > 0 ? (tier.sold / tier.quantity) * 100 : 0;
+                                                return (
+                                                    <div className="ed-tier-row" key={i}>
+                                                        <div className="ed-tier-info">
+                                                            <span className="ed-tier-name">{tier.name}</span>
+                                                            <span className="ed-tier-count">{tier.sold}/{tier.quantity}</span>
+                                                        </div>
+                                                        <div className="ed-event-bar-track ed-tier-bar-track">
+                                                            <div className="ed-event-bar-fill" style={{ width: tierFill.toFixed(1) + '%' }} />
+                                                        </div>
+                                                    </div>
+                                                );
+                                            }) : (
+                                                <span className="ed-tier-none">No tiers</span>
+                                            )}
+                                        </div>
                                         <div className="ed-fill-label">
-                                            <div className="ed-event-bar-track">
-                                                <div className="ed-event-bar-fill" style={{ width: fill.toFixed(1) + '%' }} />
-                                            </div>
-                                            <span>Fill rate <strong>{fill.toFixed(1)}%</strong></span>
+                                            <span>Overall <strong>{fill.toFixed(1)}%</strong></span>
                                         </div>
                                     </div>
                                     <div className="ed-stats-col">

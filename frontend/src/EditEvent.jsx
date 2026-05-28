@@ -364,7 +364,9 @@ function EditEvent() {
                                         </div>
                                         <div id="staff_info_card_input_group">
                                             <div id="staff_event_card_input" className="align_column">
-                                                <label htmlFor={'staff_ticket_tier_quantity_' + index}>Quantity</label>
+                                                <label htmlFor={'staff_ticket_tier_quantity_' + index}>
+                                                    Quantity {tier.sold > 0 && <span style={{fontSize: '0.85em', opacity: 0.7, fontWeight: 'normal', marginLeft: '6px'}}>({tier.sold} sold)</span>}
+                                                </label>
                                                 <input id={'staff_ticket_tier_quantity_' + index} type="text" value={tier.quantity} onChange={(e) => handleTierChange(index, 'quantity', e.target.value)} className={errors.tiers && errors.tiers[index] && errors.tiers[index].quantity ? "input-error" : ""} />
                                                 {errors.tiers && errors.tiers[index] && errors.tiers[index].quantity && <span className="field-error-text">{errors.tiers[index].quantity}</span>}
                                             </div>

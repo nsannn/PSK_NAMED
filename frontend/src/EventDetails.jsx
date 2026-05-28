@@ -189,7 +189,9 @@ function EventDetails() {
                                         </div>
                                         <div id="staff_info_card_input_group">
                                             <div id="staff_event_card_input" className="align_column">
-                                                <label>Quantity</label>
+                                                <label>
+                                                    Quantity {ticket.sold > 0 && <span style={{fontSize: '0.85em', opacity: 0.7, fontWeight: 'normal', marginLeft: '6px'}}>({ticket.sold} sold)</span>}
+                                                </label>
                                                 <span>{ticket.quantity}</span>
                                             </div>
                                             <div id="staff_event_card_input" className="align_column">
