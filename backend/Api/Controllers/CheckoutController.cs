@@ -31,13 +31,16 @@ namespace Api.Controllers
         private readonly IEmailService _emailService;
         private readonly IConfiguration _config;
         private readonly ILogger<CheckoutController> _logger;
+        private readonly ITicketTokenValidationService _ticketTokenService;
+        private static readonly System.Collections.Concurrent.ConcurrentDictionary<string, bool> _processedWebhookSessions = new();
 
-        public CheckoutController(ApplicationDbContext db, IEmailService emailService, IConfiguration config, ILogger<CheckoutController> logger)
+        public CheckoutController(ApplicationDbContext db, IEmailService emailService, IConfiguration config, ILogger<CheckoutController> logger, ITicketTokenValidationService ticketTokenService)
         {
             _db = db;
             _emailService = emailService;
             _config = config;
             _logger = logger;
+            _ticketTokenService = ticketTokenService;
         }
 
         [Authorize]
@@ -207,6 +210,10 @@ namespace Api.Controllers
                 if (session == null)
                     return Ok();
 
+                // Prevent race conditions from multiple simultaneous webhook deliveries
+                if (!_processedWebhookSessions.TryAdd(session.Id, true))
+                    return Ok();
+
                 if (await _db.Orders.AnyAsync(o => o.StripeSessionId == session.Id))
                     return Ok();
 
@@ -269,6 +276,8 @@ namespace Api.Controllers
 
                 _db.Orders.Add(order);
 
+                var emailTickets = new List<EmailTicketInfo>();
+
                 foreach(var item in ticketItems) {
                     var ticketTier = ev.Tickets.FirstOrDefault(t => t.Id == item.TicketId);
 
@@ -297,7 +306,7 @@ namespace Api.Controllers
                     ticketTier.Sold += item.Quantity;
 
                     for(int i = 0; i < item.Quantity; i++) {
-                        _db.PurchasedTickets.Add(new PurchasedTicket {
+                        var pt = new PurchasedTicket {
                             Id = Guid.NewGuid(),
                             Order = order,
                             UserId = userId,
@@ -309,6 +318,12 @@ namespace Api.Controllers
                             PriceSnapshot = ticketTier.Price,
                             Status = PurchasedTicketStatus.Active,
                             CreatedAt = DateTime.UtcNow
+                        };
+                        _db.PurchasedTickets.Add(pt);
+                        
+                        emailTickets.Add(new EmailTicketInfo {
+                            Type = ticketTier.Type,
+                            Token = _ticketTokenService.CreateToken(pt.Id)
                         });
                     }
                 }
@@ -321,7 +336,8 @@ namespace Api.Controllers
                         ev.Title,
                         totalQuantity,
                         ev.Date.ToString("MMMM d, yyyy"),
-                        ev.Location
+                        ev.Location,
+                        emailTickets
                     );
 
                 return Ok();

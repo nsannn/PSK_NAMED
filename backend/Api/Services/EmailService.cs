@@ -1,3 +1,4 @@
+using Api.Dtos.Event;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using MimeKit;
@@ -5,9 +6,15 @@ using Microsoft.Extensions.Configuration;
 
 namespace Api.Services
 {
+    public class EmailTicketInfo
+    {
+        public string Type { get; set; } = string.Empty;
+        public string Token { get; set; } = string.Empty;
+    }
+
     public interface IEmailService
     {
-        Task SendTicketConfirmationEmailAsync(string toEmail, string eventName, int quantity, string eventDate, string eventLocation);
+        Task SendTicketConfirmationEmailAsync(string toEmail, string eventName, int quantity, string eventDate, string eventLocation, List<EmailTicketInfo> tickets);
     }
 
     public class EmailService : IEmailService
@@ -21,7 +28,7 @@ namespace Api.Services
             _logger = logger;
         }
 
-        public async Task SendTicketConfirmationEmailAsync(string toEmail, string eventName, int quantity, string eventDate, string eventLocation)
+        public async Task SendTicketConfirmationEmailAsync(string toEmail, string eventName, int quantity, string eventDate, string eventLocation, List<EmailTicketInfo> tickets)
         {
             var host = _config["SMTP_HOST"] ?? "smtp.gmail.com";
             var portString = _config["SMTP_PORT"] ?? "587";
@@ -64,6 +71,13 @@ namespace Api.Services
                             </tr>
                         </table>
                     </div>
+                    
+                    {string.Join("", tickets.Select(t => $@"
+                    <div style='background-color: #1a1a1a; border: 1px solid #2b2929; border-radius: 8px; padding: 20px; margin-top: 20px; text-align: center;'>
+                        <h3 style='margin-top: 0; color: #ffffff;'>{t.Type}</h3>
+                        <img src='https://api.qrserver.com/v1/create-qr-code/?size=250x250&data={t.Token}' alt='QR Code for {t.Type}' style='width: 200px; height: 200px; margin: 10px auto; display: block; border-radius: 4px; background-color: white; padding: 10px;' />
+                        <p style='color: #787474; font-size: 12px; margin-bottom: 0;'>Ticket Token: {t.Token.Substring(0, Math.Min(8, t.Token.Length))}...</p>
+                    </div>"))}
                     
                     <p style='text-align: center; margin-top: 30px; color: #787474; font-size: 14px;'>
                         Please keep this email for your records. If you have any questions, reply to this email.

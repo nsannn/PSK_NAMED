@@ -303,23 +303,49 @@ namespace Api.Controllers
             ev.Location = updateDto.Location;
             ev.Date = updateDto.Date.ToUniversalTime();
 
-            // await _db.Tickets.Where(t => t.EventId == id).ExecuteDeleteAsync();
-            var tickets = await _db.Tickets
-                .Where(t => t.EventId == id)
-                .ToListAsync();
-            _db.Tickets.RemoveRange(tickets);
+            var incomingTicketIds = updateDto.TicketTiers.Where(t => t.Id.HasValue).Select(t => t.Id.Value).ToList();
+            
+            var ticketsToDelete = ev.Tickets.Where(t => !incomingTicketIds.Contains(t.Id)).ToList();
+            if (ticketsToDelete.Any(t => t.Sold > 0)) {
+                return BadRequest(new { message = "Cannot delete a ticket tier that has already sold tickets." });
+            }
 
-            foreach (var tierDto in updateDto.TicketTiers)
-            {
-                _db.Tickets.Add(new Ticket
-                {
-                    Id = Guid.NewGuid(),
-                    EventId = id,
-                    Type = tierDto.Name,
-                    Quantity = tierDto.Quantity,
-                    Sold = 0,
-                    Price = tierDto.Price
-                });
+            foreach (var tierDto in updateDto.TicketTiers.Where(t => t.Id.HasValue)) {
+                var existing = ev.Tickets.FirstOrDefault(t => t.Id == tierDto.Id.Value);
+                if (existing != null && tierDto.Quantity < existing.Sold) {
+                    return BadRequest(new { message = $"Cannot reduce quantity of '{existing.Type}' below tickets already sold ({existing.Sold})." });
+                }
+            }
+
+            _db.Tickets.RemoveRange(ticketsToDelete);
+
+            foreach (var tierDto in updateDto.TicketTiers) {
+                if (tierDto.Id.HasValue) {
+                    var existing = ev.Tickets.FirstOrDefault(t => t.Id == tierDto.Id.Value);
+                    if (existing != null) {
+                        existing.Type = tierDto.Name;
+                        existing.Quantity = tierDto.Quantity;
+                        existing.Price = tierDto.Price;
+                    } else {
+                        ev.Tickets.Add(new Ticket {
+                            Id = Guid.NewGuid(),
+                            EventId = id,
+                            Type = tierDto.Name,
+                            Quantity = tierDto.Quantity,
+                            Sold = 0,
+                            Price = tierDto.Price
+                        });
+                    }
+                } else {
+                    ev.Tickets.Add(new Ticket {
+                        Id = Guid.NewGuid(),
+                        EventId = id,
+                        Type = tierDto.Name,
+                        Quantity = tierDto.Quantity,
+                        Sold = 0,
+                        Price = tierDto.Price
+                    });
+                }
             }
 
             var allTagNames = new List<string>(updateDto.Tags);
