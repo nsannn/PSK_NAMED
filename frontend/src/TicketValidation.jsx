@@ -169,7 +169,7 @@ export default function TicketValidation(){
                 </>
             ):(
                 <div id="ticket_info_container" className={`align_column ${resultType}`}>
-                    <span id="status">{user.role!="Customer" ? "Please sign in to validate tickets":"Not authorized to use this page"}</span>
+                    <span id="status">Please sign in into authorized account to validate tickets</span>
                 </div>
             )}
         </div>

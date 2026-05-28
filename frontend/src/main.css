@@ -131,8 +131,8 @@ hr{
         opacity:0.8;
     }
 
-    #transparent_panel.open{
-        opacity:0.8;
+    #transparent_panel.closing{
+        opacity:0;
     }
 
 /* Sidebar for Mobile or Small Windows */
