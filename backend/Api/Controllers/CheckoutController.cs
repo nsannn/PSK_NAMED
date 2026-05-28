@@ -44,6 +44,10 @@ namespace Api.Controllers
         [HttpPost("create-session")]
         public async Task<IActionResult> CreateSession([FromBody] CreateCheckoutSessionRequest req)
         {            
+            var frontendBaseUrl = _config["FRONTEND_BASE_URL"]?.TrimEnd('/');
+            if(string.IsNullOrWhiteSpace(frontendBaseUrl))
+                return StatusCode(500, new {message = "FRONTEND_BASE_URL is not configured."});
+            
             var selectedTickets=req.Tickets
                 .Where(t => t.Quantity > 0)
                 .ToList();
@@ -105,9 +109,8 @@ namespace Api.Controllers
                     PaymentIntentData = new SessionPaymentIntentDataOptions {
                         Metadata = metadata
                     },
-                    // TEMP: Hardcoded localhost URLs
-                    SuccessUrl = "http://localhost:3000/checkout/success?session_id={CHECKOUT_SESSION_ID}",
-                    CancelUrl = $"http://localhost:3000/event/{ev.Id}"
+                    SuccessUrl = $"{frontendBaseUrl}/checkout/success?session_id={{CHECKOUT_SESSION_ID}}",
+                    CancelUrl = $"{frontendBaseUrl}/event/{ev.Id}"
                 };
 
                 var service = new SessionService();

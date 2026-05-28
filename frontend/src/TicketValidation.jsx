@@ -50,7 +50,7 @@ export default function TicketValidation(){
 
                 animFrameRef.current=requestAnimationFrame(scanQRCode);
             }catch(error){
-                console.log(error);
+                logger.error('Camera Error',err);
                 setStatus('Camera Error');
                 setInformation('Camera permission was denied or unavailable.');
             }
@@ -154,7 +154,7 @@ export default function TicketValidation(){
         <div id='ticket_validation_container'>
             {loading ? (
                 <div id="loading_anim"/>
-            ):user ? (
+            ):user && user.role!="Customer" ? (
                 <>
                     <div id='camera_container'>
                         <video ref={videoRef} id='camera' autoPlay playsInline/>
@@ -169,7 +169,7 @@ export default function TicketValidation(){
                 </>
             ):(
                 <div id="ticket_info_container" className={`align_column ${resultType}`}>
-                        <span id="status">Please sign in to validate tickets</span>
+                    <span id="status">{user.role!="Customer" ? "Please sign in to validate tickets":"Not authorized to use this page"}</span>
                 </div>
             )}
         </div>

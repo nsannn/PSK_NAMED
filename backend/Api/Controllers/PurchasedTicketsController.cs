@@ -132,7 +132,7 @@ namespace Api.Controllers{
                     EventDate = ticket.EventDateSnapshot
                 });
 
-            if(ticket.EventDateSnapshot<DateTime.UtcNow)
+            if(ticket.EventDateSnapshot<scannedAt)
                 return Ok(new TicketValidationDto{
                     Status="expired",
                     Title="Expired Ticket",

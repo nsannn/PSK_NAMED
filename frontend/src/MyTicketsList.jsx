@@ -21,7 +21,6 @@ export default function MyTicketsList(){
         async function loadTickets(){
             const data=await apiFetch('/api/purchasedtickets');
             setTicketGroups(data);
-            console.log(data)
         }
 
         loadTickets();
