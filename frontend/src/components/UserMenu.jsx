@@ -21,6 +21,11 @@ export default function UserMenu() {
 
   if (!user) return null;
 
+  const role = user.role;
+  const canManage = role === 'Manager' || role === 'SuperAdmin';
+  const canValidate = role === 'Manager' || role === 'Validator' || role === 'SuperAdmin';
+  const isCustomer = role === 'Customer';
+
   const initials = `${user.firstName?.[0] || ''}${user.lastName?.[0] || ''}`.toUpperCase();
 
   return (
@@ -46,12 +51,22 @@ export default function UserMenu() {
           </div>
         </div>
         <div className="user-menu__divider" />
-        {user.role=="Customer" && (
-          <button className="user-menu__item" onClick={() => navigate('/my-tickets')}>My Tickets</button>
+
+        {/* Customer: My Tickets */}
+        {isCustomer && (
+          <button className="user-menu__item" onClick={() => { navigate('/my-tickets'); setOpen(false); }}>My Tickets</button>
         )}
-        {(user.role=="Manager" || user.role=="SuperAdmin") && (
-          <button className="user-menu__item" onClick={() => navigate('/ticket-validation')}>Ticket Validation</button>
+
+        {/* Manager/Validator/SuperAdmin: Ticket Validation */}
+        {canValidate && (
+          <button className="user-menu__item" onClick={() => { navigate('/ticket-validation'); setOpen(false); }}>Ticket Validation</button>
         )}
+
+        {/* Manager/SuperAdmin: Dashboard */}
+        {canManage && (
+          <button className="user-menu__item" onClick={() => { navigate('/dashboard'); setOpen(false); }}>Dashboard</button>
+        )}
+
         <button className="user-menu__item" id="btn-logout" onClick={logout}>
           Logout
         </button>

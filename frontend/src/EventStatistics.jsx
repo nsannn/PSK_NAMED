@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useAuth } from './context/AuthContext';
 import { apiFetch } from './utils/api';
 import { logger } from './utils/logger';
 import './EventStatistics.css';
@@ -29,17 +30,23 @@ function InfoCard({ title, children, className = '' }) {
 function EventStatistics() {
     const navigate = useNavigate();
     const { id } = useParams();
+    const { user, loading: authLoading } = useAuth();
+    const role = user?.role;
+    const canManage = role === 'Manager' || role === 'SuperAdmin';
 
     const [event, setEvent] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        if (authLoading) return;
+        if (!canManage) { setLoading(false); return; }
         apiFetch('/api/events/' + id)
             .then(data => { setEvent(data); setLoading(false); })
             .catch(err => { logger.error('Failed to fetch event statistics', err); setLoading(false); });
-    }, [id]);
+    }, [id, authLoading, canManage]);
 
-    if (loading) return <div className="page-loading">Loading statistics...</div>;
+    if (authLoading || loading) return <div className="page-loading">Loading statistics...</div>;
+    if (!canManage) return <div className="page-loading">You do not have permission to view this page.</div>;
     if (!event)  return <div className="page-loading">Event not found.</div>;
 
     const tickets = event.tickets ?? [];

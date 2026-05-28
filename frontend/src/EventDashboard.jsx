@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from './context/AuthContext';
 import { apiFetch } from './utils/api';
 import { logger } from './utils/logger';
 import './EventDashboard.css';
@@ -36,17 +37,24 @@ function KpiCard({ title, children }) {
 
 function EventDashboard() {
     const navigate = useNavigate();
+    const { user, loading: authLoading } = useAuth();
     const [events, setEvents] = useState([]);
     const [loading, setLoading] = useState(true);
     const [sort, setSort] = useState('revenue-desc');
 
+    const role = user?.role;
+    const canManage = role === 'Manager' || role === 'SuperAdmin';
+
     useEffect(() => {
+        if (authLoading) return;
+        if (!canManage) { setLoading(false); return; }
         apiFetch('/api/events/myevents')
             .then(data => { setEvents(data); setLoading(false); })
             .catch(err => { logger.error('Failed to fetch dashboard events', err); setLoading(false); });
-    }, []);
+    }, [authLoading, canManage]);
 
-    if (loading) return <div className="page-loading">Loading dashboard...</div>;
+    if (authLoading || loading) return <div className="page-loading">Loading dashboard...</div>;
+    if (!canManage) return <div className="page-loading">You do not have permission to view this page.</div>;
 
     const totalEvents   = events.length;
     const totalSold     = events.reduce((s, e) => s + e.ticketsSold, 0);

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useAuth } from './context/AuthContext';
 import { apiFetch } from './utils/api';
 import { logger } from './utils/logger';
 import './EventDetails.css';
@@ -8,6 +9,9 @@ import './main.css';
 function EventDetails() {
     const navigate = useNavigate();
     const { id } = useParams();
+    const { user, loading: authLoading } = useAuth();
+    const role = user?.role;
+    const canManage = role === 'Manager' || role === 'SuperAdmin';
 
     const [event, setEvent] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -25,6 +29,9 @@ function EventDetails() {
                 setLoading(false);
             });
     }, [id]);
+
+    if (authLoading) return <div className="page-loading">Loading...</div>;
+    if (!canManage) return <div className="page-loading">You do not have permission to view this page.</div>;
 
     const handleDelete = async () => {
         setIsDeleting(true);
@@ -210,7 +217,6 @@ function EventDetails() {
                             <button onClick={() => navigate('/edit-event/' + event.id)}>Edit</button>
                             <button onClick={() => navigate('/event-orders/' + event.id)}>View Orders</button>
                             <button onClick={() => navigate('/event-statistics/' + event.id)}>Report</button>
-                            <button>Export Attendees</button>
                             <button onClick={() => setShowCancelModal(true)}>Cancel</button>
                         </div>
                     </div>
