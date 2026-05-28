@@ -120,21 +120,29 @@ function MyEventsList() {
                         <hr />
                         <form className="align_row" onSubmit={e => e.preventDefault()}>
                             <input
-                                type="number"
+                                type="text"
                                 id="filter_price_min_input"
                                 placeholder="Min"
                                 value={minPrice}
-                                min="0"
-                                onChange={e => setMinPrice(e.target.value)}
+                                onChange={e => {
+                                    let clean = e.target.value.replace(/[^0-9.]/g, '');
+                                    const parts = clean.split('.');
+                                    if (parts.length > 2) clean = parts[0] + '.' + parts.slice(1).join('');
+                                    setMinPrice(clean);
+                                }}
                             />
                             <span id="filter_separator">-</span>
                             <input
-                                type="number"
+                                type="text"
                                 id="filter_price_max_input"
                                 placeholder="Max"
                                 value={maxPrice}
-                                min="0"
-                                onChange={e => setMaxPrice(e.target.value)}
+                                onChange={e => {
+                                    let clean = e.target.value.replace(/[^0-9.]/g, '');
+                                    const parts = clean.split('.');
+                                    if (parts.length > 2) clean = parts[0] + '.' + parts.slice(1).join('');
+                                    setMaxPrice(clean);
+                                }}
                             />
                         </form>
                     </div>
@@ -232,8 +240,6 @@ function MyEventsList() {
                         </div>
                     </div>
 
-                    <button id="create_new_event_button" onClick={() => navigate('/create-event')}>+ Create Event</button>
-
                     <div id="event_list">
                         {loading ? (
                             <p className="page-loading">Loading events...</p>
@@ -297,10 +303,10 @@ function MyEventsList() {
                 <>
                     <div
                         id="transparent_panel"
-                        style={{ display: 'block', opacity: 0.5, cursor: 'pointer' }}
+                        className="overlay--visible"
                         onClick={() => setCancellingEventId(null)}
                     />
-                    <div id="delete_confirmation_window" className="align_column" style={{ display: 'flex', opacity: 1 }}>
+                    <div id="delete_confirmation_window" className="align_column overlay--visible">
                         <span id="window_name">Cancel Event?</span>
                         <hr />
                         <span id="window_info">

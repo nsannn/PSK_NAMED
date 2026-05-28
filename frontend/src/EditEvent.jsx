@@ -22,6 +22,8 @@ function EditEvent() {
 
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+    const [errors, setErrors] = useState({});
+    const [showSaveError, setShowSaveError] = useState(false);
 
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
@@ -29,6 +31,12 @@ function EditEvent() {
     const [hasPoster,     setHasPoster]     = useState(false);
     const [posterFile,    setPosterFile]    = useState(null);
     const [posterPreview, setPosterPreview] = useState(null);
+    const [posterUrlTimestamp, setPosterUrlTimestamp] = useState(Date.now());
+
+    const [version, setVersion] = useState(0);
+    const [conflictData, setConflictData] = useState(null);
+    const [showConflictModal, setShowConflictModal] = useState(false);
+    const [forceOverwrite, setForceOverwrite] = useState(false);
 
     useEffect(() => {
         setIsLoading(true);
@@ -44,9 +52,11 @@ function EditEvent() {
                 setDescription(data.description || '');
                 setEventType(data.eventType || 'Festival');
                 setTags(data.tags ? data.tags.map(t => t.name) : []);
+                setVersion(data.version);
                 setHasPoster(data.hasPoster ?? false);
+                setPosterUrlTimestamp(Date.now());
                 setTicketTiers(data.tickets && data.tickets.length > 0 ? data.tickets.map(t => ({
-                    name: t.name,
+                    name: t.type ?? '',
                     quantity: t.quantity || 0,
                     price: t.price || 0,
                     id: t.id
@@ -65,7 +75,16 @@ function EditEvent() {
 
     const handleTierChange = (index, field, value) => {
         const newTiers = [...ticketTiers];
-        newTiers[index][field] = value;
+        if (field === 'quantity') {
+            newTiers[index][field] = value.replace(/[^0-9]/g, '');
+        } else if (field === 'price') {
+            let clean = value.replace(/[^0-9.]/g, '');
+            const parts = clean.split('.');
+            if (parts.length > 2) clean = parts[0] + '.' + parts.slice(1).join('');
+            newTiers[index][field] = clean;
+        } else {
+            newTiers[index][field] = value;
+        }
         setTicketTiers(newTiers);
     };
 
@@ -84,7 +103,48 @@ function EditEvent() {
         setPosterPreview(URL.createObjectURL(file));
     };
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (overwriteOrEvent = false) => {
+        const overwrite = typeof overwriteOrEvent === 'boolean' ? overwriteOrEvent : false;
+
+        if (overwriteOrEvent && typeof overwriteOrEvent.preventDefault === 'function') {
+            overwriteOrEvent.preventDefault();
+        }
+
+        const newErrors = {};
+
+        if (!(title || '').trim()) newErrors.title = "Event Name is required.";
+        if (!date) newErrors.date = "Date is required.";
+        if (!time) newErrors.time = "Time is required.";
+        if (!(location || '').trim()) newErrors.location = "Location is required.";
+        if (!(description || '').trim()) newErrors.description = "Description is required.";
+        if (!eventType) newErrors.eventType = "Event Type is required.";
+        if (tags.length === 0) newErrors.tags = "At least one tag is required.";
+        if (!hasPoster && !posterFile) newErrors.poster = "Event Poster is required.";
+
+        if (ticketTiers.length === 0) {
+            newErrors.tickets = "At least one ticket tier is required.";
+        } else {
+            const tierErrors = [];
+            let hasTierError = false;
+            for (let i = 0; i < ticketTiers.length; i++) {
+                const tier = ticketTiers[i];
+                const tErr = {};
+                if (!(tier.name || '').trim()) tErr.name = "Tier Name is required.";
+                if (tier.quantity === '' || Number(tier.quantity) <= 0) tErr.quantity = "Quantity must be greater than 0.";
+                if (tier.price === '' || Number(tier.price) <= 0) tErr.price = "Price must be greater than 0.";
+                tierErrors.push(tErr);
+                if (Object.keys(tErr).length > 0) hasTierError = true;
+            }
+            if (hasTierError) newErrors.tiers = tierErrors;
+        }
+
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
+            setShowSaveError(true);
+            setTimeout(() => setShowSaveError(false), 1000);
+            return;
+        }
+        setErrors({});
         setIsSubmitting(true);
         
         let combinedDate = new Date();
@@ -100,6 +160,8 @@ function EditEvent() {
             date: combinedDate.toISOString(),
             eventType,
             tags,
+            version,
+            forceOverwrite: overwrite,
             ticketTiers: ticketTiers.map(t => ({
                 id: t.id,
                 name: t.name,
@@ -109,20 +171,40 @@ function EditEvent() {
         };
 
         try {
-            await apiFetch('/api/events/' + id, {
+            const updatedEvent = await apiFetch('/api/events/' + id, {
                 method: 'PUT',
                 body: JSON.stringify(eventData)
             });
 
+            const uploadVersion = updatedEvent?.version ?? version;
+            setVersion(uploadVersion);
+
             if (posterFile) {
                 const form = new FormData();
                 form.append('file', posterFile);
-                await apiFetch(`/api/events/${id}/poster`, { method: 'POST', body: form });
+                form.append('version', uploadVersion);
+                form.append('forceOverwrite', overwrite);
+                const uploadResult = await apiFetch(`/api/events/${id}/poster`, { method: 'POST', body: form });
+                setHasPoster(true);
+                if (uploadResult?.version) {
+                    setVersion(uploadResult.version);
+                }
+                setPosterUrlTimestamp(Date.now());
             }
+
             navigate('/');
         } catch (error) {
-            logger.error("Error submitting form:", error);
-            alert("Error updating event");
+            if (error.status === 409) {
+                if (error.data?.currentData) {
+                    setConflictData(error.data.currentData);
+                    setShowConflictModal(true);
+                } else {
+                    alert("Conflict detected but server returned no current data.");
+                }
+            } else {
+                logger.error("Error submitting form:", error);
+                alert(`Error updating event: ${error.message || 'Unknown error'}`);
+            }
         } finally {
             setIsSubmitting(false);
         }
@@ -150,6 +232,61 @@ function EditEvent() {
 
     return (
         <>
+            {showConflictModal && (
+                <>
+                    <div id="transparent_panel" onClick={() => setShowConflictModal(false)}></div>
+                    <div id="delete_confirmation_window" className="align_column">
+                        <span id="window_name"> Conflict Detected</span>
+                        <hr />
+                        <span id="window_info">Another user modified this event.</span>
+                        <span id="window_small_info">Choose what to do.</span>
+                        <div id="delete_controls" className="align_row">
+                            <button
+                                onClick={() => {
+                                    setTitle(conflictData.title || '');
+                                    setDescription(conflictData.description || '');
+                                    setLocation(conflictData.location || '');
+
+                                    if (conflictData.date) {
+                                        const d = new Date(conflictData.date);
+
+                                        setDate(d.toISOString().substring(0, 10));
+                                        setTime(d.toISOString().substring(11, 16));
+                                    }
+
+                                    setTags(conflictData.tags?.map(t => t.name) || []);
+                                    setHasPoster(conflictData.hasPoster ?? false);
+                                    setPosterFile(null);
+                                    setPosterPreview(null);
+
+                                    setTicketTiers(
+                                        conflictData.tickets?.map(t => ({
+                                            id: t.id,
+                                            name: t.type,
+                                            quantity: t.quantity,
+                                            price: t.price
+                                        })) || []
+                                    );
+
+                                    setVersion(conflictData.version);
+                                    setPosterUrlTimestamp(Date.now());
+                                    setShowConflictModal(false);
+                                }}
+                            > Reload Latest</button>
+
+                            <button
+                                onClick={async () => {
+                                    setShowConflictModal(false);
+                                    await handleSubmit(true);
+                                }}
+                            >Overwrite Anyway</button>
+
+                            <button onClick={() => setShowConflictModal(false)}>Cancel</button>
+                        </div>
+                    </div>
+                </>
+            )}
+
             {showDeleteModal && (
                 <>
                     <div id="transparent_panel" onClick={() => setShowDeleteModal(false)}></div>
@@ -179,25 +316,30 @@ function EditEvent() {
                             <hr/>
                             <div id="staff_event_card_input" className="align_column">
                                 <label htmlFor="staff_event_name">Event Name</label>
-                                <input id="staff_event_name" type="text" placeholder="Event Name" value={title} onChange={(e) => setTitle(e.target.value)} />
+                                <input id="staff_event_name" type="text" placeholder="Event Name" value={title} onChange={(e) => setTitle(e.target.value)} className={errors.title ? "input-error" : ""} />
+                                {errors.title && <span className="field-error-text">{errors.title}</span>}
                             </div>
                             <div id="staff_info_card_input_group">
                                 <div id="staff_event_card_input" className="align_column">
                                     <label htmlFor="staff_event_date">Date</label>
-                                    <input id="staff_event_date" type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+                                    <input id="staff_event_date" type="date" value={date} onChange={(e) => setDate(e.target.value)} className={errors.date ? "input-error" : ""} />
+                                    {errors.date && <span className="field-error-text">{errors.date}</span>}
                                 </div>
                                 <div id="staff_event_card_input" className="align_column">
                                     <label htmlFor="staff_event_time">Time</label>
-                                    <input id="staff_event_time" type="time" value={time} onChange={(e) => setTime(e.target.value)} />
+                                    <input id="staff_event_time" type="time" value={time} onChange={(e) => setTime(e.target.value)} className={errors.time ? "input-error" : ""} />
+                                    {errors.time && <span className="field-error-text">{errors.time}</span>}
                                 </div>
                             </div>
                             <div id="staff_event_card_input" className="align_column">
                                 <label htmlFor="staff_event_location">Location</label>
-                                <input id="staff_event_location" type="text" placeholder="Event Location" value={location} onChange={(e) => setLocation(e.target.value)} />
+                                <input id="staff_event_location" type="text" placeholder="Event Location" value={location} onChange={(e) => setLocation(e.target.value)} className={errors.location ? "input-error" : ""} />
+                                {errors.location && <span className="field-error-text">{errors.location}</span>}
                             </div>
                             <div id="staff_event_card_input" className="align_column">
                                 <label htmlFor="staff_event_description">Description</label>
-                                <textarea id="staff_event_description" placeholder="Event Description" value={description} onChange={(e) => setDescription(e.target.value)}></textarea>
+                                <textarea id="staff_event_description" placeholder="Event Description" value={description} onChange={(e) => setDescription(e.target.value)} className={errors.description ? "input-error" : ""}></textarea>
+                                {errors.description && <span className="field-error-text">{errors.description}</span>}
                             </div>
                         </div>
 
@@ -206,21 +348,25 @@ function EditEvent() {
                                 <span>Ticket Tiers</span>
                                 <button onClick={handleAddTier}>+ Add Tier</button>
                             </div>
+                            {errors.tickets && <span className="field-error-text" style={{margin: '0.5rem auto'}}>{errors.tickets}</span>}
                             <div id="staff_event_ticket_tier_list" className="align_column edit-event-tier-list">
                                 {ticketTiers.map((tier, index) => (
                                     <div id="staff_event_ticket_tier" className="align_column" key={index}>
                                         <div id="staff_event_card_input" className="align_column">
                                             <label htmlFor={'staff_ticket_tier_name_' + index}>Tier Name</label>
-                                            <input id={'staff_ticket_tier_name_' + index} type="text" placeholder="Tier Name" value={tier.name} onChange={(e) => handleTierChange(index, 'name', e.target.value)} />
+                                            <input id={'staff_ticket_tier_name_' + index} type="text" placeholder="Tier Name" value={tier.name ?? ''} onChange={(e) => handleTierChange(index, 'name', e.target.value)} className={errors.tiers && errors.tiers[index] && errors.tiers[index].name ? "input-error" : ""} />
+                                            {errors.tiers && errors.tiers[index] && errors.tiers[index].name && <span className="field-error-text">{errors.tiers[index].name}</span>}
                                         </div>
                                         <div id="staff_info_card_input_group">
                                             <div id="staff_event_card_input" className="align_column">
                                                 <label htmlFor={'staff_ticket_tier_quantity_' + index}>Quantity</label>
-                                                <input id={'staff_ticket_tier_quantity_' + index} type="number" value={tier.quantity} onChange={(e) => handleTierChange(index, 'quantity', e.target.value)} />
+                                                <input id={'staff_ticket_tier_quantity_' + index} type="text" value={tier.quantity} onChange={(e) => handleTierChange(index, 'quantity', e.target.value)} className={errors.tiers && errors.tiers[index] && errors.tiers[index].quantity ? "input-error" : ""} />
+                                                {errors.tiers && errors.tiers[index] && errors.tiers[index].quantity && <span className="field-error-text">{errors.tiers[index].quantity}</span>}
                                             </div>
                                             <div id="staff_event_card_input" className="align_column">
                                                 <label htmlFor={'staff_ticket_tier_price_' + index}>Price</label>
-                                                <input id={'staff_ticket_tier_price_' + index} type="number" value={tier.price} onChange={(e) => handleTierChange(index, 'price', e.target.value)} />
+                                                <input id={'staff_ticket_tier_price_' + index} type="text" value={tier.price} onChange={(e) => handleTierChange(index, 'price', e.target.value)} className={errors.tiers && errors.tiers[index] && errors.tiers[index].price ? "input-error" : ""} />
+                                                {errors.tiers && errors.tiers[index] && errors.tiers[index].price && <span className="field-error-text">{errors.tiers[index].price}</span>}
                                             </div>
                                         </div>
                                         <button id="staff_event_ticket_tier_delete_button" onClick={() => {
@@ -248,7 +394,7 @@ function EditEvent() {
                                     />
                                 ) : hasPoster ? (
                                     <img
-                                        src={`/api/events/${id}/poster`}
+                                        src={`/api/events/${id}/poster?ts=${posterUrlTimestamp}`}
                                         alt="Event poster"
                                         className="edit-event-poster-img"
                                         onError={() => setHasPoster(false)}
@@ -267,6 +413,7 @@ function EditEvent() {
                                 className="edit-event-poster-file-input"
                                 onChange={handlePosterChange}
                             />
+                            {errors.poster && <span className="field-error-text">{errors.poster}</span>}
                         </div>
                         <div id="staff_info_card" className="align_column">
                             <div id="staff_info_card_name">
@@ -285,6 +432,7 @@ function EditEvent() {
                                     </button>
                                 ))}
                             </div>
+                            {errors.eventType && <span className="field-error-text" style={{width: '100%'}}>{errors.eventType}</span>}
                         </div>
                         <div id="staff_info_card" className="align_column">
                             <div id="staff_info_card_name">
@@ -303,10 +451,11 @@ function EditEvent() {
                                     </button>
                                 ))}
                             </div>
+                            {errors.tags && <span className="field-error-text" style={{width: '100%'}}>{errors.tags}</span>}
                         </div>
                         <button id="staff_event_controls" className="staff_event_delete edit-event-delete-button" data-testid="staff_event_delete" onClick={() => setShowDeleteModal(true)}>Delete</button>
                         <button id="staff_event_controls" onClick={() => navigate('/')}>Cancel</button>
-                        <button id="staff_event_controls" onClick={handleSubmit} disabled={isSubmitting}>{isSubmitting ? 'Saving...' : 'Save Changes'}</button>
+                        <button id="staff_event_controls" onClick={handleSubmit} disabled={isSubmitting} className={showSaveError ? 'button-error-anim' : ''}>{isSubmitting ? 'Saving...' : 'Save Changes'}</button>
                     </div>
                 </div>
             </div>
