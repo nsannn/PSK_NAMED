@@ -49,7 +49,7 @@ export default function UserMenu() {
         {user.role=="Customer" && (
           <button className="user-menu__item" onClick={() => navigate('/my-tickets')}>My Tickets</button>
         )}
-        {user.role=="Manager" && (
+        {(user.role=="Manager" || user.role=="SuperAdmin") && (
           <button className="user-menu__item" onClick={() => navigate('/ticket-validation')}>Ticket Validation</button>
         )}
         <button className="user-menu__item" id="btn-logout" onClick={logout}>
