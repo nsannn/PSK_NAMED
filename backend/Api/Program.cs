@@ -25,7 +25,7 @@ Log.Logger = new LoggerConfiguration()
     .WriteTo.File(
         path: "Logs/log-.json",
         rollingInterval: RollingInterval.Day,
-        formatter: new Serilog.Formatting.Json.JsonFormatter())
+        formatter: new Serilog.Formatting.Json.JsonFormatter(renderMessage: true))
     .CreateLogger();
 
 try
