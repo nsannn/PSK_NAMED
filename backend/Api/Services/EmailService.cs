@@ -15,6 +15,7 @@ namespace Api.Services
     public interface IEmailService
     {
         Task SendTicketConfirmationEmailAsync(string toEmail, string eventName, int quantity, string eventDate, string eventLocation, List<EmailTicketInfo> tickets);
+        Task SendEventReminderEmailAsync(string toEmail, string eventName, string eventDate, string eventLocation, bool isManualBlast = false);
     }
 
     public class EmailService : IEmailService
@@ -98,6 +99,76 @@ namespace Api.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to send ticket confirmation email to {ToEmail} for event {EventName}", toEmail, eventName);
+            }
+        }
+
+        public async Task SendEventReminderEmailAsync(string toEmail, string eventName, string eventDate, string eventLocation, bool isManualBlast = false)
+        {
+            var host = _config["SMTP_HOST"] ?? "smtp.gmail.com";
+            var portString = _config["SMTP_PORT"] ?? "587";
+            var port = int.TryParse(portString, out var p) ? p : 587;
+            var user = _config["SMTP_USER"];
+            var pass = _config["SMTP_PASS"];
+
+            if (string.IsNullOrEmpty(user) || string.IsNullOrEmpty(pass))
+            {
+                _logger.LogWarning("SMTP credentials not configured in .env — skipping reminder email to {ToEmail}", toEmail);
+                return;
+            }
+
+            var subject = isManualBlast 
+                ? $"Reminder: Don't forget about {eventName}!" 
+                : $"Reminder: {eventName} is Tomorrow!";
+
+            var subtitle = isManualBlast
+                ? "This is a reminder that your event is coming up soon!"
+                : "Your event is happening tomorrow!";
+
+            var message = new MimeMessage();
+            message.From.Add(new MailboxAddress("Named Events", user));
+            message.To.Add(new MailboxAddress("", toEmail));
+            message.Subject = subject;
+
+            var bodyBuilder = new BodyBuilder
+            {
+                HtmlBody = $@"
+                <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #121111; color: #e0dcdc; padding: 30px; border-radius: 10px; border: 2px solid #393737;'>
+                    <h1 style='color: #cd6300; text-align: center;'>🔔 Event Reminder</h1>
+                    <p style='font-size: 16px; text-align: center;'>{subtitle}</p>
+
+                    <div style='background-color: #1a1a1a; border: 1px solid #2b2929; border-radius: 8px; padding: 20px; margin-top: 20px;'>
+                        <h2 style='margin-top: 0; color: #ffffff; text-align: center;'>{eventName}</h2>
+                        <table style='width: 100%; border-collapse: collapse;'>
+                            <tr>
+                                <td style='padding: 8px 0; color: #b0acac; border-bottom: 1px solid #2b2929;'>Date:</td>
+                                <td style='padding: 8px 0; font-weight: bold; text-align: right; border-bottom: 1px solid #2b2929;'>{eventDate}</td>
+                            </tr>
+                            <tr>
+                                <td style='padding: 8px 0; color: #b0acac;'>Location:</td>
+                                <td style='padding: 8px 0; font-weight: bold; text-align: right;'>{eventLocation}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    
+                    <p style='text-align: center; margin-top: 30px; color: #787474; font-size: 14px;'>
+                        We look forward to seeing you there! If you have any questions, reply to this email.
+                    </p>
+                </div>"
+            };
+
+            message.Body = bodyBuilder.ToMessageBody();
+
+            using var client = new SmtpClient();
+            try
+            {
+                await client.ConnectAsync(host, port, SecureSocketOptions.StartTls);
+                await client.AuthenticateAsync(user, pass);
+                await client.SendAsync(message);
+                await client.DisconnectAsync(true);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to send event reminder email to {ToEmail} for event {EventName}", toEmail, eventName);
             }
         }
     }

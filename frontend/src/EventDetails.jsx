@@ -17,17 +17,29 @@ function EventDetails() {
     const [loading, setLoading] = useState(true);
     const [showCancelModal, setShowCancelModal] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
+    
+    const [canSendReminder, setCanSendReminder] = useState(false);
+    const [nextAvailableAt, setNextAvailableAt] = useState(null);
+    const [showReminderModal, setShowReminderModal] = useState(false);
+    const [isSendingReminder, setIsSendingReminder] = useState(false);
 
     useEffect(() => {
-        apiFetch('/api/events/' + id)
-            .then(data => {
-                setEvent(data);
-                setLoading(false);
-            })
-            .catch(err => {
-                logger.error('Failed to fetch event details', err);
-                setLoading(false);
-            });
+        Promise.all([
+            apiFetch('/api/events/' + id),
+            apiFetch(`/api/notifications/event/${id}/can-send-reminder`).catch(() => ({ canSend: true }))
+        ])
+        .then(([eventData, reminderData]) => {
+            setEvent(eventData);
+            setCanSendReminder(reminderData.canSend);
+            if (reminderData.nextAvailableAt) {
+                setNextAvailableAt(new Date(reminderData.nextAvailableAt));
+            }
+            setLoading(false);
+        })
+        .catch(err => {
+            logger.error('Failed to fetch event details', err);
+            setLoading(false);
+        });
     }, [id]);
 
     if (authLoading) return <div className="page-loading">Loading...</div>;
@@ -89,6 +101,60 @@ function EventDetails() {
                             <button onClick={handleDelete} disabled={isDeleting}>
                                 {isDeleting ? 'Cancelling...' : 'Confirm'}
                             </button>
+                        </div>
+                    </div>
+                </>
+            )}
+
+            {/* Send Reminder Modal */}
+            {showReminderModal && (
+                <>
+                    <div
+                        id="transparent_panel"
+                        style={{ display: 'block', opacity: 0.5, cursor: 'pointer' }}
+                        onClick={() => setShowReminderModal(false)}
+                    />
+                    <div id="action_confirmation_window" className="align_column" style={{ display: 'flex', opacity: 1 }}>
+                        <span id="window_name">Send Event Reminder</span>
+                        <hr />
+                        {canSendReminder ? (
+                            <>
+                                <span id="window_info">Are you sure you want to send a reminder notification and email to all current ticket holders for {event.title}?</span>
+                                <span id="window_small_info" style={{ color: 'var(--accent)' }}>Note: You can only do this once per day per event.</span>
+                            </>
+                        ) : (
+                            <>
+                                <span id="window_info">A reminder has already been sent recently for this event.</span>
+                                <span id="window_small_info" style={{ color: 'var(--danger)' }}>
+                                    You can send another reminder at {nextAvailableAt ? nextAvailableAt.toLocaleString('en-GB') : 'a later time'}.
+                                </span>
+                            </>
+                        )}
+                        <div id="action_controls" className="align_row">
+                            <button onClick={() => setShowReminderModal(false)} disabled={isSendingReminder} style={{ flex: canSendReminder ? '1 1 0' : '1' }}>
+                                {canSendReminder ? 'Cancel' : 'Close'}
+                            </button>
+                            {canSendReminder && (
+                                <button 
+                                    onClick={async () => {
+                                        setIsSendingReminder(true);
+                                        try {
+                                            const res = await apiFetch(`/api/notifications/event/${event.id}/send-reminder`, { method: 'POST' });
+                                            alert(res.message);
+                                            setShowReminderModal(false);
+                                            setCanSendReminder(false);
+                                            setNextAvailableAt(new Date(Date.now() + 24 * 60 * 60 * 1000));
+                                        } catch (err) {
+                                            alert(err.message || 'Failed to send reminder');
+                                        } finally {
+                                            setIsSendingReminder(false);
+                                        }
+                                    }}
+                                    disabled={isSendingReminder}
+                                >
+                                    {isSendingReminder ? 'Sending...' : 'Yes, Send Reminder'}
+                                </button>
+                            )}
                         </div>
                     </div>
                 </>
@@ -219,6 +285,7 @@ function EventDetails() {
                             <button onClick={() => navigate('/edit-event/' + event.id)}>Edit</button>
                             <button onClick={() => navigate('/event-orders/' + event.id)}>View Orders</button>
                             <button onClick={() => navigate('/event-statistics/' + event.id)}>Report</button>
+                            <button onClick={() => setShowReminderModal(true)}>Send Reminder</button>
                             <button onClick={() => setShowCancelModal(true)}>Cancel</button>
                         </div>
                     </div>
@@ -299,6 +366,8 @@ function EventDetails() {
                     </div>
                 </div>
             </div>
+
+
         </>
     );
 }

@@ -330,6 +330,54 @@ namespace Api.Controllers
 
                 await _db.SaveChangesAsync();
 
+                // --- Tier threshold notifications for event manager ---
+                if (ev.CreatedByUserId.HasValue)
+                {
+                    foreach (var item in ticketItems)
+                    {
+                        var ticketTier = ev.Tickets.FirstOrDefault(t => t.Id == item.TicketId);
+                        if (ticketTier == null || ticketTier.Quantity == 0) continue;
+
+                        var previousSold = ticketTier.Sold - item.Quantity;
+                        var threshold80 = (int)Math.Ceiling(ticketTier.Quantity * 0.8);
+                        var threshold100 = ticketTier.Quantity;
+
+                        // Check 80% threshold crossing
+                        if (previousSold < threshold80 && ticketTier.Sold >= threshold80)
+                        {
+                            _db.Notifications.Add(new Notification
+                            {
+                                Id = Guid.NewGuid(),
+                                UserId = ev.CreatedByUserId.Value,
+                                EventId = ev.Id,
+                                Type = "TierThreshold",
+                                Title = "80% Sold!",
+                                Message = $"{ticketTier.Type} tickets for {ev.Title} have reached 80% sold ({ticketTier.Sold}/{ticketTier.Quantity}).",
+                                IsRead = false,
+                                CreatedAt = DateTime.UtcNow
+                            });
+                        }
+
+                        // Check 100% threshold crossing
+                        if (previousSold < threshold100 && ticketTier.Sold >= threshold100)
+                        {
+                            _db.Notifications.Add(new Notification
+                            {
+                                Id = Guid.NewGuid(),
+                                UserId = ev.CreatedByUserId.Value,
+                                EventId = ev.Id,
+                                Type = "TierThreshold",
+                                Title = "Sold Out!",
+                                Message = $"{ticketTier.Type} tickets for {ev.Title} are completely sold out ({ticketTier.Sold}/{ticketTier.Quantity})!",
+                                IsRead = false,
+                                CreatedAt = DateTime.UtcNow
+                            });
+                        }
+                    }
+
+                    await _db.SaveChangesAsync();
+                }
+
                 if(!string.IsNullOrEmpty(session.CustomerEmail))
                     await _emailService.SendTicketConfirmationEmailAsync(
                         session.CustomerEmail,

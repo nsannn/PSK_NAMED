@@ -41,5 +41,30 @@ namespace Api.Services
                 throw;
             }
         }
+
+        public async Task SendEventReminderEmailAsync(string toEmail, string eventName, string eventDate, string eventLocation, bool isManualBlast = false)
+        {
+            _logger.LogInformation(
+                "Sending event reminder email to {ToEmail} for event '{EventName}'",
+                toEmail, eventName);
+
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+            try
+            {
+                await _inner.SendEventReminderEmailAsync(toEmail, eventName, eventDate, eventLocation, isManualBlast);
+                sw.Stop();
+                _logger.LogInformation(
+                    "Event reminder email sent to {ToEmail} in {ElapsedMs}ms",
+                    toEmail, sw.ElapsedMilliseconds);
+            }
+            catch (Exception ex)
+            {
+                sw.Stop();
+                _logger.LogError(ex,
+                    "Failed to send event reminder email to {ToEmail} after {ElapsedMs}ms",
+                    toEmail, sw.ElapsedMilliseconds);
+                throw;
+            }
+        }
     }
 }
