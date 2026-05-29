@@ -20,6 +20,16 @@ vi.mock('./utils/logger', () => ({
   },
 }));
 
+vi.mock('./context/AuthContext', () => ({
+  useAuth: () => ({
+    user: {
+      id: 'manager-1',
+      role: 'Manager',
+    },
+    loading: false,
+  }),
+}));
+
 import { apiFetch } from './utils/api';
 
 const mockEvent = {
@@ -44,10 +54,22 @@ const mockEvent = {
 describe('EventDetails', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+
+    apiFetch.mockImplementation((url) => {
+      if (url.includes('/can-send-reminder')) {
+        return Promise.resolve({ canSend: true });
+      }
+
+      if (url.includes('/validators')) {
+        return Promise.resolve([]);
+      }
+
+      return Promise.resolve(mockEvent);
+    });
   });
 
   test('shows loading state', () => {
-    apiFetch.mockReturnValue(new Promise(() => {}));
+    apiFetch.mockImplementation(() => new Promise(() => {}));
 
     render(<EventDetails />);
 
@@ -55,8 +77,6 @@ describe('EventDetails', () => {
   });
 
   test('renders event details', async () => {
-    apiFetch.mockResolvedValueOnce(mockEvent);
-
     render(<EventDetails />);
 
     expect(await screen.findByText('Rock Festival')).toBeInTheDocument();
@@ -65,8 +85,6 @@ describe('EventDetails', () => {
   });
 
   test('opens cancel modal', async () => {
-    apiFetch.mockResolvedValueOnce(mockEvent);
-
     render(<EventDetails />);
 
     await screen.findByText('Rock Festival');
@@ -79,10 +97,6 @@ describe('EventDetails', () => {
   });
 
   test('deletes event', async () => {
-    apiFetch
-      .mockResolvedValueOnce(mockEvent)
-      .mockResolvedValueOnce({});
-
     render(<EventDetails />);
 
     await screen.findByText('Rock Festival');

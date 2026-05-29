@@ -40,6 +40,8 @@ vi.mock('../utils/api', () => ({
                 {
                     id: 'ticket1',
                     type: 'VIP',
+                    quantity: 10,
+                    sold: 0,
                     price: 20,
                 },
             ],

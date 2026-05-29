@@ -47,10 +47,6 @@ namespace Api.Controllers
         [HttpPost("create-session")]
         public async Task<IActionResult> CreateSession([FromBody] CreateCheckoutSessionRequest req)
         {            
-            var frontendBaseUrl = _config["FRONTEND_BASE_URL"]?.TrimEnd('/');
-            if(string.IsNullOrWhiteSpace(frontendBaseUrl))
-                return StatusCode(500, new {message = "FRONTEND_BASE_URL is not configured."});
-            
             var selectedTickets=req.Tickets
                 .Where(t => t.Quantity > 0)
                 .ToList();
@@ -64,6 +60,10 @@ namespace Api.Controllers
                 .FirstOrDefaultAsync(e => e.Id == req.EventId);
             if(ev == null)
                 return NotFound(new {message = "Event not found."});
+
+            var frontendBaseUrl = _config["FRONTEND_BASE_URL"]?.TrimEnd('/');
+            if(string.IsNullOrWhiteSpace(frontendBaseUrl))
+                return StatusCode(500, new {message = "FRONTEND_BASE_URL is not configured."});
 
             var lineItems=new List<SessionLineItemOptions>();
             foreach(var ticket in selectedTickets) {

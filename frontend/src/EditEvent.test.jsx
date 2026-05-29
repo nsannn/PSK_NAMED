@@ -28,23 +28,35 @@ vi.mock('./utils/logger', () => ({
   },
 }));
 
+vi.mock('./context/AuthContext', () => ({
+  useAuth: () => ({
+    user: {
+      id: 'manager-1',
+      role: 'Manager',
+    },
+    loading: false,
+  }),
+}));
+
 describe('EditEvent', () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
     mockApiFetch.mockResolvedValue({
       title: 'Existing Event',
-      date: '2026-01-01T12:00:00Z',
+      date: '2026-06-01T12:00:00Z',
       location: 'Vilnius',
       description: 'Description',
       eventType: 'Festival',
       tags: [{ name: 'Outdoor' }],
+      hasPoster: true,
       tickets: [
         {
           id: 1,
-          name: 'VIP',
+          type: 'VIP',
           quantity: 100,
           price: 50,
+          sold: 0,
         },
       ],
     });
@@ -78,7 +90,24 @@ describe('EditEvent', () => {
 
   test('saves event', async () => {
     mockApiFetch
-      .mockResolvedValueOnce({ title: 'Existing Event', tickets: [] })
+      .mockResolvedValueOnce({
+        title: 'Existing Event',
+        date: '2026-06-01T12:00:00Z',
+        location: 'Vilnius',
+        description: 'Description',
+        eventType: 'Festival',
+        tags: [{ name: 'Outdoor' }],
+        hasPoster: true,
+        tickets: [
+          {
+            id: 1,
+            type: 'VIP',
+            quantity: 100,
+            price: 50,
+            sold: 0,
+          },
+        ],
+      })
       .mockResolvedValueOnce({});
 
     render(<EditEvent />);

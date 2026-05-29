@@ -20,6 +20,16 @@ vi.mock('./utils/logger', () => ({
   },
 }));
 
+vi.mock('./context/AuthContext', () => ({
+  useAuth: () => ({
+    user: {
+      id: 'manager-1',
+      role: 'Manager',
+    },
+    loading: false,
+  }),
+}));
+
 import { apiFetch } from './utils/api';
 
 describe('EventDashboard', () => {
@@ -50,10 +60,7 @@ describe('EventDashboard', () => {
 
     render(<EventDashboard />);
 
-    // await waitFor(() => {
-    //   expect(screen.getByText('Concert A')).toBeInTheDocument();
-    // });
-    expect(await screen.findByTestId('event-name')).toHaveTextContent('Concert A');
+    expect((await screen.findAllByText('Concert A')).length).toBeGreaterThan(0);
   });
 
   test('shows empty state', async () => {

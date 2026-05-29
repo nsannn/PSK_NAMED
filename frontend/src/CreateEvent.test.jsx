@@ -28,6 +28,16 @@ vi.mock('./utils/logger', () => ({
     },
 }));
 
+vi.mock('./context/AuthContext', () => ({
+    useAuth: () => ({
+        user: {
+            id: 'manager-1',
+            role: 'Manager',
+        },
+        loading: false,
+    }),
+}));
+
 global.URL.createObjectURL = vi.fn(() => 'preview-url');
 
 describe('CreateEvent', () => {
@@ -95,6 +105,37 @@ describe('CreateEvent', () => {
             target: { value: 'Concert' },
         });
 
+        fireEvent.change(screen.getByLabelText('Date'), {
+            target: { value: '2026-06-01' },
+        });
+
+        fireEvent.change(screen.getByLabelText('Time'), {
+            target: { value: '18:00' },
+        });
+
+        fireEvent.change(screen.getByLabelText('Location'), {
+            target: { value: 'Vilnius' },
+        });
+
+        fireEvent.change(screen.getByLabelText('Description'), {
+            target: { value: 'Summer show' },
+        });
+
+        fireEvent.change(screen.getByLabelText('Tier Name'), {
+            target: { value: 'VIP' },
+        });
+
+        const quantityInput = screen.getByLabelText('Quantity');
+        fireEvent.change(quantityInput, { target: { value: '1' } });
+
+        const priceInput = screen.getByLabelText('Price');
+        fireEvent.change(priceInput, { target: { value: '10.00' } });
+
+        const file = new File(['img'], 'poster.png', { type: 'image/png' });
+        fireEvent.change(screen.getByLabelText(/choose file/i), {
+            target: { files: [file] },
+        });
+
         fireEvent.click(screen.getByText('Create Event'));
 
         await waitFor(() => {
@@ -110,6 +151,41 @@ describe('CreateEvent', () => {
         mockApiFetch.mockRejectedValueOnce(new Error('Failed'));
 
         render(<CreateEvent />);
+
+        fireEvent.change(screen.getByLabelText('Event Name'), {
+            target: { value: 'Concert' },
+        });
+
+        fireEvent.change(screen.getByLabelText('Date'), {
+            target: { value: '2026-06-01' },
+        });
+
+        fireEvent.change(screen.getByLabelText('Time'), {
+            target: { value: '18:00' },
+        });
+
+        fireEvent.change(screen.getByLabelText('Location'), {
+            target: { value: 'Vilnius' },
+        });
+
+        fireEvent.change(screen.getByLabelText('Description'), {
+            target: { value: 'Summer show' },
+        });
+
+        fireEvent.change(screen.getByLabelText('Tier Name'), {
+            target: { value: 'VIP' },
+        });
+
+        const quantityInput = screen.getByLabelText('Quantity');
+        fireEvent.change(quantityInput, { target: { value: '1' } });
+
+        const priceInput = screen.getByLabelText('Price');
+        fireEvent.change(priceInput, { target: { value: '10.00' } });
+
+        const file = new File(['img'], 'poster.png', { type: 'image/png' });
+        fireEvent.change(screen.getByLabelText(/choose file/i), {
+            target: { files: [file] },
+        });
 
         fireEvent.click(screen.getByText('Create Event'));
 
