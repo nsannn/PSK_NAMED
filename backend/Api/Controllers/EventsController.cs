@@ -365,20 +365,13 @@ namespace Api.Controllers
             foreach (var tierDto in updateDto.TicketTiers) {
                 if (tierDto.Id.HasValue) {
                     var existing = ev.Tickets.FirstOrDefault(t => t.Id == tierDto.Id.Value);
-                    if (existing != null) {
-                        existing.Type = tierDto.Name;
-                        existing.Quantity = tierDto.Quantity;
-                        existing.Price = tierDto.Price;
-                    } else {
-                        _db.Tickets.Add(new Ticket {
-                            Id = Guid.NewGuid(),
-                            EventId = id,
-                            Type = tierDto.Name,
-                            Quantity = tierDto.Quantity,
-                            Sold = 0,
-                            Price = tierDto.Price
-                        });
+                    if (existing == null) {
+                        return BadRequest(new { message = $"Ticket tier id {tierDto.Id.Value} not found for this event." });
                     }
+
+                    existing.Type = tierDto.Name;
+                    existing.Quantity = tierDto.Quantity;
+                    existing.Price = tierDto.Price;
                 } else {
                     _db.Tickets.Add(new Ticket {
                         Id = Guid.NewGuid(),
