@@ -24,6 +24,16 @@ vi.mock('./utils/logger', () => ({
   }
 }));
 
+vi.mock('./context/AuthContext', () => ({
+  useAuth: () => ({
+    user: {
+      id: 'manager-1',
+      role: 'Manager',
+    },
+    loading: false,
+  }),
+}));
+
 describe('MyEventsList', () => {
   beforeEach(() => {
     vi.clearAllMocks();

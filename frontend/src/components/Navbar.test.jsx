@@ -69,11 +69,9 @@ describe('Navbar', () => {
       </MemoryRouter>
     );
 
-    fireEvent.click(
-      screen.getAllByRole('button', { name: /dashboard/i })[0]
-    );
+    fireEvent.click(screen.getByText('Named'));
 
-    expect(navigateMock).toHaveBeenCalledWith('/dashboard');
+    expect(navigateMock).toHaveBeenCalledWith('/');
   });
 
   test('opens mobile menu', () => {

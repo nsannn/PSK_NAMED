@@ -4,6 +4,10 @@ import UserMenu from './UserMenu';
 
 const logoutMock = vi.fn();
 
+vi.mock('react-router-dom', () => ({
+  useNavigate: () => vi.fn(),
+}));
+
 vi.mock('../context/AuthContext', () => ({
   useAuth: () => ({
     logout: logoutMock,
