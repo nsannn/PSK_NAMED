@@ -16,7 +16,8 @@ namespace Api.Services
             string eventName,
             int quantity,
             string eventDate,
-            string eventLocation)
+            string eventLocation,
+            List<EmailTicketInfo> tickets)
         {
             _logger.LogInformation(
                 "Sending ticket confirmation email to {ToEmail} for event '{EventName}' (qty {Quantity})",
@@ -25,7 +26,7 @@ namespace Api.Services
             var sw = System.Diagnostics.Stopwatch.StartNew();
             try
             {
-                await _inner.SendTicketConfirmationEmailAsync(toEmail, eventName, quantity, eventDate, eventLocation);
+                await _inner.SendTicketConfirmationEmailAsync(toEmail, eventName, quantity, eventDate, eventLocation, tickets);
                 sw.Stop();
                 _logger.LogInformation(
                     "Ticket confirmation email sent to {ToEmail} in {ElapsedMs}ms",
