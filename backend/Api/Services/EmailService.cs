@@ -15,7 +15,7 @@ namespace Api.Services
     public interface IEmailService
     {
         Task SendTicketConfirmationEmailAsync(string toEmail, string eventName, int quantity, string eventDate, string eventLocation, List<EmailTicketInfo> tickets);
-        Task SendEventReminderEmailAsync(string toEmail, string eventName, string eventDate, string eventLocation, bool isManualBlast = false);
+        Task SendEventReminderEmailAsync(string toEmail, string eventName, string eventDateTime, string eventLocation, bool isManualBlast = false);
     }
 
     public class EmailService : IEmailService
@@ -48,6 +48,8 @@ namespace Api.Services
             message.To.Add(new MailboxAddress("", toEmail));
             message.Subject = $"Your Tickets for {eventName}";
 
+            var baseUrl = _config["APP_BASE_URL"] ?? "http://localhost:5134";
+
             var bodyBuilder = new BodyBuilder
             {
                 HtmlBody = $@"
@@ -78,6 +80,7 @@ namespace Api.Services
                         <h3 style='margin-top: 0; color: #ffffff;'>{t.Type}</h3>
                         <img src='https://api.qrserver.com/v1/create-qr-code/?size=250x250&data={t.Token}' alt='QR Code for {t.Type}' style='width: 200px; height: 200px; margin: 10px auto; display: block; border-radius: 4px; background-color: white; padding: 10px;' />
                         <p style='color: #787474; font-size: 12px; margin-bottom: 0;'>Ticket Token: {t.Token.Substring(0, Math.Min(8, t.Token.Length))}...</p>
+                        <p style='margin-top:8px;'><a href='{baseUrl}/api/tickets/download/{Uri.EscapeDataString(t.Token)}' style='color: #cd6300;'>Download ticket</a></p>
                     </div>"))}
                     
                     <p style='text-align: center; margin-top: 30px; color: #787474; font-size: 14px;'>
@@ -102,7 +105,7 @@ namespace Api.Services
             }
         }
 
-        public async Task SendEventReminderEmailAsync(string toEmail, string eventName, string eventDate, string eventLocation, bool isManualBlast = false)
+        public async Task SendEventReminderEmailAsync(string toEmail, string eventName, string eventDateTime, string eventLocation, bool isManualBlast = false)
         {
             var host = _config["SMTP_HOST"] ?? "smtp.gmail.com";
             var portString = _config["SMTP_PORT"] ?? "587";
@@ -139,10 +142,10 @@ namespace Api.Services
                     <div style='background-color: #1a1a1a; border: 1px solid #2b2929; border-radius: 8px; padding: 20px; margin-top: 20px;'>
                         <h2 style='margin-top: 0; color: #ffffff; text-align: center;'>{eventName}</h2>
                         <table style='width: 100%; border-collapse: collapse;'>
-                            <tr>
-                                <td style='padding: 8px 0; color: #b0acac; border-bottom: 1px solid #2b2929;'>Date:</td>
-                                <td style='padding: 8px 0; font-weight: bold; text-align: right; border-bottom: 1px solid #2b2929;'>{eventDate}</td>
-                            </tr>
+                                <tr>
+                                    <td style='padding: 8px 0; color: #b0acac; border-bottom: 1px solid #2b2929;'>When:</td>
+                                    <td style='padding: 8px 0; font-weight: bold; text-align: right; border-bottom: 1px solid #2b2929;'>{eventDateTime}</td>
+                                </tr>
                             <tr>
                                 <td style='padding: 8px 0; color: #b0acac;'>Location:</td>
                                 <td style='padding: 8px 0; font-weight: bold; text-align: right;'>{eventLocation}</td>

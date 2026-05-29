@@ -126,7 +126,14 @@ export default function MyTicketsList(){
                                             <span>{ticket.ticketType}</span>
                                             <span>Status: {ticket.status}</span>
                                             {ticket.status != "Refunded" && (
-                                                <button onClick={() => openQRCodeWindow(ticket)}>Show QR Code</button>
+                                                <>
+                                                    <button onClick={() => openQRCodeWindow(ticket)}>Show QR Code</button>
+                                                    <button onClick={async () => {
+                                                        const data = await apiFetch(`/api/purchasedtickets/${ticket.purchasedTicketId}`);
+                                                        const url = `/api/tickets/download/${encodeURIComponent(data.qrToken)}`;
+                                                        window.open(url, '_blank');
+                                                    }}>Download</button>
+                                                </>
                                             )}
                                         </div>
                                     ))}

@@ -181,7 +181,7 @@ namespace Api.Controllers
                 EventId = eventId,
                 Type = "ManagerReminder",
                 Title = "Event Reminder",
-                Message = $"Reminder: {ev.Title} is coming up on {ev.Date:MMMM d, yyyy}. Don't forget to attend!",
+                Message = $"Reminder: {ev.Title} is coming up on {ev.Date:MMMM d, yyyy 'at' h:mm tt 'UTC'}. Don't forget to attend!",
                 IsRead = false,
                 CreatedAt = now
             }).ToList();
@@ -195,7 +195,7 @@ namespace Api.Controllers
                 await _emailService.SendEventReminderEmailAsync(
                     u.Email,
                     ev.Title,
-                    ev.Date.ToString("MMMM d, yyyy"),
+                    ev.Date.ToUniversalTime().ToString("MMMM d, yyyy 'at' h:mm tt 'UTC'"),
                     ev.Location,
                     isManualBlast: true
                 );

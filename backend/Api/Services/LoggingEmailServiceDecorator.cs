@@ -42,7 +42,7 @@ namespace Api.Services
             }
         }
 
-        public async Task SendEventReminderEmailAsync(string toEmail, string eventName, string eventDate, string eventLocation, bool isManualBlast = false)
+        public async Task SendEventReminderEmailAsync(string toEmail, string eventName, string eventDateTime, string eventLocation, bool isManualBlast = false)
         {
             _logger.LogInformation(
                 "Sending event reminder email to {ToEmail} for event '{EventName}'",
@@ -51,7 +51,7 @@ namespace Api.Services
             var sw = System.Diagnostics.Stopwatch.StartNew();
             try
             {
-                await _inner.SendEventReminderEmailAsync(toEmail, eventName, eventDate, eventLocation, isManualBlast);
+                await _inner.SendEventReminderEmailAsync(toEmail, eventName, eventDateTime, eventLocation, isManualBlast);
                 sw.Stop();
                 _logger.LogInformation(
                     "Event reminder email sent to {ToEmail} in {ElapsedMs}ms",

@@ -92,7 +92,7 @@ namespace Api.Services
                         await emailService.SendEventReminderEmailAsync(
                             user.Email,
                             ev.Title,
-                            ev.Date.ToString("MMMM d, yyyy"),
+                            ev.Date.ToUniversalTime().ToString("MMMM d, yyyy 'at' h:mm tt 'UTC'"),
                             ev.Location
                         );
 
