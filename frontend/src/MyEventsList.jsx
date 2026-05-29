@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from './context/AuthContext';
 import { apiFetch } from './utils/api';
 import { logger } from './utils/logger';
 import './MyEventsList.css';
@@ -18,6 +19,10 @@ const SORT_OPTIONS = [
 
 function MyEventsList() {
     const navigate = useNavigate();
+    const { user } = useAuth();
+
+    const role = user?.role;
+    const canManage = role === 'Manager' || role === 'SuperAdmin';
 
     const [events, setEvents]   = useState([]);
     const [loading, setLoading] = useState(true);
@@ -193,7 +198,11 @@ function MyEventsList() {
                 <div id="event_list_main" className="align_column">
                     <div id="search_sort_menu" className="align_row">
                         <button id="filter_button_mobile" />
-                        <button id="create_new_event_button" onClick={() => navigate('/create-event')}>+ Create Event</button>
+
+                        {/* Only Manager/SuperAdmin can create events */}
+                        {canManage && (
+                            <button id="create_new_event_button" onClick={() => navigate('/create-event')}>+ Create Event</button>
+                        )}
 
                         <form id="search_form" onSubmit={e => e.preventDefault()}>
                             <div id="search_wrapper" className="align_row">
@@ -267,28 +276,44 @@ function MyEventsList() {
                                         <span id="event_date">📅 {new Date(ev.date).toLocaleDateString()}</span>
                                         <span id="event_location">📍 {ev.location}</span>
                                         <span id="event_description">{ev.description}</span>
-                                        <div id="event_selling_info_container" className="align_column">
-                                            <div id="event_selling_info" className="align_row">
-                                                <span>Tickets Sold</span>
-                                                <span>{ev.ticketsSold}/{ev.ticketsTotal}</span>
+
+                                        {/* Manager/SuperAdmin: show stats */}
+                                        {canManage && (
+                                            <div id="event_selling_info_container" className="align_column">
+                                                <div id="event_selling_info" className="align_row">
+                                                    <span>Tickets Sold</span>
+                                                    <span>{ev.ticketsSold}/{ev.ticketsTotal}</span>
+                                                </div>
+                                                <div id="event_sold_tickets_container">
+                                                    <div id="event_sold_tickets" style={{ width: percentSold + '%' }} />
+                                                </div>
+                                                <div id="event_selling_info" className="align_row">
+                                                    <span>Revenue</span>
+                                                    <span>€{ev.revenue}</span>
+                                                </div>
+                                                <div id="event_selling_info" className="align_row">
+                                                    <span>Price from</span>
+                                                    <span>€{ev.price}</span>
+                                                </div>
                                             </div>
-                                            <div id="event_sold_tickets_container">
-                                                <div id="event_sold_tickets" style={{ width: percentSold + '%' }} />
+                                        )}
+
+                                        {/* Manager/SuperAdmin: management controls */}
+                                        {canManage && (
+                                            <div id="event_controls" className="align_row">
+                                                <button onClick={() => navigate(`/event-details/${ev.id}`)}>Details</button>
+                                                <button onClick={() => navigate(`/edit-event/${ev.id}`)}>Edit</button>
+                                                <button onClick={() => setCancellingEventId(ev.id)}>Cancel</button>
                                             </div>
-                                            <div id="event_selling_info" className="align_row">
-                                                <span>Revenue</span>
-                                                <span>€{ev.revenue}</span>
+                                        )}
+
+                                        {/* Customer/Validator/Anonymous: browse-only — click to event page */}
+                                        {!canManage && (
+                                            <div id="event_controls" className="align_row">
+                                                <button onClick={() => navigate(`/event/${ev.id}`)}>View Event</button>
                                             </div>
-                                            <div id="event_selling_info" className="align_row">
-                                                <span>Price from</span>
-                                                <span>€{ev.price}</span>
-                                            </div>
-                                        </div>
-                                        <div id="event_controls" className="align_row">
-                                            <button onClick={() => navigate(`/event-details/${ev.id}`)}>Details</button>
-                                            <button onClick={() => navigate(`/edit-event/${ev.id}`)}>Edit</button>
-                                            <button onClick={() => setCancellingEventId(ev.id)}>Cancel</button>
-                                        </div>
+                                        )}
+
                                         <span id="event_price">From {ev.price}€</span>
                                     </div>
                                 </div>
@@ -298,8 +323,8 @@ function MyEventsList() {
                 </div>
             </div>
 
-            {/* Cancel / Delete modal */}
-            {cancellingEventId && (
+            {/* Cancel / Delete modal — only for managers/admins */}
+            {cancellingEventId && canManage && (
                 <>
                     <div
                         id="transparent_panel"

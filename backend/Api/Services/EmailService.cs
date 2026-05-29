@@ -53,7 +53,7 @@ namespace Api.Services
                 <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #121111; color: #e0dcdc; padding: 30px; border-radius: 10px; border: 2px solid #393737;'>
                     <h1 style='color: #cd6300; text-align: center;'>Payment Successful!</h1>
                     <p style='font-size: 16px; text-align: center;'>Thank you for your purchase. Here are your ticket details:</p>
-                    
+
                     <div style='background-color: #1a1a1a; border: 1px solid #2b2929; border-radius: 8px; padding: 20px; margin-top: 20px;'>
                         <h2 style='margin-top: 0; color: #ffffff;'>{eventName}</h2>
                         <table style='width: 100%; border-collapse: collapse;'>

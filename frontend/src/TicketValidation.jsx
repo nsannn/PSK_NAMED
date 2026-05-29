@@ -154,7 +154,7 @@ export default function TicketValidation(){
         <div id='ticket_validation_container'>
             {loading ? (
                 <div id="loading_anim"/>
-            ):user && user.role!="Customer" ? (
+            ):user && (user.role==="Manager" || user.role==="Validator" || user.role==="SuperAdmin") ? (
                 <>
                     <div id='camera_container'>
                         <video ref={videoRef} id='camera' autoPlay playsInline/>

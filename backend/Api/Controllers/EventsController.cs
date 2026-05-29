@@ -71,12 +71,19 @@ namespace Api.Controllers
         }
 
         // POST: api/events/{id}/poster
+        [Authorize(Roles = "Manager,SuperAdmin")]
         [HttpPost("{id:guid}/poster")]
         public async Task<IActionResult> UploadPoster(Guid id, [FromForm] IFormFile file, [FromForm] uint version, [FromForm] bool forceOverwrite = false)
         {
             var ev = await _db.Events.FindAsync(id);
             if (ev == null)
                 return NotFound();
+
+            // Managers can only upload posters for their own events
+            var uploaderIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var uploaderId = string.IsNullOrEmpty(uploaderIdStr) ? Guid.Empty : Guid.Parse(uploaderIdStr);
+            if (User.IsInRole("Manager") && ev.CreatedByUserId != uploaderId)
+                return Forbid();
 
             if (file == null || file.Length == 0)
                 return BadRequest(new { message = "No file provided." });
@@ -98,8 +105,10 @@ namespace Api.Controllers
                 System.IO.File.Delete(existing);
 
             var filePath = Path.Combine(PostersDir, id + ext);
-            await using var stream = System.IO.File.Create(filePath);
-            await file.CopyToAsync(stream);
+            await using (var stream = System.IO.File.Create(filePath))
+            {
+                await file.CopyToAsync(stream);
+            }
 
             try {
                 TouchEvent(ev);
@@ -128,6 +137,10 @@ namespace Api.Controllers
         }
 
         // GET: api/events/myevents
+        // Unified endpoint for all roles:
+        //   - Customer/Validator/Anonymous: browse all events (no stats)
+        //   - Manager: only their owned events (with stats)
+        //   - SuperAdmin: all events (with stats)
         [AllowAnonymous]
         [HttpGet("myevents")]
         public async Task<IActionResult> GetMyEvents(
@@ -145,12 +158,17 @@ namespace Api.Controllers
             var userId = string.IsNullOrEmpty(userIdStr) ? Guid.Empty : Guid.Parse(userIdStr);
             var role = User.FindFirstValue(ClaimTypes.Role);
 
+            var isManager    = role == "Manager";
+            var isSuperAdmin = role == "SuperAdmin";
+            var canManage    = isManager || isSuperAdmin;
+
             var query = _db.Events
                 .Include(e => e.Tickets)
                 .Include(e => e.Tags)
                 .AsQueryable();
 
-            if (role == "Manager")
+            // Managers only see their own events
+            if (isManager)
             {
                 query = query.Where(e => e.CreatedByUserId == userId);
             }
@@ -213,10 +231,11 @@ namespace Api.Controllers
                     Date          = ev.Date.ToString("yyyy-MM-dd"),
                     Location      = ev.Location,
                     Description   = ev.Description,
-                    TicketsSold   = ticketsSold,
-                    TicketsTotal  = ticketsTotal,
-                    Revenue       = revenue.ToString("N2"),
-                    RevenueAmount = revenue,
+                    // Only expose stats to Manager/SuperAdmin
+                    TicketsSold   = canManage ? ticketsSold : 0,
+                    TicketsTotal  = canManage ? ticketsTotal : 0,
+                    Revenue       = canManage ? revenue.ToString("N2") : "0.00",
+                    RevenueAmount = canManage ? revenue : 0,
                     Price         = price,
                     HasPoster     = EventHasPoster(ev.Id),
                     Tiers         = ev.Tickets.Select(t => new MyEventTierDto
@@ -232,7 +251,7 @@ namespace Api.Controllers
         }
 
         // POST: api/events
-        [Authorize]
+        [Authorize(Roles = "Manager,SuperAdmin")]
         [HttpPost]
         public async Task<IActionResult> CreateEvent([FromBody] CreateEventDto createDto)
         {
@@ -283,6 +302,7 @@ namespace Api.Controllers
         }
 
         // PUT: api/events/{id}
+        [Authorize(Roles = "Manager,SuperAdmin")]
         [HttpPut("{id:guid}")]
         public async Task<IActionResult> UpdateEvent(Guid id, [FromBody] UpdateEventDto updateDto)
         {
@@ -296,6 +316,12 @@ namespace Api.Controllers
 
             if (ev == null)
                 return NotFound();
+
+            // Managers can only edit their own events
+            var editorIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var editorId = string.IsNullOrEmpty(editorIdStr) ? Guid.Empty : Guid.Parse(editorIdStr);
+            if (User.IsInRole("Manager") && ev.CreatedByUserId != editorId)
+                return Forbid();
 
             if (!updateDto.ForceOverwrite && ev.Version != updateDto.Version)
             {
@@ -419,12 +445,19 @@ namespace Api.Controllers
         }
 
         // DELETE: api/events/{id}
+        [Authorize(Roles = "Manager,SuperAdmin")]
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> DeleteEvent(Guid id)
         {
             var ev = await _db.Events.FindAsync(id);
             if (ev == null)
                 return NotFound();
+
+            // Managers can only delete their own events
+            var deleterIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var deleterId = string.IsNullOrEmpty(deleterIdStr) ? Guid.Empty : Guid.Parse(deleterIdStr);
+            if (User.IsInRole("Manager") && ev.CreatedByUserId != deleterId)
+                return Forbid();
 
             // Remove poster file if it exists
             if (Directory.Exists(PostersDir))

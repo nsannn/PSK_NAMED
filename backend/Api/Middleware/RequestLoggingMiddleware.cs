@@ -1,8 +1,9 @@
 using System.Diagnostics;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Mvc.Controllers;
 
 namespace Api.Middleware
 {
-    // Logs every HTTP request with method, path, status code, and duration.
     public class RequestLoggingMiddleware
     {
         private readonly RequestDelegate _next;
@@ -16,7 +17,6 @@ namespace Api.Middleware
 
         public async Task InvokeAsync(HttpContext context)
         {
-            // Generate or reuse correlation ID
             var correlationId = context.Request.Headers["X-Correlation-Id"].FirstOrDefault()
                                 ?? Guid.NewGuid().ToString("N")[..12];
 
@@ -37,6 +37,21 @@ namespace Api.Middleware
                 {
                     sw.Stop();
 
+                    var userName = context.User?.Identity?.IsAuthenticated == true
+                        ? context.User.FindFirstValue(ClaimTypes.Email)
+                          ?? context.User.Identity.Name
+                          ?? "authenticated"
+                        : "anonymous";
+
+                    var role = context.User?.FindFirstValue(ClaimTypes.Role) ?? "none";
+
+                    var actionDescriptor = context.GetEndpoint()
+                        ?.Metadata
+                        ?.GetMetadata<ControllerActionDescriptor>();
+
+                    var className  = actionDescriptor?.ControllerTypeInfo?.FullName ?? "-";
+                    var methodName = actionDescriptor?.MethodInfo?.Name ?? "-";
+
                     var level = context.Response.StatusCode >= 500
                         ? LogLevel.Error
                         : context.Response.StatusCode >= 400
@@ -44,11 +59,15 @@ namespace Api.Middleware
                             : LogLevel.Information;
 
                     _logger.Log(level,
-                        "HTTP {Method} {Path} responded {StatusCode} in {ElapsedMs}ms | CorrelationId: {CorrelationId}",
+                        "HTTP {Method} {Path} responded {StatusCode} in {ElapsedMs}ms | User: {UserName} | Role: {Role} | Action: {ClassName}.{MethodName} | CorrelationId: {CorrelationId}",
                         context.Request.Method,
                         context.Request.Path,
                         context.Response.StatusCode,
                         sw.ElapsedMilliseconds,
+                        userName,
+                        role,
+                        className,
+                        methodName,
                         correlationId);
                 }
             }

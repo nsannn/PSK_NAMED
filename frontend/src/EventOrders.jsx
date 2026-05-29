@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { useAuth } from './context/AuthContext';
 import { apiFetch } from './utils/api';
 import './EventOrders.css';
 import './main.css';
 
 function EventOrders() {
     const { id } = useParams();
+    const { user, loading: authLoading } = useAuth();
+    const role = user?.role;
+    const canManage = role === 'Manager' || role === 'SuperAdmin';
+
     const [orders, setOrders] = useState([]);
     const [event, setEvent] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -15,6 +20,8 @@ function EventOrders() {
     const [actionLoading, setActionLoading] = useState(false);
 
     useEffect(() => {
+        if (authLoading) return;
+        if (!canManage) { setLoading(false); setError("You do not have permission to view this page."); return; }
         const fetchOrdersAndEvent = async () => {
             try {
                 const evData = await apiFetch(`/api/events/${id}`);
@@ -31,7 +38,7 @@ function EventOrders() {
         };
 
         fetchOrdersAndEvent();
-    }, [id]);
+    }, [id, authLoading, canManage]);
 
     const handleRefund = async () => {
         setActionLoading(true);
