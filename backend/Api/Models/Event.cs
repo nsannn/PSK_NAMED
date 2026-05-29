@@ -19,5 +19,6 @@ namespace Api.Models
         [Timestamp]
         public uint Version { get; set; }
         public ICollection<Order> Orders { get; set; } = new List<Order>();
+        public ICollection<User> AssignedValidators { get; set; } = new List<User>();
     }
 }

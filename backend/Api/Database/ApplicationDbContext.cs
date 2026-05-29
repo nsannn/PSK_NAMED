@@ -56,6 +56,10 @@ namespace Api.Database
                 .WithMany()
                 .HasForeignKey(e => e.CreatedByUserId)
                 .OnDelete(DeleteBehavior.SetNull);
+            modelBuilder.Entity<Event>()
+                .HasMany(e => e.AssignedValidators)
+                .WithMany(u => u.AssignedEvents)
+                .UsingEntity(j => j.ToTable("EventValidators"));
             
             modelBuilder.Entity<PurchasedTicket>(entity => {
                 entity.HasIndex(t => t.UserId);

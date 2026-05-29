@@ -16,6 +16,7 @@ export default function Navbar() {
   const role = user?.role;
   const canManage = role === 'Manager' || role === 'SuperAdmin';
   const canValidate = role === 'Manager' || role === 'Validator' || role === 'SuperAdmin';
+  const homePath = role === 'Validator' ? '/validator-dashboard' : '/';
 
   function openLogin() {
     setModalMode('login');
@@ -35,7 +36,7 @@ export default function Navbar() {
         <div
           className="navbar__logo"
           id="site-logo"
-          onClick={() => navigate('/')}
+          onClick={() => navigate(homePath)}
           style={{ cursor: 'pointer' }}
         >
           Named

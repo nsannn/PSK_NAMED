@@ -1,15 +1,20 @@
 import React,{useState,useEffect,useRef} from 'react';
+import { useSearchParams } from 'react-router-dom';
 import jsQR from 'jsqr';
 import {apiFetch} from './utils/api';
 import {logger} from './utils/logger';
 import {useAuth} from './context/AuthContext';
+import './ValidatorExperience.css';
 import "./TicketValidation.css";
 
 export default function TicketValidation(){
     const {user,loading}=useAuth();
+    const [searchParams] = useSearchParams();
+    const eventId = searchParams.get('eventId');
     const [status,setStatus]=useState('Scanning...');
-    const [information,setInformation]=useState('Point camera at QR code');
+    const [information,setInformation]=useState(eventId ? 'Point camera at QR code for this event' : 'Point camera at QR code');
     const [resultType,setResultType]=useState('');
+    const isResultVisible = resultType !== '';
 
     const videoRef=useRef(null);
     const canvasRef=useRef(null);
@@ -106,7 +111,13 @@ export default function TicketValidation(){
             setStatus('Checking ticket...');
             setInformation('Please wait.');
 
-            const data=await apiFetch('/api/purchasedtickets/validate?token='+encodeURIComponent(qrText));
+            const validateUrl = new URL('/api/purchasedtickets/validate', window.location.origin);
+            validateUrl.searchParams.set('token', qrText);
+            if (eventId) {
+                validateUrl.searchParams.set('eventId', eventId);
+            }
+
+            const data=await apiFetch(validateUrl.pathname + validateUrl.search);
 
             showResult(
                 data.status,
@@ -151,20 +162,36 @@ export default function TicketValidation(){
     }
 
     return(
-        <div id='ticket_validation_container'>
+        <div id='ticket_validation_container' className="validator-scanner-shell">
+            <div className="validator-scanner-header">
+                <div className="validator-scanner-header__title">
+                    <strong>Ticket Scanner</strong>
+                    <span>{eventId ? 'Event-specific scanning is enabled' : 'General scanning mode'}</span>
+                </div>
+                <div className="validator-scanner-header__pill">
+                    {eventId ? 'Scanning this event only' : 'No event selected'}
+                </div>
+            </div>
+
             {loading ? (
                 <div id="loading_anim"/>
             ):user && (user.role==="Manager" || user.role==="Validator" || user.role==="SuperAdmin") ? (
                 <>
-                    <div id='camera_container'>
+                    <div id='camera_container' className="validator-scanner-camera">
                         <video ref={videoRef} id='camera' autoPlay playsInline/>
                         <div id='scan_frame'/>
                     </div>
-                    <div id="ticket_info_container" className={`align_column ${resultType}`}>
-                        <span id="status">{status}</span>
-                        <hr/>
-                        <div id="ticket_info">{information}</div>
-                    </div>
+                    {isResultVisible && (
+                        <div className="validator-scanner-result-overlay">
+                            <div id="ticket_info_container" className={`validator-scanner-panel validator-scanner-panel--popup align_column ${resultType}`}>
+                                <div className="validator-scanner-panel__header">
+                                    <span className="validator-scanner-panel__badge">{resultType === 'valid' ? 'Confirmed' : resultType === 'already_used' ? 'Already scanned' : 'Scan failed'}</span>
+                                    <span className="validator-scanner-panel__status" id="status">{status}</span>
+                                </div>
+                                <div className="validator-scanner-panel__message" id="ticket_info">{information}</div>
+                            </div>
+                        </div>
+                    )}
                     <canvas ref={canvasRef} id="canvas" hidden></canvas>
                 </>
             ):(

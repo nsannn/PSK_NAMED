@@ -1,4 +1,4 @@
-﻿using Api.Database;
+using Api.Database;
 using Api.Dtos.Validation;
 using Api.Models;
 using Api.Services;
@@ -83,7 +83,7 @@ namespace Api.Controllers{
         // GET: api/purchasedtickets/validate
         [Authorize(Roles = "Manager,Validator,SuperAdmin")]
         [HttpGet("validate")]
-        public async Task<IActionResult> ValidateTicket([FromQuery] String token) {
+        public async Task<IActionResult> ValidateTicket([FromQuery] String token, [FromQuery] Guid? eventId) {
             var staffUserIdValue=User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if(!Guid.TryParse(staffUserIdValue, out var staffUserId))
@@ -106,6 +106,39 @@ namespace Api.Controllers{
                     Title="Invalid Ticket",
                     Message="This ticket was not found."
                 });
+
+            if (User.IsInRole("Validator") && !eventId.HasValue)
+                return Ok(new TicketValidationDto
+                {
+                    Status = "invalid",
+                    Title = "Invalid Ticket",
+                    Message = "Validator scans require an event context."
+                });
+
+            // If scanned from a specific event page, ensure the ticket belongs to that event
+            if (eventId.HasValue && ticket.EventId != eventId.Value)
+                return Ok(new TicketValidationDto{
+                    Status="invalid",
+                    Title="Invalid Ticket (Wrong Event)",
+                    Message="This ticket belongs to a different event."
+                });
+
+            // If the user is a Validator, ensure they are assigned to this event
+            if (User.IsInRole("Validator"))
+            {
+                var isAssigned = await _db.Events
+                    .Where(e => e.Id == ticket.EventId && e.AssignedValidators.Any(v => v.Id == staffUserId))
+                    .AnyAsync();
+
+                if (!isAssigned)
+                {
+                    return Ok(new TicketValidationDto{
+                        Status="invalid",
+                        Title="Unauthorized",
+                        Message="You are not assigned to validate tickets for this event."
+                    });
+                }
+            }
 
             if(ticket.Status==PurchasedTicketStatus.Used)
                 return Ok(new TicketValidationDto{
