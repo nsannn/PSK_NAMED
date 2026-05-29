@@ -3,6 +3,7 @@ using System;
 using Api.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260529055955_AddNotifications")]
+    partial class AddNotifications
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -309,21 +312,6 @@ namespace Api.Migrations
                     b.ToTable("EventTag");
                 });
 
-            modelBuilder.Entity("EventUser", b =>
-                {
-                    b.Property<Guid>("AssignedEventsId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("AssignedValidatorsId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("AssignedEventsId", "AssignedValidatorsId");
-
-                    b.HasIndex("AssignedValidatorsId");
-
-                    b.ToTable("EventValidators", (string)null);
-                });
-
             modelBuilder.Entity("Api.Models.Event", b =>
                 {
                     b.HasOne("Api.Models.User", "CreatedByUser")
@@ -431,21 +419,6 @@ namespace Api.Migrations
                     b.HasOne("Api.Models.Tag", null)
                         .WithMany()
                         .HasForeignKey("TagsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("EventUser", b =>
-                {
-                    b.HasOne("Api.Models.Event", null)
-                        .WithMany()
-                        .HasForeignKey("AssignedEventsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Api.Models.User", null)
-                        .WithMany()
-                        .HasForeignKey("AssignedValidatorsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

@@ -11,11 +11,11 @@
 		public Guid UserId {get;set;}
 		public User User {get;set;}=null!;
 
-		public Guid EventId {get;set;}
-		public Event Event {get;set;}=null!;
+public Guid? EventId {get;set;}
+                public Event? Event {get;set;}
 
-		public Guid TicketId {get;set;}
-		public Ticket Ticket {get;set;}=null!;
+                public Guid? TicketId {get;set;}
+                public Ticket? Ticket {get;set;}
 
 		public Guid? OrderId {get;set;}
 		public Order? Order {get;set;}

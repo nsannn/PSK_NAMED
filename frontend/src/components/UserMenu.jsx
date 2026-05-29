@@ -23,8 +23,10 @@ export default function UserMenu() {
 
   const role = user.role;
   const canManage = role === 'Manager' || role === 'SuperAdmin';
-  const canValidate = role === 'Manager' || role === 'Validator' || role === 'SuperAdmin';
+  const canValidate = role === 'Validator' || role === 'SuperAdmin';
   const isCustomer = role === 'Customer';
+  const validationDestination = role === 'Validator' ? '/validator-dashboard' : '/ticket-validation';
+  const validationLabel = role === 'Validator' ? 'Assigned Events' : 'Ticket Validation';
 
   const initials = `${user.firstName?.[0] || ''}${user.lastName?.[0] || ''}`.toUpperCase();
 
@@ -57,9 +59,9 @@ export default function UserMenu() {
           <button className="user-menu__item" onClick={() => { navigate('/my-tickets'); setOpen(false); }}>My Tickets</button>
         )}
 
-        {/* Manager/Validator/SuperAdmin: Ticket Validation */}
+        {/* Validator/SuperAdmin: Ticket Validation */}
         {canValidate && (
-          <button className="user-menu__item" onClick={() => { navigate('/ticket-validation'); setOpen(false); }}>Ticket Validation</button>
+          <button className="user-menu__item" onClick={() => { navigate(validationDestination); setOpen(false); }}>{validationLabel}</button>
         )}
 
         {/* Manager/SuperAdmin: Dashboard */}

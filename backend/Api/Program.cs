@@ -100,6 +100,8 @@ try
             sp.GetRequiredService<ILogger<LoggingEmailServiceDecorator>>()));
     builder.Services.AddScoped<ITicketTokenValidationService,TicketTokenValidationService>();
 
+    builder.Services.AddHostedService<EventReminderService>();
+
     if (builder.Environment.IsDevelopment())
     {
         builder.Services.AddHostedService<StripeListenService>();

@@ -63,8 +63,9 @@ function EditEvent() {
                     name: t.type ?? '',
                     quantity: t.quantity || 0,
                     price: t.price || 0,
-                    id: t.id
-                })) : [{ name: '', quantity: 0, price: 0 }]);
+                    id: t.id,
+                    sold: t.sold || 0
+                })) : [{ name: '', quantity: 0, price: 0, sold: 0 }]);
             })
             .catch(err => {
                 logger.error("Failed to fetch event for edit", err);
@@ -77,7 +78,7 @@ function EditEvent() {
     if (!canManage) return <div className="page-loading">You do not have permission to edit events.</div>;
 
     const handleAddTier = () => {
-        setTicketTiers([...ticketTiers, { name: '', quantity: 0, price: 0 }]);
+        setTicketTiers([...ticketTiers, { name: '', quantity: 0, price: 0, sold: 0 }]);
     };
 
     const handleTierChange = (index, field, value) => {
@@ -156,6 +157,9 @@ function EditEvent() {
                     seenNames[trimmedName] = i;
                 }
                 if (tier.quantity === '' || Number(tier.quantity) <= 0) tErr.quantity = "Quantity must be greater than 0.";
+                if (tier.sold && Number(tier.quantity) < tier.sold) {
+                    tErr.quantity = `Quantity cannot be less than tickets sold (${tier.sold}).`;
+                }
                 if (tier.price === '' || Number(tier.price) <= 0) tErr.price = "Price must be greater than 0.";
                 tierErrors.push(tErr);
                 if (Object.keys(tErr).length > 0) hasTierError = true;
@@ -289,7 +293,8 @@ function EditEvent() {
                                             id: t.id,
                                             name: t.type,
                                             quantity: t.quantity,
-                                            price: t.price
+                                            price: t.price,
+                                            sold: t.sold
                                         })) || []
                                     );
 
@@ -384,7 +389,9 @@ function EditEvent() {
                                         </div>
                                         <div id="staff_info_card_input_group">
                                             <div id="staff_event_card_input" className="align_column">
-                                                <label htmlFor={'staff_ticket_tier_quantity_' + index}>Quantity</label>
+                                                <label htmlFor={'staff_ticket_tier_quantity_' + index}>
+                                                    Quantity {tier.sold > 0 && <span style={{fontSize: '0.85em', opacity: 0.7, fontWeight: 'normal', marginLeft: '6px'}}>({tier.sold} sold)</span>}
+                                                </label>
                                                 <input id={'staff_ticket_tier_quantity_' + index} type="text" value={tier.quantity} onChange={(e) => handleTierChange(index, 'quantity', e.target.value)} className={errors.tiers && errors.tiers[index] && errors.tiers[index].quantity ? "input-error" : ""} />
                                                 {errors.tiers && errors.tiers[index] && errors.tiers[index].quantity && <span className="field-error-text">{errors.tiers[index].quantity}</span>}
                                             </div>

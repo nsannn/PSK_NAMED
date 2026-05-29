@@ -97,8 +97,8 @@ function CreateEvent() {
                 } else {
                     seenNames[trimmedName] = i;
                 }
-                if (tier.quantity === '' || Number(tier.quantity) <= 0) tErr.quantity = "Quantity must be greater than 0.";
-                if (tier.price === '' || Number(tier.price) <= 0) tErr.price = "Price must be greater than 0.";
+                if (tier.quantity === '' || Number(tier.quantity) < 1) tErr.quantity = "Quantity must be at least 1.";
+                if (tier.price === '' || Number(tier.price) < 0.01) tErr.price = "Price must be at least 0.01.";
                 tierErrors.push(tErr);
                 if (Object.keys(tErr).length > 0) hasTierError = true;
             }
@@ -208,23 +208,21 @@ function CreateEvent() {
                                         <div id="staff_info_card_input_group">
                                             <div id="staff_event_card_input" className="align_column">
                                                 <label htmlFor={`tier_qty_${index}`}>Quantity</label>
-                                                <input id={`tier_qty_${index}`} type="number" min={0} step={1} value={tier.quantity} onChange={e => {
+                                                <input id={`tier_qty_${index}`} type="text" value={tier.quantity} onChange={e => {
                                                     const value = e.target.value;
 
-                                                    if (value === '' || Number(value) >= 0) {
-                                                        handleTierChange(index, 'quantity', value);
-                                                    }
-                                                }} />
+                                                    handleTierChange(index, 'quantity', value);
+                                                }} className={errors.tiers && errors.tiers[index] && errors.tiers[index].quantity ? "input-error" : ""} />
+                                                {errors.tiers && errors.tiers[index] && errors.tiers[index].quantity && <span className="field-error-text">{errors.tiers[index].quantity}</span>}
                                             </div>
                                             <div id="staff_event_card_input" className="align_column">
                                                 <label htmlFor={`tier_price_${index}`}>Price</label>
-                                                <input id={`tier_price_${index}`} type="number" min={0} step={0.01} value={tier.price} onChange={e => {
+                                                <input id={`tier_price_${index}`} type="text" value={tier.price} onChange={e => {
                                                     const value = e.target.value;
 
-                                                    if (value === '' || Number(value) >= 0) {
-                                                        handleTierChange(index, 'price', value);
-                                                    }
-                                                }} />
+                                                    handleTierChange(index, 'price', value);
+                                                }} className={errors.tiers && errors.tiers[index] && errors.tiers[index].price ? "input-error" : ""} />
+                                                {errors.tiers && errors.tiers[index] && errors.tiers[index].price && <span className="field-error-text">{errors.tiers[index].price}</span>}
                                             </div>
                                         </div>
                                         {ticketTiers.length > 1 && (

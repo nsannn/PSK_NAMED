@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import AuthModal from './AuthModal';
 import UserMenu from './UserMenu';
+import NotificationDropdown from './NotificationDropdown';
 import './Navbar.css';
 
 export default function Navbar() {
@@ -15,6 +16,7 @@ export default function Navbar() {
   const role = user?.role;
   const canManage = role === 'Manager' || role === 'SuperAdmin';
   const canValidate = role === 'Manager' || role === 'Validator' || role === 'SuperAdmin';
+  const homePath = role === 'Validator' ? '/validator-dashboard' : '/';
 
   function openLogin() {
     setModalMode('login');
@@ -34,7 +36,7 @@ export default function Navbar() {
         <div
           className="navbar__logo"
           id="site-logo"
-          onClick={() => navigate('/')}
+          onClick={() => navigate(homePath)}
           style={{ cursor: 'pointer' }}
         >
           Named
@@ -49,15 +51,7 @@ export default function Navbar() {
         <div className="navbar__actions" id="nav-actions">
           {user ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-              <div id="notification_container" className="navbar__notification-container">
-                <button
-                  id="notification_button"
-                  className="btn btn--outline navbar__notification-btn"
-                  title="Notifications"
-                >
-                  🔔
-                </button>
-              </div>
+              <NotificationDropdown />
               <UserMenu />
             </div>
           ) : (
@@ -94,12 +88,7 @@ export default function Navbar() {
         <div className="mobile-sidebar__actions">
           {user ? (
             <>
-              <button
-                className="btn btn--outline btn--full"
-                style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem' }}
-              >
-                🔔 Notifications
-              </button>
+              <NotificationDropdown />
               <UserMenu />
             </>
           ) : (

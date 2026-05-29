@@ -16,6 +16,7 @@ namespace Api.Database
         public DbSet<Tag> Tags { get; set; }
         public DbSet<PurchasedTicket> PurchasedTickets { get; set; }
         public DbSet<Order> Orders { get; set; }
+        public DbSet<Notification> Notifications { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -32,6 +33,20 @@ namespace Api.Database
                 entity.Property(o => o.Status).HasConversion<string>();
             });
 
+            modelBuilder.Entity<Notification>(entity =>
+            {
+                entity.HasIndex(n => n.UserId);
+                entity.HasIndex(n => n.EventId);
+                entity.HasOne(n => n.User)
+                    .WithMany()
+                    .HasForeignKey(n => n.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(n => n.Event)
+                    .WithMany()
+                    .HasForeignKey(n => n.EventId)
+                    .OnDelete(DeleteBehavior.SetNull);
+            });
+
             modelBuilder.Entity<Event>()
                 .HasMany(e => e.Tags)
                 .WithMany(t => t.Events);
@@ -41,6 +56,10 @@ namespace Api.Database
                 .WithMany()
                 .HasForeignKey(e => e.CreatedByUserId)
                 .OnDelete(DeleteBehavior.SetNull);
+            modelBuilder.Entity<Event>()
+                .HasMany(e => e.AssignedValidators)
+                .WithMany(u => u.AssignedEvents)
+                .UsingEntity(j => j.ToTable("EventValidators"));
             
             modelBuilder.Entity<PurchasedTicket>(entity => {
                 entity.HasIndex(t => t.UserId);

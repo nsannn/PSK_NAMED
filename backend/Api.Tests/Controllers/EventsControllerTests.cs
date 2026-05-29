@@ -128,6 +128,7 @@ namespace Api.Tests.Controllers
         {
             await using var db = CreateDb(Guid.NewGuid().ToString());
             var evId = Guid.NewGuid();
+            var ticketId = Guid.NewGuid();
 
             db.Events.Add(new Event
             {
@@ -135,6 +136,15 @@ namespace Api.Tests.Controllers
                 Title = "Old Title",
                 Description = "Old Desc",
                 Date = DateTime.UtcNow
+            });
+            db.Tickets.Add(new Ticket
+            {
+                Id = ticketId,
+                EventId = evId,
+                Type = "General",
+                Quantity = 10,
+                Sold = 3,
+                Price = 25
             });
             await db.SaveChangesAsync();
 
@@ -146,7 +156,16 @@ namespace Api.Tests.Controllers
                 Description = "New Desc",
                 Location = "New Location",
                 Date = DateTime.UtcNow,
-                TicketTiers = new List<CreateTicketTierDto>(),
+                TicketTiers = new List<UpdateTicketTierDto>
+                {
+                    new UpdateTicketTierDto
+                    {
+                        Id = ticketId,
+                        Name = "General",
+                        Quantity = 12,
+                        Price = 30
+                    }
+                },
                 Tags = new List<string>()
             };
 
@@ -158,7 +177,67 @@ namespace Api.Tests.Controllers
             updatedEvent.Should().NotBeNull();
             updatedEvent!.Title.Should().Be("New Title");
 
+            var savedTicket = db.Tickets.First(t => t.Id == ticketId);
+            savedTicket.Sold.Should().Be(3);
+            savedTicket.Quantity.Should().Be(12);
+            savedTicket.Price.Should().Be(30);
+
             db.Events.First(e => e.Id == evId).Title.Should().Be("New Title");
+        }
+
+        [Fact]
+        public async Task UpdateEvent_ReturnsBadRequest_WhenRemovingSoldTicketTier()
+        {
+            await using var db = CreateDb(Guid.NewGuid().ToString());
+            var evId = Guid.NewGuid();
+            var ticketId = Guid.NewGuid();
+
+            db.Events.Add(new Event
+            {
+                Id = evId,
+                Title = "Old Title",
+                Description = "Old Desc",
+                Date = DateTime.UtcNow
+            });
+            db.Tickets.Add(new Ticket
+            {
+                Id = ticketId,
+                EventId = evId,
+                Type = "General",
+                Quantity = 10,
+                Sold = 1,
+                Price = 25
+            });
+            db.PurchasedTickets.Add(new PurchasedTicket
+            {
+                Id = Guid.NewGuid(),
+                EventId = evId,
+                TicketId = ticketId,
+                UserId = Guid.NewGuid(),
+                EventNameSnapshot = "Old Title",
+                TicketTypeSnapshot = "General",
+                EventDateSnapshot = DateTime.UtcNow,
+                PriceSnapshot = 25,
+                Status = PurchasedTicketStatus.Active,
+                CreatedAt = DateTime.UtcNow
+            });
+            await db.SaveChangesAsync();
+
+            var controller = CreateController(db);
+
+            var updateDto = new UpdateEventDto
+            {
+                Title = "New Title",
+                Description = "New Desc",
+                Location = "New Location",
+                Date = DateTime.UtcNow,
+                TicketTiers = new List<UpdateTicketTierDto>(),
+                Tags = new List<string>()
+            };
+
+            var result = await controller.UpdateEvent(evId, updateDto);
+
+            result.Should().BeOfType<BadRequestObjectResult>();
         }
 
         [Fact]

@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 import { apiFetch } from './utils/api';
 import { logger } from './utils/logger';
+import './ValidatorExperience.css';
 import './EventDetails.css';
 import './main.css';
 
@@ -17,18 +18,53 @@ function EventDetails() {
     const [loading, setLoading] = useState(true);
     const [showCancelModal, setShowCancelModal] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
+    
+    const [canSendReminder, setCanSendReminder] = useState(false);
+    const [nextAvailableAt, setNextAvailableAt] = useState(null);
+    const [showReminderModal, setShowReminderModal] = useState(false);
+    const [isSendingReminder, setIsSendingReminder] = useState(false);
+    const [allValidators, setAllValidators] = useState([]);
+    const [assignedValidators, setAssignedValidators] = useState([]);
+    const [validatorsLoading, setValidatorsLoading] = useState(false);
+    const [showValidatorsModal, setShowValidatorsModal] = useState(false);
+    const [validatorSearch, setValidatorSearch] = useState('');
 
     useEffect(() => {
-        apiFetch('/api/events/' + id)
-            .then(data => {
-                setEvent(data);
-                setLoading(false);
+        Promise.all([
+            apiFetch('/api/events/' + id),
+            apiFetch(`/api/notifications/event/${id}/can-send-reminder`).catch(() => ({ canSend: true }))
+        ])
+        .then(([eventData, reminderData]) => {
+            setEvent(eventData);
+            setCanSendReminder(reminderData.canSend);
+            if (reminderData.nextAvailableAt) {
+                setNextAvailableAt(new Date(reminderData.nextAvailableAt));
+            }
+            setLoading(false);
+        })
+        .catch(err => {
+            logger.error('Failed to fetch event details', err);
+            setLoading(false);
+        });
+    }, [id]);
+
+    useEffect(() => {
+        if (!canManage || !event) return;
+
+        setValidatorsLoading(true);
+        Promise.all([
+            apiFetch('/api/users/validators'),
+            apiFetch(`/api/events/${id}/validators`)
+        ])
+            .then(([validatorsData, assignedData]) => {
+                setAllValidators(validatorsData || []);
+                setAssignedValidators(assignedData || []);
             })
             .catch(err => {
-                logger.error('Failed to fetch event details', err);
-                setLoading(false);
-            });
-    }, [id]);
+                logger.error('Failed to load validators', err);
+            })
+            .finally(() => setValidatorsLoading(false));
+    }, [canManage, event, id]);
 
     if (authLoading) return <div className="page-loading">Loading...</div>;
     if (!canManage) return <div className="page-loading">You do not have permission to view this page.</div>;
@@ -69,6 +105,35 @@ function EventDetails() {
 
     const eventTypeTags = event.tags.filter(t => EVENT_TYPES.includes(t.name));
     const regularTags = event.tags.filter(t => !EVENT_TYPES.includes(t.name));
+    const assignedIds = new Set(assignedValidators.map(v => v.id));
+    const filteredValidators = allValidators.filter(v => {
+        const query = validatorSearch.trim().toLowerCase();
+        if (!query) return true;
+        return [v.firstName, v.lastName, v.email].some(value => value?.toLowerCase().includes(query));
+    });
+
+    const refreshValidators = async () => {
+        const [validatorsData, assignedData] = await Promise.all([
+            apiFetch('/api/users/validators'),
+            apiFetch(`/api/events/${id}/validators`)
+        ]);
+
+        setAllValidators(validatorsData || []);
+        setAssignedValidators(assignedData || []);
+    };
+
+    const toggleValidator = async (validator) => {
+        try {
+            const isAssigned = assignedIds.has(validator.id);
+            await apiFetch(`/api/events/${id}/validators/${validator.id}`, {
+                method: isAssigned ? 'DELETE' : 'POST'
+            });
+            await refreshValidators();
+        } catch (err) {
+            logger.error('Failed to update event validators', err);
+            alert(err.message || 'Failed to update validators');
+        }
+    };
 
     return (
         <>
@@ -89,6 +154,60 @@ function EventDetails() {
                             <button onClick={handleDelete} disabled={isDeleting}>
                                 {isDeleting ? 'Cancelling...' : 'Confirm'}
                             </button>
+                        </div>
+                    </div>
+                </>
+            )}
+
+            {/* Send Reminder Modal */}
+            {showReminderModal && (
+                <>
+                    <div
+                        id="transparent_panel"
+                        style={{ display: 'block', opacity: 0.5, cursor: 'pointer' }}
+                        onClick={() => setShowReminderModal(false)}
+                    />
+                    <div id="action_confirmation_window" className="align_column" style={{ display: 'flex', opacity: 1 }}>
+                        <span id="window_name">Send Event Reminder</span>
+                        <hr />
+                        {canSendReminder ? (
+                            <>
+                                <span id="window_info">Are you sure you want to send a reminder notification and email to all current ticket holders for {event.title}?</span>
+                                <span id="window_small_info" style={{ color: 'var(--accent)' }}>Note: You can only do this once per day per event.</span>
+                            </>
+                        ) : (
+                            <>
+                                <span id="window_info">A reminder has already been sent recently for this event.</span>
+                                <span id="window_small_info" style={{ color: 'var(--danger)' }}>
+                                    You can send another reminder at {nextAvailableAt ? nextAvailableAt.toLocaleString('en-GB') : 'a later time'}.
+                                </span>
+                            </>
+                        )}
+                        <div id="action_controls" className="align_row">
+                            <button onClick={() => setShowReminderModal(false)} disabled={isSendingReminder} style={{ flex: canSendReminder ? '1 1 0' : '1' }}>
+                                {canSendReminder ? 'Cancel' : 'Close'}
+                            </button>
+                            {canSendReminder && (
+                                <button 
+                                    onClick={async () => {
+                                        setIsSendingReminder(true);
+                                        try {
+                                            const res = await apiFetch(`/api/notifications/event/${event.id}/send-reminder`, { method: 'POST' });
+                                            alert(res.message);
+                                            setShowReminderModal(false);
+                                            setCanSendReminder(false);
+                                            setNextAvailableAt(new Date(Date.now() + 24 * 60 * 60 * 1000));
+                                        } catch (err) {
+                                            alert(err.message || 'Failed to send reminder');
+                                        } finally {
+                                            setIsSendingReminder(false);
+                                        }
+                                    }}
+                                    disabled={isSendingReminder}
+                                >
+                                    {isSendingReminder ? 'Sending...' : 'Yes, Send Reminder'}
+                                </button>
+                            )}
                         </div>
                     </div>
                 </>
@@ -196,7 +315,9 @@ function EventDetails() {
                                         </div>
                                         <div id="staff_info_card_input_group">
                                             <div id="staff_event_card_input" className="align_column">
-                                                <label>Quantity</label>
+                                                <label>
+                                                    Quantity {ticket.sold > 0 && <span style={{fontSize: '0.85em', opacity: 0.7, fontWeight: 'normal', marginLeft: '6px'}}>({ticket.sold} sold)</span>}
+                                                </label>
                                                 <span>{ticket.quantity}</span>
                                             </div>
                                             <div id="staff_event_card_input" className="align_column">
@@ -209,6 +330,29 @@ function EventDetails() {
                             </div>
                         </div>
 
+                        {/* Assigned Validators */}
+                        <div id="staff_info_card" className="align_column details-ticket-tiers-card">
+                            <div id="staff_info_card_name" className="align_row" style={{ justifyContent: 'space-between', gap: '1rem' }}>
+                                <span>Assigned Validators</span>
+                                <button onClick={() => setShowValidatorsModal(true)}>Manage Validators</button>
+                            </div>
+                            <hr />
+                            {validatorsLoading ? (
+                                <span className="details-no-items">Loading validators...</span>
+                            ) : assignedValidators.length === 0 ? (
+                                <span className="details-no-items">No validators assigned yet.</span>
+                            ) : (
+                                <div className="align_column" style={{ gap: '0.75rem' }}>
+                                    {assignedValidators.map(validator => (
+                                        <div key={validator.id} id="event_selling_info" className="align_row">
+                                            <span>{validator.firstName} {validator.lastName}</span>
+                                            <span>{validator.email}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
                         {/* Action buttons */}
                         <div id="staff_event_detail_controls">
                             <button onClick={() => navigate(`/event/${event.id}`)} style={{ backgroundColor: '#2ba84a', color: '#fff' }}>
@@ -217,6 +361,7 @@ function EventDetails() {
                             <button onClick={() => navigate('/edit-event/' + event.id)}>Edit</button>
                             <button onClick={() => navigate('/event-orders/' + event.id)}>View Orders</button>
                             <button onClick={() => navigate('/event-statistics/' + event.id)}>Report</button>
+                            <button onClick={() => setShowReminderModal(true)}>Send Reminder</button>
                             <button onClick={() => setShowCancelModal(true)}>Cancel</button>
                         </div>
                     </div>
@@ -297,6 +442,77 @@ function EventDetails() {
                     </div>
                 </div>
             </div>
+
+            {showValidatorsModal && (
+                <>
+                    <div id="transparent_panel" onClick={() => setShowValidatorsModal(false)}></div>
+                    <div
+                        className="validator-modal"
+                        style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            position: 'fixed',
+                            top: '50%',
+                            left: '50%',
+                            transform: 'translate(-50%, -50%)',
+                            zIndex: 1010
+                        }}
+                    >
+                        <div className="validator-modal__top">
+                            <div className="validator-modal__title">
+                                <strong>Manage Validators</strong>
+                                <span>Assign or remove validators for {event.title}. Use the search to find people quickly.</span>
+                            </div>
+                            <span className="validator-chip">{assignedValidators.length} assigned</span>
+                        </div>
+
+                        <div className="validator-modal__body">
+                            <input
+                                className="validator-modal__search"
+                                type="text"
+                                placeholder="Search validators by name or email..."
+                                value={validatorSearch}
+                                onChange={(e) => setValidatorSearch(e.target.value)}
+                            />
+
+                            <div className="validator-modal__list">
+                                {validatorsLoading ? (
+                                    <div className="validator-empty">Loading validators...</div>
+                                ) : filteredValidators.length === 0 ? (
+                                    <div className="validator-empty">No validators found.</div>
+                                ) : filteredValidators.map(validator => {
+                                    const isAssigned = assignedIds.has(validator.id);
+                                    return (
+                                        <div key={validator.id} className="validator-person-card">
+                                            <div className="validator-person-card__row">
+                                                <div className="validator-person-card__name">
+                                                    <strong>{validator.firstName} {validator.lastName}</strong>
+                                                    <span className="validator-person-card__email">{validator.email}</span>
+                                                </div>
+                                                <span className={`validator-person-card__badge ${isAssigned ? 'validator-person-card__badge--assigned' : 'validator-person-card__badge--available'}`}>
+                                                    {isAssigned ? 'Assigned' : 'Available'}
+                                                </span>
+                                            </div>
+
+                                            <div className="validator-person-card__actions">
+                                                <button className="validator-person-card__button" onClick={() => toggleValidator(validator)}>
+                                                    {isAssigned ? 'Remove Validator' : 'Assign Validator'}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+
+                        <div className="validator-modal__footer">
+                            <button onClick={() => setShowValidatorsModal(false)}>Close</button>
+                        </div>
+                    </div>
+                </>
+            )}
+
+
         </>
     );
 }

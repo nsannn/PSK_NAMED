@@ -16,7 +16,8 @@ namespace Api.Services
             string eventName,
             int quantity,
             string eventDate,
-            string eventLocation)
+            string eventLocation,
+            List<EmailTicketInfo> tickets)
         {
             _logger.LogInformation(
                 "Sending ticket confirmation email to {ToEmail} for event '{EventName}' (qty {Quantity})",
@@ -25,7 +26,7 @@ namespace Api.Services
             var sw = System.Diagnostics.Stopwatch.StartNew();
             try
             {
-                await _inner.SendTicketConfirmationEmailAsync(toEmail, eventName, quantity, eventDate, eventLocation);
+                await _inner.SendTicketConfirmationEmailAsync(toEmail, eventName, quantity, eventDate, eventLocation, tickets);
                 sw.Stop();
                 _logger.LogInformation(
                     "Ticket confirmation email sent to {ToEmail} in {ElapsedMs}ms",
@@ -36,6 +37,31 @@ namespace Api.Services
                 sw.Stop();
                 _logger.LogError(ex,
                     "Failed to send ticket confirmation email to {ToEmail} after {ElapsedMs}ms",
+                    toEmail, sw.ElapsedMilliseconds);
+                throw;
+            }
+        }
+
+        public async Task SendEventReminderEmailAsync(string toEmail, string eventName, string eventDateTime, string eventLocation, bool isManualBlast = false)
+        {
+            _logger.LogInformation(
+                "Sending event reminder email to {ToEmail} for event '{EventName}'",
+                toEmail, eventName);
+
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+            try
+            {
+                await _inner.SendEventReminderEmailAsync(toEmail, eventName, eventDateTime, eventLocation, isManualBlast);
+                sw.Stop();
+                _logger.LogInformation(
+                    "Event reminder email sent to {ToEmail} in {ElapsedMs}ms",
+                    toEmail, sw.ElapsedMilliseconds);
+            }
+            catch (Exception ex)
+            {
+                sw.Stop();
+                _logger.LogError(ex,
+                    "Failed to send event reminder email to {ToEmail} after {ElapsedMs}ms",
                     toEmail, sw.ElapsedMilliseconds);
                 throw;
             }

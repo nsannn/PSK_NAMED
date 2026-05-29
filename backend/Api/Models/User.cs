@@ -34,5 +34,7 @@ namespace Api.Models
         public UserRole Role { get; set; } = UserRole.Customer;
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        
+        public ICollection<Event> AssignedEvents { get; set; } = new List<Event>();
     }
 }

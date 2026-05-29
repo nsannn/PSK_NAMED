@@ -26,7 +26,8 @@ namespace Api.Tests.Controllers
         private CheckoutController GetController(ApplicationDbContext db, IEmailService emailService, IConfiguration config)
         {
             var logger = Mock.Of<ILogger<CheckoutController>>();
-            var controller = new CheckoutController(db, emailService, config, logger);
+            var tokenService = Mock.Of<ITicketTokenValidationService>();
+            var controller = new CheckoutController(db, emailService, config, logger, tokenService);
 
             // Mock authenticated user
             var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
@@ -54,7 +55,7 @@ namespace Api.Tests.Controllers
 
             var request = new CreateCheckoutSessionRequest
             {
-                Quantity = 0,
+                Tickets = new List<SessionReqTicket> { new SessionReqTicket { TicketId = Guid.NewGuid(), Quantity = 0 } },
                 EventId = Guid.NewGuid()
             };
 
@@ -78,7 +79,7 @@ namespace Api.Tests.Controllers
 
             var request = new CreateCheckoutSessionRequest
             {
-                Quantity = 1,
+                Tickets = new List<SessionReqTicket> { new SessionReqTicket { TicketId = Guid.NewGuid(), Quantity = 1 } },
                 EventId = Guid.NewGuid()
             };
 

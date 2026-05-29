@@ -1,3 +1,4 @@
+using Api.Dtos.Event;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using MimeKit;
@@ -5,9 +6,16 @@ using Microsoft.Extensions.Configuration;
 
 namespace Api.Services
 {
+    public class EmailTicketInfo
+    {
+        public string Type { get; set; } = string.Empty;
+        public string Token { get; set; } = string.Empty;
+    }
+
     public interface IEmailService
     {
-        Task SendTicketConfirmationEmailAsync(string toEmail, string eventName, int quantity, string eventDate, string eventLocation);
+        Task SendTicketConfirmationEmailAsync(string toEmail, string eventName, int quantity, string eventDate, string eventLocation, List<EmailTicketInfo> tickets);
+        Task SendEventReminderEmailAsync(string toEmail, string eventName, string eventDateTime, string eventLocation, bool isManualBlast = false);
     }
 
     public class EmailService : IEmailService
@@ -21,7 +29,7 @@ namespace Api.Services
             _logger = logger;
         }
 
-        public async Task SendTicketConfirmationEmailAsync(string toEmail, string eventName, int quantity, string eventDate, string eventLocation)
+        public async Task SendTicketConfirmationEmailAsync(string toEmail, string eventName, int quantity, string eventDate, string eventLocation, List<EmailTicketInfo> tickets)
         {
             var host = _config["SMTP_HOST"] ?? "smtp.gmail.com";
             var portString = _config["SMTP_PORT"] ?? "587";
@@ -39,6 +47,8 @@ namespace Api.Services
             message.From.Add(new MailboxAddress("Named Events", user));
             message.To.Add(new MailboxAddress("", toEmail));
             message.Subject = $"Your Tickets for {eventName}";
+
+            var baseUrl = _config["APP_BASE_URL"] ?? "http://localhost:5134";
 
             var bodyBuilder = new BodyBuilder
             {
@@ -64,7 +74,15 @@ namespace Api.Services
                             </tr>
                         </table>
                     </div>
-
+                    
+                    {string.Join("", tickets.Select(t => $@"
+                    <div style='background-color: #1a1a1a; border: 1px solid #2b2929; border-radius: 8px; padding: 20px; margin-top: 20px; text-align: center;'>
+                        <h3 style='margin-top: 0; color: #ffffff;'>{t.Type}</h3>
+                        <img src='https://api.qrserver.com/v1/create-qr-code/?size=250x250&data={t.Token}' alt='QR Code for {t.Type}' style='width: 200px; height: 200px; margin: 10px auto; display: block; border-radius: 4px; background-color: white; padding: 10px;' />
+                        <p style='color: #787474; font-size: 12px; margin-bottom: 0;'>Ticket Token: {t.Token.Substring(0, Math.Min(8, t.Token.Length))}...</p>
+                        <p style='margin-top:8px;'><a href='{baseUrl}/api/tickets/download/{Uri.EscapeDataString(t.Token)}' style='color: #cd6300;'>Download ticket</a></p>
+                    </div>"))}
+                    
                     <p style='text-align: center; margin-top: 30px; color: #787474; font-size: 14px;'>
                         Please keep this email for your records. If you have any questions, reply to this email.
                     </p>
@@ -84,6 +102,76 @@ namespace Api.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to send ticket confirmation email to {ToEmail} for event {EventName}", toEmail, eventName);
+            }
+        }
+
+        public async Task SendEventReminderEmailAsync(string toEmail, string eventName, string eventDateTime, string eventLocation, bool isManualBlast = false)
+        {
+            var host = _config["SMTP_HOST"] ?? "smtp.gmail.com";
+            var portString = _config["SMTP_PORT"] ?? "587";
+            var port = int.TryParse(portString, out var p) ? p : 587;
+            var user = _config["SMTP_USER"];
+            var pass = _config["SMTP_PASS"];
+
+            if (string.IsNullOrEmpty(user) || string.IsNullOrEmpty(pass))
+            {
+                _logger.LogWarning("SMTP credentials not configured in .env — skipping reminder email to {ToEmail}", toEmail);
+                return;
+            }
+
+            var subject = isManualBlast 
+                ? $"Reminder: Don't forget about {eventName}!" 
+                : $"Reminder: {eventName} is Tomorrow!";
+
+            var subtitle = isManualBlast
+                ? "This is a reminder that your event is coming up soon!"
+                : "Your event is happening tomorrow!";
+
+            var message = new MimeMessage();
+            message.From.Add(new MailboxAddress("Named Events", user));
+            message.To.Add(new MailboxAddress("", toEmail));
+            message.Subject = subject;
+
+            var bodyBuilder = new BodyBuilder
+            {
+                HtmlBody = $@"
+                <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #121111; color: #e0dcdc; padding: 30px; border-radius: 10px; border: 2px solid #393737;'>
+                    <h1 style='color: #cd6300; text-align: center;'>🔔 Event Reminder</h1>
+                    <p style='font-size: 16px; text-align: center;'>{subtitle}</p>
+
+                    <div style='background-color: #1a1a1a; border: 1px solid #2b2929; border-radius: 8px; padding: 20px; margin-top: 20px;'>
+                        <h2 style='margin-top: 0; color: #ffffff; text-align: center;'>{eventName}</h2>
+                        <table style='width: 100%; border-collapse: collapse;'>
+                                <tr>
+                                    <td style='padding: 8px 0; color: #b0acac; border-bottom: 1px solid #2b2929;'>When:</td>
+                                    <td style='padding: 8px 0; font-weight: bold; text-align: right; border-bottom: 1px solid #2b2929;'>{eventDateTime}</td>
+                                </tr>
+                            <tr>
+                                <td style='padding: 8px 0; color: #b0acac;'>Location:</td>
+                                <td style='padding: 8px 0; font-weight: bold; text-align: right;'>{eventLocation}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    
+                    <p style='text-align: center; margin-top: 30px; color: #787474; font-size: 14px;'>
+                        We look forward to seeing you there! If you have any questions, reply to this email.
+                    </p>
+                </div>"
+            };
+
+            message.Body = bodyBuilder.ToMessageBody();
+
+            using var client = new SmtpClient();
+            try
+            {
+                await client.ConnectAsync(host, port, SecureSocketOptions.StartTls);
+                await client.AuthenticateAsync(user, pass);
+                await client.SendAsync(message);
+                await client.DisconnectAsync(true);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to send event reminder email to {ToEmail} for event {EventName}", toEmail, eventName);
             }
         }
     }

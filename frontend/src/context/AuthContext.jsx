@@ -30,11 +30,15 @@ export function AuthProvider({ children }) {
     });
 
     setUser(data.user);
-    // refresh the page so all parts of the app reflect the authenticated state
-    try {
-      window.location.reload();
-    } catch (err) {
-      // ignore - non-browser environments
+    if (data.user?.role === 'Validator') {
+      window.location.assign('/validator-dashboard');
+    } else {
+      // refresh the page so all parts of the app reflect the authenticated state
+      try {
+        window.location.reload();
+      } catch (err) {
+        // ignore - non-browser environments
+      }
     }
     return data;
   }
@@ -46,10 +50,14 @@ export function AuthProvider({ children }) {
     });
 
     setUser(data.user);
-    try {
-      window.location.reload();
-    } catch (err) {
-      // ignore
+    if (data.user?.role === 'Validator') {
+      window.location.assign('/validator-dashboard');
+    } else {
+      try {
+        window.location.reload();
+      } catch (err) {
+        // ignore
+      }
     }
     return data;
   }

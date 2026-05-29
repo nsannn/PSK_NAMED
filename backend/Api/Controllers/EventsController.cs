@@ -237,7 +237,13 @@ namespace Api.Controllers
                     Revenue       = canManage ? revenue.ToString("N2") : "0.00",
                     RevenueAmount = canManage ? revenue : 0,
                     Price         = price,
-                    HasPoster     = EventHasPoster(ev.Id)
+                    HasPoster     = EventHasPoster(ev.Id),
+                    Tiers         = ev.Tickets.Select(t => new MyEventTierDto
+                    {
+                        Name     = t.Type,
+                        Quantity = t.Quantity,
+                        Sold     = t.Sold
+                    }).ToList()
                 };
             });
 
@@ -317,11 +323,22 @@ namespace Api.Controllers
             if (User.IsInRole("Manager") && ev.CreatedByUserId != editorId)
                 return Forbid();
 
-            if (!updateDto.ForceOverwrite)
+            if (!updateDto.ForceOverwrite && ev.Version != updateDto.Version)
             {
-                _db.Entry(ev)
-                    .Property(e => e.Version)
-                    .OriginalValue = updateDto.Version;
+                _logger.LogWarning("Concurrency conflict updating event {EventId}: client version {ClientVersion} != db version {DbVersion}",
+                    id, updateDto.Version, ev.Version);
+
+                var currentData = await _db.Events
+                    .Include(e => e.Tickets)
+                    .Include(e => e.Tags)
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(e => e.Id == id);
+
+                return Conflict(new
+                {
+                    message = "Event was modified or deleted by another user",
+                    currentData = currentData == null ? null : MapToDto(currentData, EventHasPoster(currentData.Id))
+                });
             }
 
             ev.Title = updateDto.Title;
@@ -329,23 +346,42 @@ namespace Api.Controllers
             ev.Location = updateDto.Location;
             ev.Date = updateDto.Date.ToUniversalTime();
 
-            // await _db.Tickets.Where(t => t.EventId == id).ExecuteDeleteAsync();
-            var tickets = await _db.Tickets
-                .Where(t => t.EventId == id)
-                .ToListAsync();
-            _db.Tickets.RemoveRange(tickets);
+            var incomingTicketIds = updateDto.TicketTiers.Where(t => t.Id.HasValue).Select(t => t.Id.Value).ToList();
+            
+            var ticketsToDelete = ev.Tickets.Where(t => !incomingTicketIds.Contains(t.Id)).ToList();
+            if (ticketsToDelete.Any(t => t.Sold > 0)) {
+                return BadRequest(new { message = "Cannot delete a ticket tier that has already sold tickets." });
+            }
 
-            foreach (var tierDto in updateDto.TicketTiers)
-            {
-                _db.Tickets.Add(new Ticket
-                {
-                    Id = Guid.NewGuid(),
-                    EventId = id,
-                    Type = tierDto.Name,
-                    Quantity = tierDto.Quantity,
-                    Sold = 0,
-                    Price = tierDto.Price
-                });
+            foreach (var tierDto in updateDto.TicketTiers.Where(t => t.Id.HasValue)) {
+                var existing = ev.Tickets.FirstOrDefault(t => t.Id == tierDto.Id.Value);
+                if (existing != null && tierDto.Quantity < existing.Sold) {
+                    return BadRequest(new { message = $"Cannot reduce quantity of '{existing.Type}' below tickets already sold ({existing.Sold})." });
+                }
+            }
+
+            _db.Tickets.RemoveRange(ticketsToDelete);
+
+            foreach (var tierDto in updateDto.TicketTiers) {
+                if (tierDto.Id.HasValue) {
+                    var existing = ev.Tickets.FirstOrDefault(t => t.Id == tierDto.Id.Value);
+                    if (existing == null) {
+                        return BadRequest(new { message = $"Ticket tier id {tierDto.Id.Value} not found for this event." });
+                    }
+
+                    existing.Type = tierDto.Name;
+                    existing.Quantity = tierDto.Quantity;
+                    existing.Price = tierDto.Price;
+                } else {
+                    _db.Tickets.Add(new Ticket {
+                        Id = Guid.NewGuid(),
+                        EventId = id,
+                        Type = tierDto.Name,
+                        Quantity = tierDto.Quantity,
+                        Sold = 0,
+                        Price = tierDto.Price
+                    });
+                }
             }
 
             var allTagNames = new List<string>(updateDto.Tags);
@@ -375,8 +411,11 @@ namespace Api.Controllers
 
             try
             {
-                TouchEvent(ev);
                 await _db.SaveChangesAsync();
+                
+                // Re-read to get the new xmin/Version after save
+                await _db.Entry(ev).ReloadAsync();
+                
                 var updatedEvent = MapToDto(ev, EventHasPoster(ev.Id));
                 return Ok(updatedEvent);
             }
