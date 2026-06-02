@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { apiFetch } from '../utils/api';
 import './NotificationDropdown.css';
 
-export default function NotificationDropdown() {
+export default function NotificationDropdown({ isMobile }) {
   const [open, setOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const [notifications, setNotifications] = useState([]);
@@ -100,20 +100,31 @@ export default function NotificationDropdown() {
   }
 
   return (
-    <div className="nd-container" ref={dropdownRef}>
+    <div className={`nd-container ${isMobile ? 'nd-container--mobile' : ''}`} ref={dropdownRef}>
       <button
-        className="btn btn--outline nd-toggle-btn"
+        className={`${isMobile ? 'mobile-sidebar__link nd-mobile-btn' : 'btn btn--outline nd-toggle-btn'}`}
         onClick={() => setOpen(!open)}
         title="Notifications"
       >
-        <span className="nd-icon">🔔</span>
-        {unreadCount > 0 && (
-          <span className="nd-badge">{unreadCount > 99 ? '99+' : unreadCount}</span>
+        {isMobile ? (
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', position: 'relative' }}>
+            <span>Notifications</span>
+            {unreadCount > 0 && (
+              <span className="nd-badge nd-badge--mobile" style={{ position: 'absolute', right: 0 }}>{unreadCount > 99 ? '99+' : unreadCount}</span>
+            )}
+          </div>
+        ) : (
+          <>
+            <span className="nd-icon">🔔</span>
+            {unreadCount > 0 && (
+              <span className="nd-badge">{unreadCount > 99 ? '99+' : unreadCount}</span>
+            )}
+          </>
         )}
       </button>
 
       {open && (
-        <div className="nd-dropdown">
+        <div className={`nd-dropdown ${isMobile ? 'nd-dropdown--mobile' : ''}`}>
           <div className="nd-header">
             <h3>Notifications</h3>
             {unreadCount > 0 && (

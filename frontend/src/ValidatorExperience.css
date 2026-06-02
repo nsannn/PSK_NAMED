@@ -538,6 +538,13 @@
   justify-content: space-between;
   gap: 1rem;
   padding: 1rem 1.4rem;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 600px) {
+  .validator-scanner-header {
+    display: none;
+  }
 }
 
 .validator-scanner-header__title {

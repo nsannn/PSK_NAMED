@@ -7,7 +7,7 @@ import NotificationDropdown from './NotificationDropdown';
 import './Navbar.css';
 
 export default function Navbar() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [modalMode, setModalMode] = useState(null); // 'login' | 'register' | null
@@ -29,6 +29,11 @@ export default function Navbar() {
   }
 
   const isActive = (path) => location.pathname === path ? 'navbar__link--active' : '';
+
+  // Helpers for user menu inside mobile sidebar
+  const isCustomer = role === 'Customer';
+  const validationDestination = role === 'Validator' ? '/validator-dashboard' : '/ticket-validation';
+  const validationLabel = role === 'Validator' ? 'Assigned Events' : 'Ticket Validation';
 
   return (
     <>
@@ -80,24 +85,45 @@ export default function Navbar() {
       <div className={`mobile-overlay ${mobileOpen ? 'mobile-overlay--visible' : ''}`}
            onClick={() => setMobileOpen(false)} />
       <aside className={`mobile-sidebar ${mobileOpen ? 'mobile-sidebar--open' : ''}`} id="mobile-sidebar">
-        <div className="mobile-sidebar__links">
-          {canManage && (
-            <button className="mobile-sidebar__link" onClick={() => { navigate('/dashboard'); setMobileOpen(false); }}>Dashboard</button>
-          )}
-        </div>
-        <div className="mobile-sidebar__actions">
-          {user ? (
-            <>
-              <NotificationDropdown />
-              <UserMenu />
-            </>
-          ) : (
-            <>
+        
+        {user ? (
+          <div className="mobile-sidebar__user-section">
+            <div className="mobile-sidebar__user-profile">
+              <span className="mobile-sidebar__user-name">{user.firstName} {user.lastName}</span>
+              <span className="mobile-sidebar__user-role">{user.role}</span>
+            </div>
+            
+            <div className="mobile-sidebar__links">
+              {canManage && (
+                <button className="mobile-sidebar__link" onClick={() => { navigate('/dashboard'); setMobileOpen(false); }}>Dashboard</button>
+              )}
+              
+              {isCustomer && (
+                <button className="mobile-sidebar__link" onClick={() => { navigate('/my-tickets'); setMobileOpen(false); }}>My Tickets</button>
+              )}
+
+              {canValidate && (
+                <button className="mobile-sidebar__link" onClick={() => { navigate(validationDestination); setMobileOpen(false); }}>{validationLabel}</button>
+              )}
+              
+              <NotificationDropdown isMobile={true} />
+              
+              <button className="mobile-sidebar__link mobile-sidebar__link--logout" onClick={() => { logout(); setMobileOpen(false); }}>Logout</button>
+            </div>
+          </div>
+        ) : (
+          <>
+            <div className="mobile-sidebar__links">
+              {canManage && (
+                <button className="mobile-sidebar__link" onClick={() => { navigate('/dashboard'); setMobileOpen(false); }}>Dashboard</button>
+              )}
+            </div>
+            <div className="mobile-sidebar__actions">
               <button className="btn btn--accent btn--full" onClick={openLogin}>Sign In</button>
               <button className="btn btn--outline btn--full" onClick={openRegister}>Register</button>
-            </>
-          )}
-        </div>
+            </div>
+          </>
+        )}
       </aside>
 
       {/* Auth modal */}

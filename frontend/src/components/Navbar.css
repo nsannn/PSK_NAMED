@@ -159,7 +159,43 @@
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  margin-top: auto;
+}
+
+.mobile-sidebar__user-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.mobile-sidebar__user-profile {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 1rem;
+  background: var(--surface-0);
+  border-radius: 12px;
+  border: 1px solid var(--border-1);
+}
+
+.mobile-sidebar__user-name {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text-0);
+}
+
+.mobile-sidebar__user-role {
+  font-size: 0.9rem;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.mobile-sidebar__link--logout {
+  color: var(--error, #e74c3c);
+  border-color: rgba(231, 76, 60, 0.2);
+}
+
+.mobile-sidebar__link--logout:hover {
+  background: rgba(231, 76, 60, 0.1);
 }
 
 

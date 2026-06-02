@@ -188,3 +188,61 @@
     to { transform: translateY(0); }
   }
 }
+
+/* Mobile Component Overrides (when isMobile is true) */
+.nd-container--mobile {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+}
+
+.nd-mobile-btn {
+  display: flex;
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--surface-0);
+  border: 2px solid var(--border-1);
+  color: var(--text-1);
+  font-size: 1.1rem;
+  font-weight: 600;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+  border-radius: 2rem;
+}
+
+.nd-badge--mobile {
+  position: static;
+  background: var(--accent);
+  color: var(--text-0);
+  font-size: 0.8rem;
+  font-weight: bold;
+  height: 24px;
+  min-width: 24px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 8px;
+  border: none;
+  box-shadow: none;
+}
+
+/* Force inline dropdown for the sidebar */
+@media (max-width: 768px) {
+  .nd-dropdown.nd-dropdown--mobile {
+    position: static;
+    width: 100%;
+    margin-top: 0.5rem;
+    border-radius: 12px;
+    border: 2px solid var(--border-1);
+    box-shadow: none;
+    background: var(--surface-0);
+    animation: none;
+  }
+  .nd-dropdown.nd-dropdown--mobile .nd-list {
+    max-height: 250px;
+  }
+}
+
